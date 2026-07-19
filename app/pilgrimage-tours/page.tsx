@@ -32,11 +32,11 @@ export default function PilgrimageTours() {
       <Navbar />
       <PageTransition>
         <main className="w-full flex-grow">
-          
+
           {/* 1. Hero Section */}
           <section className="relative w-full h-[600px] flex items-center justify-center overflow-hidden select-none">
             {/* Background image */}
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full z-0 transform scale-102"
               style={{
                 backgroundImage: `url("${getAssetPath("/images/hero_dawn_temple.png")}")`
@@ -46,7 +46,7 @@ export default function PilgrimageTours() {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/95 to-primary/45 z-10" />
 
             <div className="relative z-20 max-w-container-max mx-auto px-margin-mobile md:px-12 w-full text-left flex flex-col items-start gap-6 pt-12">
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: easeQuint }}
@@ -55,7 +55,7 @@ export default function PilgrimageTours() {
                 Sacred Journeys,<br /> Carefully Organised
               </motion.h1>
 
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: easeQuint }}
@@ -64,7 +64,7 @@ export default function PilgrimageTours() {
                 Experience spiritual fulfillment with our expertly guided pilgrimage tours. Designed for comfort, safety, and deep reverence, ensuring peace of mind for every generation of your family.
               </motion.p>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2, ease: easeQuint }}
@@ -76,7 +76,7 @@ export default function PilgrimageTours() {
                     <span className="material-symbols-outlined text-[18px]">explore</span>
                   </button>
                 </Link>
-                <button 
+                <button
                   onClick={handleEnquireClick}
                   className="bg-transparent border-2 border-on-primary text-on-primary font-label-bold text-label-bold h-[56px] px-8 rounded-lg hover:bg-on-primary/10 transition-all flex items-center justify-center cursor-pointer"
                 >
@@ -89,7 +89,7 @@ export default function PilgrimageTours() {
           {/* 2. Trust Badges Bar */}
           <div className="bg-surface-container py-6 border-b border-outline-variant/20 select-none">
             <div className="max-w-container-max mx-auto px-margin-mobile md:px-12 flex flex-wrap justify-between items-center gap-6">
-              
+
               <div className="flex items-center gap-3 text-primary">
                 <div className="w-10 h-10 bg-surface rounded-full flex items-center justify-center shadow-sm text-secondary">
                   <ShieldCheck size={20} />
@@ -132,11 +132,11 @@ export default function PilgrimageTours() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter items-stretch select-none">
               {/* Large Featured Card (Tamil Nadu) */}
-              <Link 
-                href="/packages?dest=South" 
+              <Link
+                href="/packages?dest=South"
                 className="md:col-span-2 group relative h-[400px] rounded-card overflow-hidden shadow-level-1 cursor-pointer block"
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
                     backgroundImage: `url("${getAssetPath("/images/rameswaram_temple.png")}")`
@@ -161,11 +161,11 @@ export default function PilgrimageTours() {
               </Link>
 
               {/* Smaller Card 1 (Kashi) */}
-              <Link 
+              <Link
                 href="/packages?dest=Kashi"
                 className="group relative h-[400px] rounded-card overflow-hidden shadow-level-1 cursor-pointer block text-left"
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
                     backgroundImage: `url("${getAssetPath("/images/kashi_ganga_aarti.png")}")`
@@ -189,11 +189,11 @@ export default function PilgrimageTours() {
               </Link>
 
               {/* Smaller Card 2 (Himalayan Chardham) */}
-              <Link 
+              <Link
                 href="/packages?dest=Char"
                 className="group relative h-[300px] rounded-card overflow-hidden shadow-level-1 cursor-pointer block text-left"
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
                     backgroundImage: `url("${getAssetPath("/images/himalayas_kedarnath.png")}")`
@@ -209,11 +209,11 @@ export default function PilgrimageTours() {
               </Link>
 
               {/* Smaller Card 3 (Shirdi) */}
-              <Link 
+              <Link
                 href="/packages?dest=Shirdi"
                 className="group relative h-[300px] rounded-card overflow-hidden shadow-level-1 cursor-pointer block text-left"
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
                     backgroundImage: `url("${getAssetPath("/images/somnath_seaside.png")}")`
@@ -229,11 +229,11 @@ export default function PilgrimageTours() {
               </Link>
 
               {/* Smaller Card 4 (Jyotirlinga) */}
-              <Link 
+              <Link
                 href="/packages?dest=somnath"
                 className="group relative h-[300px] rounded-card overflow-hidden shadow-level-1 cursor-pointer block text-left"
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
                     backgroundImage: `url("${getAssetPath("/images/somnath_seaside.png")}")`
@@ -261,19 +261,19 @@ export default function PilgrimageTours() {
               </div>
               <Link href="/packages">
                 <button className="text-secondary font-label-bold text-label-bold flex items-center gap-1.5 hover:text-secondary-fixed-dim transition-colors cursor-pointer group">
-                  View All Packages 
+                  View All Packages
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter text-left">
-              
+
               {/* Detailed Package Card 1 */}
               <div className="bg-surface flex flex-col sm:flex-row rounded-card overflow-hidden border border-outline-variant/20 hover:shadow-level-2 transition-shadow duration-300">
                 <div className="w-full sm:w-2/5 h-48 sm:h-auto relative select-none bg-surface-container">
-                  <img 
-                    src={getAssetPath("/images/rameswaram_temple.png")} 
+                  <img
+                    src={getAssetPath("/images/rameswaram_temple.png")}
                     alt="Rameswaram Temple Details"
                     className="absolute inset-0 w-full h-full object-cover hover:scale-103 transition-transform duration-500"
                   />
@@ -320,8 +320,8 @@ export default function PilgrimageTours() {
               {/* Detailed Package Card 2 */}
               <div className="bg-surface flex flex-col sm:flex-row rounded-card overflow-hidden border border-outline-variant/20 hover:shadow-level-2 transition-shadow duration-300">
                 <div className="w-full sm:w-2/5 h-48 sm:h-auto relative select-none bg-surface-container">
-                  <img 
-                    src={getAssetPath("/images/kashi_ganga_aarti.png")} 
+                  <img
+                    src={getAssetPath("/images/kashi_ganga_aarti.png")}
                     alt="Haridwar ashram side view"
                     className="absolute inset-0 w-full h-full object-cover hover:scale-103 transition-transform duration-500"
                   />
@@ -367,7 +367,7 @@ export default function PilgrimageTours() {
 
           {/* 5. Route Timeline & Senior Assistance Split Layout */}
           <section className="max-w-container-max mx-auto px-margin-mobile md:px-12 py-12 grid grid-cols-1 lg:grid-cols-3 gap-gutter items-stretch">
-            
+
             {/* Left: Example Route Timeline */}
             <div className="lg:col-span-2 bg-surface-container-lowest rounded-card p-6 md:p-8 shadow-level-1 border border-outline-variant/10 text-left">
               <h2 className="font-headline-md text-headline-md text-primary font-bold mb-8 flex items-center gap-2 select-none">
@@ -376,7 +376,7 @@ export default function PilgrimageTours() {
               </h2>
 
               <div className="relative border-l-2 border-outline-variant/30 ml-4 space-y-8 pb-4 select-none">
-                
+
                 {/* Timeline Day 1 */}
                 <div className="relative pl-8">
                   <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-secondary border-4 border-surface-container-lowest" />
@@ -454,7 +454,7 @@ export default function PilgrimageTours() {
                 <p className="text-sm text-on-primary/80 leading-relaxed mb-6">
                   We understand the unique needs of elderly pilgrims. Our tours are meticulously planned to minimize physical strain while maximizing spiritual engagement.
                 </p>
-                
+
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
                     <span className="material-symbols-outlined text-secondary-fixed text-[20px] icon-fill mt-0.5">check_circle</span>
@@ -480,7 +480,7 @@ export default function PilgrimageTours() {
                 </ul>
               </div>
 
-              <button 
+              <button
                 onClick={handleEnquireClick}
                 className="w-full mt-8 bg-secondary text-on-secondary font-label-bold text-sm h-[48px] rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors cursor-pointer"
               >

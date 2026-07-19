@@ -33,7 +33,7 @@ export default function Home() {
     if (travelMonth) params.append("month", travelMonth);
     if (duration) params.append("duration", duration);
     if (travellers) params.append("travellers", travellers);
-    
+
     router.push(`/packages?${params.toString()}`);
   };
 
@@ -55,7 +55,7 @@ export default function Home() {
           <section className="relative w-full min-h-[640px] flex items-center justify-center pt-8 pb-16 px-margin-mobile md:px-12 select-none">
             {/* Background Image & Overlay */}
             <div className="absolute inset-0 z-0">
-              <div 
+              <div
                 className="bg-cover bg-center w-full h-full transform scale-102"
                 style={{
                   backgroundImage: `url("${getAssetPath("/images/hero_dawn_temple.png")}")`
@@ -66,7 +66,7 @@ export default function Home() {
 
             <div className="relative z-10 w-full max-w-container-max mx-auto flex flex-col items-center text-center gap-12 pt-6">
               <div className="max-w-3xl space-y-5">
-                <motion.span 
+                <motion.span
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -74,8 +74,8 @@ export default function Home() {
                 >
                   Curated Spiritual Experiences
                 </motion.span>
-                
-                <motion.h1 
+
+                <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -83,8 +83,8 @@ export default function Home() {
                 >
                   Plan Your Sacred Journey with Confidence
                 </motion.h1>
-                
-                <motion.p 
+
+                <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -96,12 +96,12 @@ export default function Home() {
 
               {/* Search Panel Box */}
               <FadeUp delay={0.3}>
-                <form 
+                <form
                   onSubmit={handleSearchSubmit}
                   className="w-full max-w-5xl bg-surface-container-lowest/95 backdrop-blur-md p-4 md:p-2.5 rounded-2xl shadow-level-2 border border-outline-variant/20 flex flex-col md:flex-row items-stretch md:items-center gap-2"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-4 grow divide-y md:divide-y-0 md:divide-x divide-outline-variant/20">
-                    
+
                     {/* Destination input */}
                     <div className="flex flex-col gap-1 p-4 hover:bg-surface-container-low transition-colors rounded-t-xl md:rounded-l-xl md:rounded-tr-none text-left">
                       <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline">Destination</label>
@@ -229,7 +229,7 @@ export default function Home() {
               </div>
               <Link href="/packages">
                 <button className="font-label-bold text-label-bold text-secondary flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer group">
-                  View All Packages 
+                  View All Packages
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
@@ -252,8 +252,8 @@ export default function Home() {
               {/* Image box */}
               <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-level-2 border-4 border-surface-container-lowest">
                 <ScaleIn>
-                  <img 
-                    src={getAssetPath("/images/elderly_pilgrims.png")} 
+                  <img
+                    src={getAssetPath("/images/elderly_pilgrims.png")}
                     alt="Elderly couple assisted by travel guide"
                     className="w-full h-auto object-cover aspect-[4/3] hover:scale-103 transition-transform duration-500"
                   />
@@ -284,7 +284,7 @@ export default function Home() {
                 {/* Key features lists */}
                 <StaggerContainer delay={0.3}>
                   <div className="space-y-5 pt-4">
-                    
+
                     <StaggerItem>
                       <div className="flex gap-4">
                         <div className="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center shrink-0 text-secondary shadow-sm">
@@ -340,23 +340,23 @@ export default function Home() {
               <div className="bg-primary rounded-2xl p-8 md:p-16 text-center flex flex-col items-center gap-6 shadow-level-2 relative overflow-hidden">
                 {/* Subtle pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "24px 24px" }} />
-                
+
                 <h2 className="font-display-lg-mobile md:font-display-lg text-on-primary relative z-10 max-w-2xl font-bold font-display leading-tight">
                   Ready to Plan Your Sacred Journey?
                 </h2>
-                
+
                 <p className="font-body-lg text-body-lg text-primary-fixed relative z-10 max-w-xl leading-relaxed">
                   Our travel experts are ready to curate a customized itinerary for your family, ensuring a seamless and divine experience.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-6 relative z-10 w-full sm:w-auto justify-center select-none">
-                  <button 
+                  <button
                     onClick={handleEnquireClick}
                     className="bg-surface-container-lowest text-primary h-14 px-8 rounded-lg font-label-bold text-label-bold hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 whitespace-nowrap shadow-sm cursor-pointer active:scale-97 font-bold"
                   >
                     Enquire Now
                   </button>
-                  <a 
+                  <a
                     href="https://wa.me/9118007454746"
                     target="_blank"
                     rel="noopener noreferrer"

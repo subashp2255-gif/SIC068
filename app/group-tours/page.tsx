@@ -59,7 +59,7 @@ export default function GroupTours() {
       <Navbar />
       <PageTransition>
         <main className="w-full flex-grow">
-          
+
           {/* Main Container Switch */}
           <AnimatePresence mode="wait">
             {activeView === "landing" ? (
@@ -74,7 +74,7 @@ export default function GroupTours() {
                 {/* Hero Section */}
                 <section className="relative w-full min-h-[720px] flex items-center justify-center overflow-hidden select-none">
                   <div className="absolute inset-0 w-full h-full z-0">
-                    <div 
+                    <div
                       className="bg-cover bg-center w-full h-full absolute inset-0 transform scale-102"
                       style={{
                         backgroundImage: `url("${getAssetPath("/images/elderly_pilgrims.png")}")`
@@ -96,14 +96,14 @@ export default function GroupTours() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto select-none">
-                      <button 
+                      <button
                         onClick={() => setActiveView("listing")}
                         className="bg-primary text-on-primary h-14 px-8 rounded-lg font-label-bold text-label-bold hover:bg-primary-container hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer font-bold"
                       >
                         Explore Group Packages
                         <ArrowRight size={18} />
                       </button>
-                      <button 
+                      <button
                         onClick={handleEnquireClick}
                         className="bg-transparent text-primary border-2 border-primary h-14 px-8 rounded-lg font-label-bold text-label-bold hover:bg-surface-variant transition-all flex items-center justify-center gap-2 cursor-pointer font-bold"
                       >
@@ -131,7 +131,7 @@ export default function GroupTours() {
                     <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     <span className="text-on-surface font-bold">Group Packages</span>
                   </nav>
-                  
+
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                     <div>
                       <h1 className="font-display-lg text-primary font-bold">Explore Group Tour Packages</h1>
@@ -139,7 +139,7 @@ export default function GroupTours() {
                         Experience the spiritual journey of a lifetime with our carefully organized, affordable group tours. Ideal for families, friends, and multigenerational travelers seeking shared moments of devotion.
                       </p>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setActiveView("landing")}
                       className="border border-primary text-primary px-4 py-2 rounded-lg text-xs font-bold hover:bg-surface-container transition-all cursor-pointer flex-shrink-0"
                     >
@@ -156,7 +156,7 @@ export default function GroupTours() {
                         <label className="font-label-bold text-xs uppercase tracking-wider text-outline">Destination</label>
                         <div className="relative">
                           <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
-                          <input 
+                          <input
                             type="text"
                             placeholder="Where to?"
                             value={searchText}
@@ -165,10 +165,10 @@ export default function GroupTours() {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-col gap-2">
                         <label className="font-label-bold text-xs uppercase tracking-wider text-outline">Group Region</label>
-                        <select 
+                        <select
                           value={selectedRegion}
                           onChange={(e) => setSelectedRegion(e.target.value)}
                           className="w-full h-12 px-3 rounded-lg border border-outline-variant focus:border-primary text-sm outline-none cursor-pointer"
@@ -182,7 +182,7 @@ export default function GroupTours() {
 
                       <div className="flex flex-col gap-2">
                         <label className="font-label-bold text-xs uppercase tracking-wider text-outline">Group Size</label>
-                        <select 
+                        <select
                           value={selectedSize}
                           onChange={(e) => setSelectedSize(e.target.value)}
                           className="w-full h-12 px-3 rounded-lg border border-outline-variant focus:border-primary text-sm outline-none cursor-pointer"
@@ -193,7 +193,7 @@ export default function GroupTours() {
                         </select>
                       </div>
 
-                      <button 
+                      <button
                         type="submit"
                         className="bg-primary text-on-primary h-12 rounded-lg font-bold text-sm hover:bg-primary-container transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm w-full"
                       >
@@ -206,12 +206,12 @@ export default function GroupTours() {
 
                 {/* Sidebar + Packages Grid Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-                  
+
                   {/* Sidebar Filters */}
                   <aside className="lg:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-surface-variant flex flex-col gap-6 sticky top-28 select-none">
                     <div className="flex justify-between items-center border-b border-outline-variant/10 pb-3">
                       <h2 className="font-headline-md text-base text-primary font-bold">Filters</h2>
-                      <button 
+                      <button
                         onClick={() => { setSelectedRegion("All"); setSelectedSize("Any"); setIsSeniorFriendlyOnly(false); }}
                         className="text-secondary font-label-bold text-xs hover:underline"
                       >
@@ -225,8 +225,8 @@ export default function GroupTours() {
                       <div className="flex flex-col gap-2">
                         {["North India", "South India", "Char Dham"].map((region) => (
                           <label key={region} className="flex items-center gap-2 cursor-pointer group text-sm font-medium">
-                            <input 
-                              type="radio" 
+                            <input
+                              type="radio"
                               name="region-grp"
                               checked={selectedRegion === region}
                               onChange={() => setSelectedRegion(region)}
@@ -236,8 +236,8 @@ export default function GroupTours() {
                           </label>
                         ))}
                         <label className="flex items-center gap-2 cursor-pointer group text-sm font-medium">
-                          <input 
-                            type="radio" 
+                          <input
+                            type="radio"
                             name="region-grp"
                             checked={selectedRegion === "All"}
                             onChange={() => setSelectedRegion("All")}
@@ -253,7 +253,7 @@ export default function GroupTours() {
                       <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline">Requirements</h3>
                       <div className="flex flex-col gap-2.5">
                         <label className="flex items-center gap-2.5 cursor-pointer text-sm font-medium">
-                          <input 
+                          <input
                             type="checkbox"
                             checked={isSeniorFriendlyOnly}
                             onChange={(e) => setIsSeniorFriendlyOnly(e.target.checked)}
@@ -267,7 +267,7 @@ export default function GroupTours() {
 
                   {/* Listings Grid */}
                   <div className="lg:col-span-9 flex flex-col gap-6">
-                    
+
                     {/* List Header */}
                     <div className="flex justify-between items-center bg-surface-container-lowest p-4 rounded-xl shadow-level-1 border border-surface-variant select-none">
                       <span className="text-sm font-bold text-primary">
@@ -279,7 +279,7 @@ export default function GroupTours() {
                     {groupPackages.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-16 bg-surface-container-lowest rounded-xl shadow-level-1 border border-outline-variant/10 gap-3">
                         <span className="text-outline font-bold">No matching group packages found.</span>
-                        <button 
+                        <button
                           onClick={() => { setSelectedRegion("All"); setSelectedSize("Any"); setSearchText(""); }}
                           className="text-primary text-xs font-bold underline"
                         >
