@@ -43,7 +43,7 @@ export const mockPackages: Package[] = [
     price: 14500,
     rating: 4.8,
     reviewCount: 156,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAR1WO1m045T-GrLKlEhu4yWkAV-yqirE6T9-XCD7aHTt77PmDhai5rcKm8JPdikyxCH9jbmbP1EvY0zNruVjnlPZIkUpvzloF_txweNDM-Jk0VcTib8oSVFzXL8HGk0Ul4pd02bO76SeOAkwvmyEpcT0ti2dDyrvUt-rRAU7PQZl8y18x9vtKRQZ7j_GePdXeSbgmY86iMRhngYZM_WQmkklVviR8lWVLx0gIV68DPr61thdmvdF6eO8evykFx5ryLJMIOAiy1-Bs",
+    image: "/images/rameswaram_temple.png",
     tags: ["Senior Friendly", "Fast Filling"],
     inclusions: {
       hotel: "3-Star Hotel",
@@ -71,7 +71,7 @@ export const mockPackages: Package[] = [
     price: 18200,
     rating: 4.8,
     reviewCount: 218,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD55yje_WBSPz_DrWBCODVi0yoGveTFXaZJHAu3zsLTqz55Kpl6Kp5LH6DXhJsMWhV5s-UbXAwRlGbOrYtSIf0EnsnPvUkDQMDHJ682aMHGLpmf1jwaDQ0wajesfsKbwZ8wWua4uxKUEydTwFxuuqCO6qp3Ypiu04MnEdPtqPAeSMJz1c3c5eHGz-c_r_uZTT3VLDTvsgjk_hEymfWOdmfQorhEO0hTh8HBMtHybwxGA--TpJan8EsRmEyklC0J1vb0hR-wPvRtbx8",
+    image: "/images/kashi_ganga_aarti.png",
     tags: ["Senior Friendly"],
     inclusions: {
       hotel: "4-Star Hotel",
@@ -100,7 +100,7 @@ export const mockPackages: Package[] = [
     price: 24000,
     rating: 4.7,
     reviewCount: 142,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAktLk9KBwBbY43-H4Zj4a2GnAF8CzgIrd-myWuc0oIuVV8gwf4tT1H76DiPRJPB2HorBAsutlbc3yd-XTQjxUsTp3Xoh20VvTofjOODKZiYa1cN86Dxmne44mTjWmbY6oMqidqUveNlpTaZLcxdaTRspz77BdhepjnmyOtxwbXE9H9V-krogUws8QrxcAAGKC2UGVIOyygDHEdHoByrhR8xfzMBqiAr0lpaD3QL5CzOf29TChM_iCy2qFCYlYddmSlOFQABgWjo38",
+    image: "/images/somnath_seaside.png",
     tags: ["Most Popular"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -131,7 +131,7 @@ export const mockPackages: Package[] = [
     price: 32500,
     rating: 4.8,
     reviewCount: 310,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDW5opxfk6dhSvOJ4WsgjHhNPtDw-W8zZB7hRZil7FiYKs1iB9RhClAaSJAkXYMQ4vOa-_jMKrRFl6SqZ4l_FAo2uQ_NiIlyfcJk2J9z7sD0RWthdKCWOeBwLfYMQnicOSp2k8CqOaTfSfdTgjB_3W3SVF4kCdKxL1JeYpH8pk6DqOtbIg33ViZGsP5LerNOYf0CGksJpP928I1CEDX7JCzyX7zbB5aoVDSBMG5jcCeF0wamgj4ocNMC1eVdc2XBvuJFCKVXe7R3jA",
+    image: "/images/rameswaram_temple.png",
     tags: ["Senior Friendly", "Best for Families"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -162,7 +162,7 @@ export const mockPackages: Package[] = [
     price: 24000,
     rating: 4.8,
     reviewCount: 198,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCCDOuP4jQ7-zICx9FZ4CpMKFyziZaeqSye1vDlZh1FOaBBCtwBxvJfI-vDO3_a-ZQrSxfqihpsQy3IiuuoR_sQubSdZubHoUSWpJgwUSum3EKUDmxGxEmnU2TwcP3gi-WyBkRuS4qEBpzSTY4A0FSJUoK_fezF_tRcBqJAf0Vpjx1yWY5AGM7Dk7EsEip5lKbY9He_ctAJnB77tT-zowuWqgOJPqljxJI8Fab7F-h02acAb3ne5eGtYOvoUy-SIMin91qj8k2kWEQ",
+    image: "/images/golden_temple_amritsar.png",
     tags: ["Most Popular"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -191,7 +191,7 @@ export const mockPackages: Package[] = [
     price: 9200,
     rating: 4.9,
     reviewCount: 312,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCDEtH6CKIAJVgiR5X72lsSjGTKEQ9ppZH6mTQi2joArQvwNqMHP4VICUUyOzQ8cB5GLQJ8AgcC2c250H9nsj2pS3iGBw8yPtOZArugUZNNZ5DkeGbTyt5OX-UUUqD345M7DwoAWXo1Bn8FjylyCLDM2mtBP-OoKDO0p-PCePvo64gnRNPZ8cO0WgAw3c7ZxXl3aj-4LCq-VuAL9P_iYIQn7nlM7UiyDXQSZYa0laRw6nBBZKM-BfkDD6sFmEwxACLHM6Zgr2r_u-I",
+    image: "/images/rameswaram_temple.png",
     tags: ["Special Darshan"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -218,7 +218,7 @@ export const mockPackages: Package[] = [
     price: 32000,
     rating: 4.7,
     reviewCount: 89,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6DotzZIqjF7mIIJlFlsPmVQBERi8jzDCh6lu92NWeXQrEGE9KpVYzUmR_BZaspIIFGuvnDdANKL4U9hH7ii39iSIWxhJyc0xgCaTvNVos1Dd6K567cODCJrvHgq5pkpMIsJe0o41mn7C3UutNC9sIvVJ33bTKIemVyYJgwUg4hY0XCWX-WSBQUi16QFs12_mA7dAEXDu2Ysp5obyRex8eUQz3_G9YB4DfgU4uFPXGQtCq8QnFQXNdb_asUDZiZkp2LmCtJBTEGTI",
+    image: "/images/rameswaram_temple.png",
     tags: ["Retreat"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -249,7 +249,7 @@ export const mockPackages: Package[] = [
     price: 35000,
     rating: 4.9,
     reviewCount: 94,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDuOw_DVP5nshpMCzhA4G4vep_wkjIWpBFirXWg6sP0KdmSgTVLnZ3lCvzX7qGwt9wbokG0R_SazeGKM43jO2cGeUkpX_qkTy6AXdY_adg6aLrzz3i_aIIUynrEwvRGamJAjSi695im33tfb5zqvx1_9dAGcZeBKR0Xf7koBibm3NBQ0YLZnNk6o5ruBxdmQaSNW3f654W_Ksv3M2D1X2kmEQp_irFq41vNmwDqd-eoh3Fn6Zip_HJiXFAhcau582EG28ZlTC-Vci4",
+    image: "/images/kashi_ganga_aarti.png",
     tags: ["Senior Friendly", "Fully Accessible"],
     inclusions: {
       hotel: "5-Star Stay",
@@ -277,7 +277,7 @@ export const mockPackages: Package[] = [
     price: 42500,
     rating: 4.8,
     reviewCount: 167,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA98-RulIUtFrdBuHyn4W3uKhtwXWZH6c0TkMmAUuSaj5vr3jzykCWGbrm_0SjomPMpkc2P66oVW2FOjeukbseF28HJ7OQXg8-JFQU5Jm257Q6btOsRfFeI7oTwOiOxXBE2ahX-J-B5DFZ6FObN0CaLiKt5y1_eC8uc8ObnAT52r3V7gyULloOIii0sY0M2MsyBpyd8R1rGZcD8hoboqaA1fodAauPCGxgjHGpNmJKZ3PRp43NQnCZdPjkU50f2Eyv6p4o8H1ULRhk",
+    image: "/images/kashi_ganga_aarti.png",
     tags: ["Senior Friendly", "Matches Budget"],
     inclusions: {
       hotel: "Premium Stay",
@@ -307,7 +307,7 @@ export const mockPackages: Package[] = [
     price: 55000,
     rating: 4.8,
     reviewCount: 45,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA-jt2dwWeprzcfSMJm6xT1dHwWDrDMGF7AyVA1CDAs09Z2pSpPnygs96Rz_6YuqVfJ1gQ_mhJ6hfpQDAS9-0gvhsU_DdQx7JTK6ERWSGsrzZ7g1vkW3inc_0VFiwPG5qsaJjzZ29TMvXQYW-JNVcxUZzOjREI3jt98Tbbdn_BoNeGz7NONul3j64naZAxy7jooQCszsZS2ddgegzPK_j5kCd5z9XEiuA-yjlr8PtzYQLaO_Vu6egNKMYUuT_eDQXMGJzpOQe8h-ws",
+    image: "/images/kashi_ganga_aarti.png",
     tags: ["Premium Experience", "Ramp Access"],
     inclusions: {
       hotel: "Luxury Tent",
@@ -337,7 +337,7 @@ export const mockPackages: Package[] = [
     price: 15000,
     rating: 4.8,
     reviewCount: 104,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAUhI77FKiyEkUbw6PUZGPNa9d1J88oq5TYLMxhGeKIZEbwMSJW9HllWQssytAOBrXLn9A0wiNwnYZbIYRIqkt4ieOxWAgQgGwnfhNo1jaVMZb7IIDFfhCjwSC2DkYJGwbJPRZHP3zyivz6QaeM6teapasQtPI3lwSJz2Que9KU_68QX5gbc4-TQEX9IHOv8piz92qOqsa54Ts7aUs3jyKwfiFR0MFD2XMjW2f2ZU2hZm8WMz_7jqfIikT2hnHcMPYlgummkeOwcyo",
+    image: "/images/kashi_ganga_aarti.png",
     tags: ["Wheelchair Friendly"],
     inclusions: {
       hotel: "Ashram Stay",
@@ -366,7 +366,7 @@ export const mockPackages: Package[] = [
     price: 45000,
     rating: 4.8,
     reviewCount: 165,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBvKseiB5hZprunanNVHvXaC6NSvqi50PENgHifzjlFV_F-3FefPyQRSkose4HFWXc4UKGfXsL3NZfcqWndiR3XDl2tCGhp70JhCXpAMZBa0t63DyuzIULItECelXc44-v3BaHjoE803dVyw0CLX4AwzQEwTMI6RDtWdsmtiaeJkQk3kz_2IWijMXsc-dXo7ZsAZ7Jk_w0lvD39BQf0HoRprHEgX3qbo7rmT1eGLx94OYhiWrJFchO2PA_ot6vguJqXEFkia2b8NI0",
+    image: "/images/himalayas_kedarnath.png",
     tags: ["Char Dham"],
     inclusions: {
       hotel: "Premium Hotel",
@@ -398,7 +398,7 @@ export const mockPackages: Package[] = [
     price: 11500,
     rating: 4.8,
     reviewCount: 220,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCsAJO9cyslP31GDjt37NvUejm1ZmQjAf3MVobEU08Zop7PclABqQa3wKl-BufkOdOj6QTIINukLa_IMSI7_ZLZIEmBYhI8VOVNZgWUmfWRlYwoPjRPz-q27hHJl1EfjGy7eEbUvBRV5im6HoAWRqF6CngDvk2c7yo0OODmfCm2ABMDH0qLyQ0Fcc72n2XHOsDZy5hvwScfGK0UujiieFk3hvun_rXD36bwvXM4XtbEHDKnybQfBygp7vffhogJ8-EX2N_0AcYf1WU",
+    image: "/images/somnath_seaside.png",
     tags: ["Devotional"],
     inclusions: {
       hotel: "Premium Hotel",

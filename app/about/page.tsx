@@ -6,7 +6,7 @@ import PageTransition from "@/components/animations/PageTransition";
 import ScrollProgress from "@/components/animations/ScrollProgress";
 import { FadeIn, FadeUp, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations/Reveals";
 import { ShieldAlert, Heart, Calendar, Users, HeartHandshake, Eye, BookOpen, Star } from "lucide-react";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function AboutUs() {
   return (
@@ -79,7 +79,7 @@ export default function AboutUs() {
               <div className="relative h-96 lg:h-auto w-full aspect-square lg:aspect-auto">
                 <ScaleIn delay={0.1}>
                   <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMaKtadcwUM8ha5OUjiYYGi6EU20wMA_CzvgUJyzgAY4rd8j51E-uHAK8KSW3ksP3eri7Dcn9xqynhJDm7ySQ8nyV6tR_1Nu2Bs6TZJ2zveiuwQh3rUEn3opiQOFEJe4N44hWOeS5_C9KwnID3hrLo7_eAHhbTf-uG_bu9M_MVjWEEO3TiWri9wC3HIruuVf9qASSTX1jSZtp4Y0aSRcq2UB-SPVOeKxOGku4BWxlrV9Fkn4Gpglym4ESOOFjqEapBQ2jXZ8C4TMY" 
+                    src={getAssetPath("/images/family_temple_prayer.png")} 
                     alt="Indian family in temple praying" 
                     className="object-cover w-full h-full rounded-2xl shadow-level-2 border-4 border-surface-container-lowest/10 aspect-[4/3]"
                   />

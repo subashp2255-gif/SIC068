@@ -10,7 +10,7 @@ import ScrollProgress from "@/components/animations/ScrollProgress";
 import { FadeIn } from "@/components/animations/Reveals";
 import { Package } from "@/data/packages";
 import { useApp } from "@/context/AppContext";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 import { ArrowLeft, MapPin, Check, ShieldAlert, Heart, PhoneCall, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -74,8 +74,8 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
   // Mock secondary images for gallery
   const galleryImages = [
     pkg.image,
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCCvQz0KgXnd9p2ZRnu9bToyvDdSSyRq6cxtSoft4vQkhj0-h4-LA-daSLe6_W0N_T4DtPdoSAm4xcRWy66BX_PT_BAPD8k5D9GgE97Wq-3kWiGrxw-C6fYKYRyn1I53XGIbhDAL4gr9er-hBTsyvdncuycW5h0Yt56XRVZ1gZnm5bYEukn4zrLrfJdJwprq8M9ZuUHEtSrtS8a3DgpSTSQwpxyhWwmqoi0f2IFFDp4RVO06FLjUV1tJGJjQNj5T3Rf4X0dSAfi7nU",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAUhI77FKiyEkUbw6PUZGPNa9d1J88oq5TYLMxhGeKIZEbwMSJW9HllWQssytAOBrXLn9A0wiNwnYZbIYRIqkt4ieOxWAgQgGwnfhNo1jaVMZb7IIDFfhCjwSC2DkYJGwbJPRZHP3zyivz6QaeM6teapasQtPI3lwSJz2Que9KU_68QX5gbc4-TQEX9IHOv8piz92qOqsa54Ts7aUs3jyKwfiFR0MFD2XMjW2f2ZU2hZm8WMz_7jqfIikT2hnHcMPYlgummkeOwcyo"
+    "/images/hero_dawn_temple.png",
+    "/images/family_temple_prayer.png"
   ];
 
   // Price calculations
@@ -157,7 +157,7 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
               {/* Dynamic Image Gallery */}
               <div className="space-y-3">
                 <div className="h-96 md:h-[450px] w-full rounded-2xl overflow-hidden bg-surface-container shadow-level-1 relative select-none">
-                  <img src={activeImage} alt={pkg.title} className="w-full h-full object-cover transition-all duration-300" />
+                  <img src={getAssetPath(activeImage)} alt={pkg.title} className="w-full h-full object-cover transition-all duration-300" />
                 </div>
                 
                 {/* Thumbnails selector */}
@@ -170,7 +170,7 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                         activeImage === img ? "border-secondary scale-102" : "border-transparent opacity-75 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="temple thumb" className="w-full h-full object-cover" />
+                      <img src={getAssetPath(img)} alt="temple thumb" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>

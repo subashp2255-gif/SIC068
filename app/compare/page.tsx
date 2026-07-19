@@ -9,7 +9,7 @@ import { mockPackages } from "@/data/packages";
 import { useApp } from "@/context/AppContext";
 import { RefreshCw, Search, ArrowLeft, Trash2, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function ComparePackages() {
   const { compareIds, toggleCompare, setEnquireOpen, setEnquirePackageId } = useApp();
@@ -111,7 +111,7 @@ export default function ComparePackages() {
                               </button>
 
                               <img 
-                                src={pkg.image} 
+                                src={getAssetPath(pkg.image)} 
                                 alt={pkg.title} 
                                 className="w-full h-32 object-cover rounded-lg shadow-sm border border-outline-variant/10" 
                               />

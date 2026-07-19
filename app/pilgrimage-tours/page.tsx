@@ -9,7 +9,7 @@ import ScrollProgress from "@/components/animations/ScrollProgress";
 import { FadeIn, FadeUp, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations/Reveals";
 import { useApp } from "@/context/AppContext";
 import { ShieldCheck, HeartHandshake, Utensils, ShieldAlert, Compass, Calendar, BookOpen, Clock, MapPin, ChevronRight, Activity, Heart, ArrowRight } from "lucide-react";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function PilgrimageTours() {
   const { setEnquireOpen, setEnquirePackageId } = useApp();
@@ -39,7 +39,7 @@ export default function PilgrimageTours() {
             <div 
               className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full z-0 transform scale-102"
               style={{
-                backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuDfTB5gcUdz5GKvP5ad-CHzQF44gOsieKmcWNeoChr3YN8u6KcHEMEGrK1jDnjpjdlwx6qRPYIUCfGKt1tmcCMT5otWwOhWaMZYsnqqh_rT4AZ_gEjFZeqxVjmlUbDg5EYos1Y_L_GShW3z5Cwo0KX185iPdfjHcm43a-hiSfxNyIfEa0qy-m6D9qrWD9Akum_jRb3cflWHiJBSt06BgDqCYk9ldmEwwP6FX6CKT-OY9EgmcTGPAj7njp5JuulJkV2LPLnr2FqKXQg")`
+                backgroundImage: `url("${getAssetPath("/images/hero_dawn_temple.png")}")`
               }}
             />
             {/* Dark gradient mask for legibility */}
@@ -139,7 +139,7 @@ export default function PilgrimageTours() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUnJv6PnVVKIhkMbxP9GA9nyxz8tMsQvEA0w4HV-v-gHlq7D9mE7kmsBNPEC1Y11JVPqgjCnQjpnXmiMQr5rGb2SCLKAtrd7xwNPoT0x9eaQewDX6voOyamAntJ82YWCcofl6RaPwIjl07IGeRDTtEFuyJyauIpQvAZeVrEU_UuY1GJEj5-Xvi9Kj5-zxk7eGCBi4Uzi4DLr_hRvWVWJ16qWoRqR3L2ATyP955Wacl4Whnt39pyCwT-7lSDmolf5X6XwM-qA7yB7c")`
+                    backgroundImage: `url("${getAssetPath("/images/rameswaram_temple.png")}")`
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/30 to-transparent" />
@@ -168,7 +168,7 @@ export default function PilgrimageTours() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvFQz7dsG_OTURRdus2kesj4x67oBBMB3xwVv0ECoIrzmn5Yi4vMYbKiYapVI6LFXKGMZ54_yVYlkwJbzaBbIv-66RkHhr_geRb79f3PRSmXZf0zyxPoJpMcOfGqoEMpr9TDthgvu-HgnqLxFcGtaNudN2dv8LrEaSsyLrPtGDw1t30PNDET6V78Plxxts9P_mcU9oSgN3CNbvScfub82x8AlUfQTIvM_7P_8E0fiSj1XbJeScCYHtRxktgkxrEnJsiLCnVIB58x4")`
+                    backgroundImage: `url("${getAssetPath("/images/kashi_ganga_aarti.png")}")`
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/30 to-transparent" />
@@ -196,7 +196,7 @@ export default function PilgrimageTours() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvKseiB5hZprunanNVHvXaC6NSvqi50PENgHifzjlFV_F-3FefPyQRSkose4HFWXc4UKGfXsL3NZfcqWndiR3XDl2tCGhp70JhCXpAMZBa0t63DyuzIULItECelXc44-v3BaHjoE803dVyw0CLX4AwzQEwTMI6RDtWdsmtiaeJkQk3kz_2IWijMXsc-dXo7ZsAZ7Jk_w0lvD39BQf0HoRprHEgX3qbo7rmT1eGLx94OYhiWrJFchO2PA_ot6vguJqXEFkia2b8NI0")`
+                    backgroundImage: `url("${getAssetPath("/images/himalayas_kedarnath.png")}")`
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
@@ -216,7 +216,7 @@ export default function PilgrimageTours() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuCsAJO9cyslP31GDjt37NvUejm1ZmQjAf3MVobEU08Zop7PclABqQa3wKl-BufkOdOj6QTIINukLa_IMSI7_ZLZIEmBYhI8VOVNZgWUmfWRlYwoPjRPz-q27hHJl1EfjGy7eEbUvBRV5im6HoAWRqF6CngDvk2c7yo0OODmfCm2ABMDH0qLyQ0Fcc72n2XHOsDZy5hvwScfGK0UujiieFk3hvun_rXD36bwvXM4XtbEHDKnybQfBygp7vffhogJ8-EX2N_0AcYf1WU")`
+                    backgroundImage: `url("${getAssetPath("/images/somnath_seaside.png")}")`
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
@@ -236,7 +236,7 @@ export default function PilgrimageTours() {
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-103"
                   style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuB-b5Ujt9S5KrdKpXc04aHzs_vnEjqIznb1F915oooPBTABcART4-lTAQFTYxmqHHkAqED7aThaZyFA5KrH1mk1rlD3wAfbEvG_cuYDlPznft1eaUHxYUxsMmqr9JfcXa4H6jnuBvFoY7paL8dxLYh_tG0awfJwsEiCd3tMbQHMr43rxeBkykF2SW_AYtH2LV2NZwWAPqScBu6ir6dBsUDYJKbAAFPn-WOGr37LIkBwdUxZMZ1FVSmj5SVPtBiYBfTBV8kGN3E30FM")`
+                    backgroundImage: `url("${getAssetPath("/images/somnath_seaside.png")}")`
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
@@ -273,7 +273,7 @@ export default function PilgrimageTours() {
               <div className="bg-surface flex flex-col sm:flex-row rounded-card overflow-hidden border border-outline-variant/20 hover:shadow-level-2 transition-shadow duration-300">
                 <div className="w-full sm:w-2/5 h-48 sm:h-auto relative select-none bg-surface-container">
                   <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCvQz0KgXnd9p2ZRnu9bToyvDdSSyRq6cxtSoft4vQkhj0-h4-LA-daSLe6_W0N_T4DtPdoSAm4xcRWy66BX_PT_BAPD8k5D9GgE97Wq-3kWiGrxw-C6fYKYRyn1I53XGIbhDAL4gr9er-hBTsyvdncuycW5h0Yt56XRVZ1gZnm5bYEukn4zrLrfJdJwprq8M9ZuUHEtSrtS8a3DgpSTSQwpxyhWwmqoi0f2IFFDp4RVO06FLjUV1tJGJjQNj5T3Rf4X0dSAfi7nU" 
+                    src={getAssetPath("/images/rameswaram_temple.png")} 
                     alt="Rameswaram Temple Details"
                     className="absolute inset-0 w-full h-full object-cover hover:scale-103 transition-transform duration-500"
                   />
@@ -321,7 +321,7 @@ export default function PilgrimageTours() {
               <div className="bg-surface flex flex-col sm:flex-row rounded-card overflow-hidden border border-outline-variant/20 hover:shadow-level-2 transition-shadow duration-300">
                 <div className="w-full sm:w-2/5 h-48 sm:h-auto relative select-none bg-surface-container">
                   <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUhI77FKiyEkUbw6PUZGPNa9d1J88oq5TYLMxhGeKIZEbwMSJW9HllWQssytAOBrXLn9A0wiNwnYZbIYRIqkt4ieOxWAgQgGwnfhNo1jaVMZb7IIDFfhCjwSC2DkYJGwbJPRZHP3zyivz6QaeM6teapasQtPI3lwSJz2Que9KU_68QX5gbc4-TQEX9IHOv8piz92qOqsa54Ts7aUs3jyKwfiFR0MFD2XMjW2f2ZU2hZm8WMz_7jqfIikT2hnHcMPYlgummkeOwcyo" 
+                    src={getAssetPath("/images/kashi_ganga_aarti.png")} 
                     alt="Haridwar ashram side view"
                     className="absolute inset-0 w-full h-full object-cover hover:scale-103 transition-transform duration-500"
                   />

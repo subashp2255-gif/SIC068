@@ -56,3 +56,13 @@ export const imageReveal = {
     transition: { duration: 0.8, ease: easeQuint },
   },
 };
+
+export const getAssetPath = (path: string) => {
+  const isProd = process.env.NODE_ENV === "production";
+  const basePath = isProd ? "/SIC068" : "";
+  if (!path) return "";
+  if (path.startsWith("http") || path.startsWith("data:")) return path;
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${basePath}${cleanPath}`;
+};
+

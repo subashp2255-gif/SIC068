@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { Package } from "@/data/packages";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 import { Heart, RefreshCw, Star, MapPin, Eye, ArrowRight } from "lucide-react";
 
 interface PackageCardProps {
@@ -39,7 +39,7 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
       {/* 1. Image Area with tags and overlay controls */}
       <div className="relative h-56 w-full overflow-hidden bg-surface-container">
         <img
-          src={pkg.image}
+          src={getAssetPath(pkg.image)}
           alt={pkg.title}
           className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
           loading="lazy"

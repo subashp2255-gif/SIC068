@@ -13,6 +13,7 @@ import { useApp } from "@/context/AppContext";
 import { ArrowRight, Search, Calendar, Clock, Users, Heart, AlertCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { getAssetPath } from "@/lib/animations";
 
 export default function Home() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function Home() {
               <div 
                 className="bg-cover bg-center w-full h-full transform scale-102"
                 style={{
-                  backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuC_VuSfXIKWmFgE7Yff93WYUGkakfYaKRD9rYlfGCvq4wUBd75lOGb45PGY6zcQP32dsP3ued2TECR2wuFK5fyvjh-n01a_WpgNsZivNQqSVnSoP_vF5lQ72L_LIj1rU6cY-K-DScawQiMSBU2ZmXSQvEiNqyDtO3QOQds41dYzqKWMwVq4foxJWfEiEgn4-Pahar4W0NNC2m8pWfExXLCXd3z96cFc25tqxqXpaSRVY9HVq9uso7zkRp536Xw12BPTFtu6hGxDYHg")`
+                  backgroundImage: `url("${getAssetPath("/images/hero_dawn_temple.png")}")`
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/20 to-background" />
@@ -252,7 +253,7 @@ export default function Home() {
               <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow-level-2 border-4 border-surface-container-lowest">
                 <ScaleIn>
                   <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl5f078gDpPYkksW3lebpptLDRUMgr1TXMc-701KNDSmgrLpzPwFVeVUb8j6ZZqq45vtdakVlchtvTRR45QTmE_YgYgvlNK7dC7mMwWziZUMmCvcGQXOKAaWMKfqv1VrsHGj-RDmthJZp8N8fqr5RlaxPEcK4IBtEcEJ1EQLj9oTGwDID9P_3YVmX_zUM8WPiqpJtBXulTr3Ojzpuwn9JOT5c97gThYQ2F2WktCB6iBheaL5p7qpe3LgmVkWr-uYxR63s8iW3jc5s" 
+                    src={getAssetPath("/images/elderly_pilgrims.png")} 
                     alt="Elderly couple assisted by travel guide"
                     className="w-full h-auto object-cover aspect-[4/3] hover:scale-103 transition-transform duration-500"
                   />

@@ -12,7 +12,7 @@ import { useApp } from "@/context/AppContext";
 import { Search, MapPin, SlidersHorizontal, Check, RefreshCw, X, AlertTriangle, Eye, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function PackageListContent() {
   const searchParams = useSearchParams();
@@ -496,7 +496,7 @@ export default function PackageListContent() {
                           className="flex items-center gap-2 bg-surface-container-low border border-outline-variant/15 pr-3 pl-1 py-1 rounded-lg shadow-sm"
                         >
                           <img 
-                            src={pkg.image} 
+                            src={getAssetPath(pkg.image)} 
                             alt={pkg.title} 
                             className="w-8 h-8 rounded object-cover" 
                           />

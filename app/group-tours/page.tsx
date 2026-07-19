@@ -11,7 +11,7 @@ import { FadeIn, FadeUp, ScaleIn, StaggerContainer, StaggerItem } from "@/compon
 import PackageCard from "@/components/cards/PackageCard";
 import { mockPackages } from "@/data/packages";
 import { useApp } from "@/context/AppContext";
-import { easeQuint } from "@/lib/animations";
+import { easeQuint, getAssetPath } from "@/lib/animations";
 import { Users, Search, SlidersHorizontal, RefreshCw, X, Calendar, MapPin, Eye, ArrowRight } from "lucide-react";
 
 export default function GroupTours() {
@@ -77,7 +77,7 @@ export default function GroupTours() {
                     <div 
                       className="bg-cover bg-center w-full h-full absolute inset-0 transform scale-102"
                       style={{
-                        backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZ8k-p7IiAVWauZw9nYyT3Aw2pNlaaqr9d0Gxntcq9wGNmwwg_lf-EaH52uH5enVvF_mg7ids-mhto7-VvG0NadbYhdrdxKaPs_nwcnHbSUo2KnjixWSYStLQ2FRShsXBgTryJ7k_9I5OMXCjyXoCiYelXkbLl4rg6wgsoympe0UyvQ-7BpBGubTHGFonsMGrKg_Z-UV3ZRCZ4Tc9ce6Vv1kW6AtRawFG5PndytG00ChjgiTYb1MP6Gyzk7huIqn9JwTNeIxTw2sk")`
+                        backgroundImage: `url("${getAssetPath("/images/elderly_pilgrims.png")}")`
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-surface/95 to-surface/40" />
