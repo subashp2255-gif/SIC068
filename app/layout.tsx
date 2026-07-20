@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import SmoothScroll from "@/components/animations/SmoothScroll";
 import { AppProvider } from "@/context/AppContext";
 import EnquiryModal from "@/components/modals/EnquiryModal";
+import AccessibilityProvider from "@/components/layout/AccessibilityProvider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -41,10 +42,12 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface">
         <AppProvider>
-          <SmoothScroll>
-            {children}
-          </SmoothScroll>
-          <EnquiryModal />
+          <AccessibilityProvider>
+            <SmoothScroll>
+              {children}
+            </SmoothScroll>
+            <EnquiryModal />
+          </AccessibilityProvider>
         </AppProvider>
         <Toaster position="bottom-right" richColors closeButton />
       </body>

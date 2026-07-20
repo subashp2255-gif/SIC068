@@ -15,6 +15,14 @@ interface AppContextType {
   setEnquirePackageId: (id: string | null) => void;
   isCompareOpen: boolean;
   setCompareOpen: (open: boolean) => void;
+  // Accessibility States
+  fontSizeClass: "text-normal" | "text-large";
+  setFontSizeClass: (size: "text-normal" | "text-large") => void;
+  highContrast: boolean;
+  setHighContrast: (active: boolean) => void;
+  // Recently Viewed States
+  recentlyViewed: string[];
+  addToRecentlyViewed: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -26,6 +34,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [enquirePackageId, setEnquirePackageId] = useState<string | null>(null);
   const [isCompareOpen, setCompareOpen] = useState(false);
 
+  // Accessibility
+  const [fontSizeClass, setFontSizeClass] = useState<"text-normal" | "text-large">("text-normal");
+  const [highContrast, setHighContrast] = useState(false);
+
+  // Recently Viewed
+  const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
+
   // Load from LocalStorage
   useEffect(() => {
     try {
@@ -34,6 +49,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const compare = localStorage.getItem("dharmayatra_compare");
       if (compare) setCompareIds(JSON.parse(compare));
+
+      const rv = localStorage.getItem("dharmayatra_recently_viewed");
+      if (rv) setRecentlyViewed(JSON.parse(rv));
+
+      const fs = localStorage.getItem("dharmayatra_fontsize");
+      if (fs) setFontSizeClass(fs as "text-normal" | "text-large");
+
+      const hc = localStorage.getItem("dharmayatra_highcontrast");
+      if (hc) setHighContrast(JSON.parse(hc));
     } catch (e) {
       console.error("Failed to load localstorage data", e);
     }
@@ -81,6 +105,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("dharmayatra_compare", JSON.stringify(updated));
   };
 
+  // Add to Recently Viewed
+  const addToRecentlyViewed = (id: string) => {
+    if (recentlyViewed.includes(id)) return;
+    const updated = [id, ...recentlyViewed.filter(x => x !== id)].slice(0, 4);
+    setRecentlyViewed(updated);
+    localStorage.setItem("dharmayatra_recently_viewed", JSON.stringify(updated));
+  };
+
+  // Accessibility handlers
+  const handleSetFontSize = (size: "text-normal" | "text-large") => {
+    setFontSizeClass(size);
+    localStorage.setItem("dharmayatra_fontsize", size);
+  };
+
+  const handleSetHighContrast = (active: boolean) => {
+    setHighContrast(active);
+    localStorage.setItem("dharmayatra_highcontrast", JSON.stringify(active));
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -94,6 +137,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setEnquirePackageId,
         isCompareOpen,
         setCompareOpen,
+        fontSizeClass,
+        setFontSizeClass: handleSetFontSize,
+        highContrast,
+        setHighContrast: handleSetHighContrast,
+        recentlyViewed,
+        addToRecentlyViewed
       }}
     >
       {children}

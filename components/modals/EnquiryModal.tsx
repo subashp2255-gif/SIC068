@@ -136,6 +136,17 @@ export default function EnquiryModal() {
     localStorage.removeItem("dharmayatra_enquiry_draft");
   };
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isEnquireOpen) {
+        setEnquireOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isEnquireOpen, setEnquireOpen]);
+
   return (
     <AnimatePresence>
       {isEnquireOpen && (
@@ -146,11 +157,14 @@ export default function EnquiryModal() {
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             onClick={() => setEnquireOpen(false)}
-            className="fixed inset-0 bg-black z-50 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#041F35] z-50 backdrop-blur-md mix-blend-multiply"
           />
 
           {/* Modal Container */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="enquiry-modal-title"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -160,7 +174,7 @@ export default function EnquiryModal() {
             {/* Header */}
             <div className="bg-primary text-on-primary p-6 flex justify-between items-center relative select-none">
               <div>
-                <h3 className="font-headline-lg font-semibold text-lg font-display">
+                <h3 id="enquiry-modal-title" className="font-headline-lg font-semibold text-lg font-display">
                   {selectedPackage ? `Enquire for ${selectedPackage.title}` : "Plan Your Sacred Journey"}
                 </h3>
                 <p className="text-primary-fixed/80 text-xs mt-1">

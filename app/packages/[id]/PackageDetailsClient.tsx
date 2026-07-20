@@ -11,7 +11,7 @@ import { FadeIn } from "@/components/animations/Reveals";
 import { Package } from "@/data/packages";
 import { useApp } from "@/context/AppContext";
 import { easeQuint, getAssetPath } from "@/lib/animations";
-import { ArrowLeft, MapPin, Check, ShieldAlert, Heart, PhoneCall, ChevronDown } from "lucide-react";
+import { ArrowLeft, MapPin, Check, ShieldAlert, Heart, PhoneCall, ChevronDown, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface PackageDetailsClientProps {
@@ -20,7 +20,7 @@ interface PackageDetailsClientProps {
 
 export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps) {
   const router = useRouter();
-  const { savedIds, toggleSave, setEnquireOpen, setEnquirePackageId } = useApp();
+  const { savedIds, toggleSave, setEnquireOpen, setEnquirePackageId, addToRecentlyViewed } = useApp();
 
   const isSaved = savedIds.includes(pkg?.id || "");
 
@@ -38,8 +38,9 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
   useEffect(() => {
     if (pkg) {
       setActiveImage(pkg.image);
+      addToRecentlyViewed(pkg.id);
     }
-  }, [pkg]);
+  }, [pkg, addToRecentlyViewed]);
 
   if (!pkg) {
     return (
@@ -234,39 +235,61 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                 </div>
               </div>
 
-              {/* Itinerary Vertical Timeline Accordion */}
+              {/* Detailed Itinerary Experience */}
               <div className="space-y-6">
-                <h3 className="font-headline-md text-[18px] text-primary font-bold select-none">
-                  Detailed Day-by-Day Itinerary
-                </h3>
+                <div className="flex justify-between items-center select-none">
+                  <h3 className="font-headline-md text-[18px] text-primary font-bold">
+                    Detailed Day-by-Day Itinerary
+                  </h3>
+                  <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+                    Assisted Walking Pace
+                  </span>
+                </div>
 
                 {/* Vertical timeline start */}
-                <div className="relative border-l-2 border-outline-variant/30 ml-4 space-y-4">
+                <div className="relative border-l-2 border-slate-200 ml-4 space-y-6">
                   {pkg.itinerary.map((day) => {
                     const isOpen = !!openDays[day.day];
+                    
+                    // Detailed mock itinerary helper details
+                    const details = {
+                      morning: "VIP Temple Darshan assembly. Assisted fast-track queue entry coordinated by our care guides.",
+                      afternoon: "Travel via air-conditioned group transit. Regular rest stops at certified hygienic Satvik restaurants.",
+                      evening: "Attend sunset Aarti prayers / Hotel check-in. Evening spiritual discourse or group relaxation session.",
+                      timings: "Darshan Pooja: 6:00 AM - 11:30 AM | Aarti prayers: 6:30 PM",
+                      food: "100% Satvik vegetarian meals prepared with minimal spices (Breakfast, Lunch, Dinner included)",
+                      accommodation: `${pkg.inclusions.hotel ? String(pkg.inclusions.hotel) : "Premium Hotel"} (Fully wheelchair accessible, elevators, western-style bathrooms, hot water)`,
+                      travelMode: `${pkg.inclusions.transit ? String(pkg.inclusions.transit) : "Luxury Coach"} with dedicated first-aid assistance`,
+                      distance: "Approx. 45 km to 120 km (depending on daily religious schedule)",
+                      weather: "Comfortable yatra weather: 22°C - 26°C with low humidity",
+                      dressCode: "Traditional / decent dress (Modest clothing, sari or dhoti/kurta). Slip-on shoes recommended.",
+                      thingsToCarry: "Yatra registration card, sun protection, personal regular medication, light shawl",
+                      walkingLevel: pkg.seniorFriendly ? "Elder-Friendly (Slow pace, ramps, flat surfaces, zero steep stairs)" : "Moderate Paced (Gentle walks, help guides on stand-by)"
+                    };
+
                     return (
                       <div key={day.day} className="relative pl-8">
                         {/* Timeline dot */}
                         <div 
-                          className={`absolute -left-[9px] top-4 w-4 h-4 rounded-full border-4 border-surface-container-lowest transition-all duration-300 ${
-                            isOpen ? "bg-secondary scale-110 shadow-sm" : "bg-outline-variant"
+                          className={`absolute -left-[9px] top-4 w-4 h-4 rounded-full border-4 border-white transition-all duration-300 ${
+                            isOpen ? "bg-[#E9A227] scale-110 shadow-sm" : "bg-slate-300"
                           }`}
                         />
                         
                         {/* Accordion container card */}
-                        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm overflow-hidden">
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                           {/* Toggle Header */}
                           <button
                             onClick={() => toggleDay(day.day)}
-                            className="w-full p-4 flex justify-between items-center text-left hover:bg-surface-container-low/20 transition-all duration-200 cursor-pointer select-none"
+                            className="w-full p-5 flex justify-between items-center text-left hover:bg-slate-50/50 transition-all duration-200 cursor-pointer select-none"
                           >
                             <span className="font-label-bold text-primary font-bold text-[15px] flex items-center gap-2">
-                              <span>Day {day.day}:</span>
+                              <span className="text-[#E9A227]">Day {day.day}:</span>
                               <span>{day.title}</span>
                             </span>
                             <ChevronDown 
                               size={18} 
-                              className={`text-on-surface-variant transition-transform duration-300 ${
+                              className={`text-slate-500 transition-transform duration-300 ${
                                 isOpen ? "rotate-180" : ""
                               }`} 
                             />
@@ -281,13 +304,65 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.25, ease: easeQuint }}
                               >
-                                <div className="p-4 border-t border-outline-variant/5 space-y-3 bg-surface-container-lowest text-sm">
-                                  <p className="text-on-surface-variant leading-relaxed">
+                                <div className="p-5 border-t border-slate-100 space-y-4 bg-white text-sm">
+                                  <p className="text-slate-700 leading-relaxed text-[14.5px]">
                                     {day.description}
                                   </p>
-                                  <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-bold text-outline select-none">
-                                    {day.stay && <span className="bg-surface-container px-2 py-1 rounded">🏠 Stay: {day.stay}</span>}
-                                    {day.meals && <span className="bg-surface-container px-2 py-1 rounded">🍴 meals: {day.meals}</span>}
+
+                                  {/* Multi-Period Timeline Segments */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-xl">
+                                    <div>
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Morning</span>
+                                      <p className="text-xs text-slate-700 mt-1">{details.morning}</p>
+                                    </div>
+                                    <div className="border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Afternoon</span>
+                                      <p className="text-xs text-slate-700 mt-1">{details.afternoon}</p>
+                                    </div>
+                                    <div className="border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Evening</span>
+                                      <p className="text-xs text-slate-700 mt-1">{details.evening}</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Detailed Logistics Grid */}
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2">
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Temple Timings:</span>
+                                        <span className="text-slate-800 font-bold">{details.timings}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Satvik Meals:</span>
+                                        <span className="text-slate-800 font-bold">{details.food}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Travel Transit:</span>
+                                        <span className="text-slate-800 font-bold">{details.travelMode}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Walking Level:</span>
+                                        <span className="text-[#E9A227] font-bold">{details.walkingLevel}</span>
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Stay Hotel:</span>
+                                        <span className="text-slate-800 font-bold">{details.accommodation}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Daily Weather:</span>
+                                        <span className="text-slate-800 font-bold">{details.weather}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Dress Code:</span>
+                                        <span className="text-slate-800 font-bold">{details.dressCode}</span>
+                                      </div>
+                                      <div className="flex justify-between py-1 border-b border-slate-100">
+                                        <span className="text-slate-500 font-semibold">Suggested Packing:</span>
+                                        <span className="text-slate-800 font-bold">{details.thingsToCarry}</span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </motion.div>
@@ -302,44 +377,50 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
 
             </div>
 
-            {/* Right Column: Sticky Booking Card (Desktop sidebar) */}
+            {/* Right Column: Sticky Booking Card & Pricing Breakdown */}
             <div className="lg:col-span-4 sticky top-28 select-none">
               <FadeIn>
-                <div className="bg-surface-container-lowest rounded-2xl shadow-level-2 border border-outline-variant/15 p-6 flex flex-col gap-6 text-left">
-                  <div>
-                    <span className="text-[11px] font-bold text-outline uppercase tracking-wider">Package Pricing</span>
-                    <div className="flex items-baseline gap-1 mt-1">
-                      <span className="font-headline-lg text-primary text-3xl font-extrabold font-display">
-                        ₹{pricePerPerson.toLocaleString()}
-                      </span>
-                      <span className="text-sm font-medium text-outline-variant">/ person starting price</span>
+                <div className="bg-white rounded-2xl shadow-level-2 border border-slate-200/80 p-6 flex flex-col gap-6 text-left">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Starting Price</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="font-headline-lg text-[#062E4F] text-3xl font-extrabold font-display">
+                          ₹{pricePerPerson.toLocaleString()}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-500">/ person</span>
+                      </div>
                     </div>
+                    {/* Trust guarantee badge */}
+                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                      <ShieldCheck size={12} /> No Hidden Charges
+                    </span>
                   </div>
 
-                  <div className="border-t border-outline-variant/10 pt-4 space-y-4">
+                  <div className="border-t border-slate-100 pt-4 space-y-4">
                     {/* Date Selector input */}
                     <div className="relative">
-                      <label className="block text-[11px] font-bold text-outline uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                         Preferred travel date
                       </label>
                       <input
                         type="date"
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
-                        className="w-full bg-surface-container-low text-on-surface p-3 rounded-lg border border-outline-variant focus:border-primary outline-none text-sm"
+                        className="w-full bg-slate-50 text-slate-800 p-3 rounded-lg border border-slate-200 focus:border-[#062E4F] outline-none text-sm font-semibold"
                       />
                     </div>
 
                     {/* Passenger selections */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-bold text-outline uppercase tracking-wider mb-1">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                           Adults
                         </label>
                         <select
                           value={adults}
                           onChange={(e) => setAdults(parseInt(e.target.value))}
-                          className="w-full bg-surface-container-low p-2.5 rounded-lg border border-outline-variant outline-none text-xs font-semibold text-primary"
+                          className="w-full bg-slate-50 p-2.5 rounded-lg border border-slate-200 outline-none text-xs font-semibold text-slate-800"
                         >
                           {[...Array(10)].map((_, i) => (
                             <option key={i} value={i}>
@@ -349,13 +430,13 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-outline uppercase tracking-wider mb-1">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                           Seniors (60+)
                         </label>
                         <select
                           value={seniors}
                           onChange={(e) => setSeniors(parseInt(e.target.value))}
-                          className="w-full bg-surface-container-low p-2.5 rounded-lg border border-outline-variant outline-none text-xs font-semibold text-primary"
+                          className="w-full bg-slate-50 p-2.5 rounded-lg border border-slate-200 outline-none text-xs font-semibold text-slate-800"
                         >
                           {[...Array(10)].map((_, i) => (
                             <option key={i} value={i}>
@@ -367,31 +448,71 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                     </div>
                   </div>
 
-                  {/* Calculator Summary */}
-                  <div className="bg-surface-container p-4 rounded-xl space-y-2 border border-primary-fixed-dim/30">
-                    <div className="flex justify-between text-xs text-on-surface-variant font-medium">
-                      <span>Rate base x {adults + seniors} guests</span>
-                      <span>₹{(pricePerPerson * (adults + seniors)).toLocaleString()}</span>
+                  {/* Pricing Breakdown Cards */}
+                  <div className="bg-slate-50 p-5 rounded-2xl space-y-3 border border-slate-100">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block border-b border-slate-200 pb-1.5">Cost breakdown</span>
+                    
+                    <div className="space-y-1.5 text-xs text-slate-600 font-medium">
+                      <div className="flex justify-between">
+                        <span>Base Package cost:</span>
+                        <span>₹{(pricePerPerson * 0.5 * (adults + seniors)).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Hotel Stay share:</span>
+                        <span>₹{(pricePerPerson * 0.2 * (adults + seniors)).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Transport & Guides:</span>
+                        <span>₹{(pricePerPerson * 0.25 * (adults + seniors)).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>VIP entry passes & GST:</span>
+                        <span>₹{(pricePerPerson * 0.05 * (adults + seniors)).toLocaleString()}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-xs text-on-surface-variant font-medium">
-                      <span>Local taxes & GST</span>
-                      <span className="text-tertiary font-bold">Inclusive</span>
-                    </div>
-                    <div className="border-t border-outline-variant/15 pt-2 flex justify-between text-sm font-bold text-primary">
-                      <span>Estimated Total</span>
-                      <span>₹{totalPrice.toLocaleString()}</span>
+
+                    {/* Discounts section */}
+                    {(seniors > 0 || (adults + seniors >= 4)) && (
+                      <div className="space-y-1.5 text-xs font-semibold border-t border-slate-200 pt-2 text-emerald-700">
+                        <div className="flex justify-between">
+                          <span>Early Booking Discount:</span>
+                          <span>- ₹1,500</span>
+                        </div>
+                        {seniors > 0 && (
+                          <div className="flex justify-between">
+                            <span>Senior citizen concession:</span>
+                            <span>- ₹{(seniors * 1000).toLocaleString()}</span>
+                          </div>
+                        )}
+                        {adults + seniors >= 4 && (
+                          <div className="flex justify-between">
+                            <span>Group booking rebate:</span>
+                            <span>- ₹2,000</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="border-t border-slate-200 pt-3 flex justify-between text-[15px] font-bold text-[#062E4F]">
+                      <span>Final Net Price</span>
+                      <span>
+                        ₹{Math.max(
+                          0,
+                          totalPrice - 1500 - (seniors * 1000) - (adults + seniors >= 4 ? 2000 : 0)
+                        ).toLocaleString()}
+                      </span>
                     </div>
                   </div>
 
                   {/* Booking CTA Button */}
                   <button
                     onClick={handleBookNow}
-                    className="w-full bg-primary text-on-primary py-3.5 rounded-lg font-bold text-sm hover:bg-primary-container transition-all active:scale-97 cursor-pointer text-center shadow-sm flex items-center justify-center gap-1.5"
+                    className="w-full bg-[#E9A227] hover:bg-[#d58e1c] text-white py-3.5 rounded-xl font-bold text-sm hover:shadow-md transition-all active:scale-97 cursor-pointer text-center flex items-center justify-center gap-1.5"
                   >
                     Send Yatra Enquiry
                   </button>
 
-                  <p className="text-[10px] text-outline text-center leading-normal">
+                  <p className="text-[10px] text-slate-500 text-center leading-normal">
                     This booking form acts as a prefilled enquiry checklist. No payment is required client-side. A travel expert will coordinate reservations.
                   </p>
                 </div>

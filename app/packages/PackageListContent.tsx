@@ -16,7 +16,7 @@ import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function PackageListContent() {
   const searchParams = useSearchParams();
-  const { compareIds, toggleCompare, setCompareOpen, setEnquireOpen, setEnquirePackageId } = useApp();
+  const { compareIds, toggleCompare, setCompareOpen, setEnquireOpen, setEnquirePackageId, recentlyViewed } = useApp();
   
   // Simulated Loading State for filters
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +31,9 @@ export default function PackageListContent() {
   const [isWheelchairOnly, setIsWheelchairOnly] = useState(false);
   const [maxBudget, setMaxBudget] = useState(60000);
   const [sortBy, setSortBy] = useState("Recommended");
+  const [selectedMeals, setSelectedMeals] = useState<string[]>([]);
+  const [selectedTransports, setSelectedTransports] = useState<string[]>([]);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Read URL params on mount
   useEffect(() => {
@@ -86,6 +89,18 @@ export default function PackageListContent() {
     // Budget
     if (pkg.price > maxBudget) return false;
 
+    // Meals
+    if (selectedMeals.length > 0) {
+      const match = selectedMeals.some(m => String(pkg.inclusions.meals).toLowerCase().includes(m.toLowerCase()));
+      if (!match) return false;
+    }
+
+    // Transport
+    if (selectedTransports.length > 0) {
+      const match = selectedTransports.some(t => String(pkg.inclusions.transit).toLowerCase().includes(t.toLowerCase()));
+      if (!match) return false;
+    }
+
     return true;
   });
 
@@ -119,6 +134,20 @@ export default function PackageListContent() {
     triggerFilterShimmer();
   };
 
+  const handleMealToggle = (meal: string) => {
+    setSelectedMeals((prev) =>
+      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal]
+    );
+    triggerFilterShimmer();
+  };
+
+  const handleTransportToggle = (t: string) => {
+    setSelectedTransports((prev) =>
+      prev.includes(t) ? prev.filter((item) => item !== t) : [...prev, t]
+    );
+    triggerFilterShimmer();
+  };
+
   const triggerFilterShimmer = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -135,6 +164,8 @@ export default function PackageListContent() {
     setIsWheelchairOnly(false);
     setMaxBudget(60000);
     setSortBy("Recommended");
+    setSelectedMeals([]);
+    setSelectedTransports([]);
     triggerFilterShimmer();
   };
 
@@ -225,6 +256,18 @@ export default function PackageListContent() {
                     <button onClick={() => handleDurationToggle(d)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 ))}
+                {selectedMeals.map((m) => (
+                  <span key={m} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    Food: {m}
+                    <button onClick={() => handleMealToggle(m)} className="hover:text-error transition-colors"><X size={12} /></button>
+                  </span>
+                ))}
+                {selectedTransports.map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    Transit: {t}
+                    <button onClick={() => handleTransportToggle(t)} className="hover:text-error transition-colors"><X size={12} /></button>
+                  </span>
+                ))}
 
                 <button 
                   onClick={handleClearAll} 
@@ -236,11 +279,22 @@ export default function PackageListContent() {
             )}
           </div>
 
+          {/* Mobile Filter Toggle Button */}
+          <div className="lg:hidden select-none">
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="w-full bg-[#062E4F] text-white py-3.5 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#0B426D] transition-colors cursor-pointer text-sm"
+            >
+              <SlidersHorizontal size={16} className="text-[#E9A227]" />
+              {showMobileFilters ? "Hide Sidebar Filters" : "Show Sidebar Filters & Keyword Search"}
+            </button>
+          </div>
+
           {/* Main Grid: Sidebar + Results List */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
             
             {/* Sidebar Filters */}
-            <aside className="lg:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-outline-variant/15 flex flex-col gap-6 sticky top-28 select-none">
+            <aside className={`lg:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-outline-variant/15 flex flex-col gap-6 sticky top-28 select-none ${showMobileFilters ? "block" : "hidden lg:flex"}`}>
               <div className="flex justify-between items-center border-b border-outline-variant/10 pb-4">
                 <h2 className="font-headline-md text-[18px] text-primary font-bold flex items-center gap-2">
                   <SlidersHorizontal size={18} className="text-secondary" />
@@ -399,6 +453,76 @@ export default function PackageListContent() {
                   ))}
                 </div>
               </div>
+
+              {/* Meals Inclusions Filter */}
+              <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
+                <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Meal Preference</h3>
+                <div className="space-y-2.5">
+                  {["Veg", "Meals"].map((meal) => (
+                    <label key={meal} className="flex items-center gap-3 cursor-pointer group select-none">
+                      <input
+                        type="checkbox"
+                        checked={selectedMeals.includes(meal)}
+                        onChange={() => handleMealToggle(meal)}
+                        className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
+                      />
+                      <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
+                        {meal === "Veg" ? "Pure Vegetarian Satvik" : "All Inclusive Meals"}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Transit vehicle filter */}
+              <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
+                <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Transport Mode</h3>
+                <div className="space-y-2.5">
+                  {["AC Transport", "AC SUV", "Coach"].map((t) => (
+                    <label key={t} className="flex items-center gap-3 cursor-pointer group select-none">
+                      <input
+                        type="checkbox"
+                        checked={selectedTransports.includes(t)}
+                        onChange={() => handleTransportToggle(t)}
+                        className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
+                      />
+                      <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
+                        {t}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recently Viewed Block */}
+              {recentlyViewed && recentlyViewed.length > 0 && (
+                <div className="flex flex-col gap-3 border-t border-outline-variant/10 pt-4 text-left">
+                  <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Recently Viewed</h3>
+                  <div className="space-y-3">
+                    {mockPackages
+                      .filter((p) => recentlyViewed.includes(p.id))
+                      .map((pkg) => (
+                        <Link 
+                          key={pkg.id} 
+                          href={`/packages/${pkg.id}`}
+                          className="flex items-center gap-3 group/rv hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
+                        >
+                          <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-slate-200">
+                            <img src={getAssetPath(pkg.image)} alt={pkg.title} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-bold text-[#062E4F] group-hover/rv:text-[#E9A227] transition-colors truncate">
+                              {pkg.title}
+                            </h4>
+                            <span className="text-[10px] font-extrabold text-[#062E4F] mt-0.5 block">
+                              ₹{pkg.price.toLocaleString()}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                  </div>
+                </div>
+              )}
 
             </aside>
 
