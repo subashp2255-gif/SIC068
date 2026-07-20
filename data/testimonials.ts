@@ -15,7 +15,7 @@ export const mockTestimonials: Testimonial[] = [
     name: "Ramesh & Savitri Iyer",
     age: 68,
     location: "Chennai",
-    quote: "We were very anxious about traveling to Rameswaram because of my arthritis. DharmaYatra took care of everything—pre-arranged wheelchairs, zero walking in queues, and hotel just steps from the temple. A blessed experience!",
+    quote: "We were very anxious about traveling to Rameswaram because of my arthritis. OneJourney took care of everything—pre-arranged wheelchairs, zero walking in queues, and hotel just steps from the temple. A blessed experience!",
     rating: 5,
     avatarUrl: "/images/avatar_female_senior.png",
     tripName: "Divine South Yatra"

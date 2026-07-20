@@ -20,8 +20,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DharmaYatra - Plan Your Sacred Journey with Confidence",
-  description: "Facilitating sacred journeys with trust, transparency, and utmost care for over 15 years. Specialized tours designed for senior citizens.",
+  title: "OneJourney | Trusted AI Travel & Pilgrimage Planner",
+  description: "OneJourney is a trusted AI-powered travel platform for spiritual journeys, pilgrimage tours, group travel, and personalized travel planning.",
 };
 
 export default function RootLayout({

@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Users, ChevronDown, Plus, Minus } from "lucide-react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { Users, ChevronDown, Plus, Minus, X } from "lucide-react";
+import Popover from "@/components/ui/Popover";
 
 export interface TravellersState {
   adults: number;
   children: number;
   seniors: number;
+  rooms: number;
 }
 
 interface Props {
@@ -15,98 +16,200 @@ interface Props {
   onChange: (val: TravellersState) => void;
 }
 
-export default function TravellerSelector({ value, onChange }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+interface CounterRowProps {
+  label: string;
+  description?: string;
+  type: keyof TravellersState;
+  min?: number;
+  max?: number;
+  value: TravellersState;
+  onChange: (type: keyof TravellersState, val: number) => void;
+}
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const total = value.adults + value.children + value.seniors;
+function CounterRow({
+  label,
+  description,
+  type,
+  min = 0,
+  max = 12,
+  value,
+  onChange,
+}: CounterRowProps) {
+  const currentValue = value[type];
   
-  // Format the label responsively based on available space via CSS and truncate
-  const desktopLabel = `${value.adults + value.seniors} Adults, ${value.children} Children`;
-  const mobileLabel = `${total} Travellers`;
-
-  const handleIncrement = (type: keyof TravellersState) => {
-    onChange({ ...value, [type]: value[type] + 1 });
-  };
-
-  const handleDecrement = (type: keyof TravellersState) => {
-    if (value[type] > 0) {
-      if (type === 'adults' && value.adults === 1 && value.seniors === 0) return; // Must have at least 1 adult or senior
-      onChange({ ...value, [type]: value[type] - 1 });
-    }
-  };
-
-  const CounterRow = ({ label, description, type, min = 0 }: { label: string, description: string, type: keyof TravellersState, min?: number }) => (
-    <div className="flex items-center justify-between py-3">
+  return (
+    <div className="flex items-center justify-between py-4">
       <div>
-        <div className="text-sm font-bold text-on-surface">{label}</div>
-        <div className="text-xs text-outline-variant">{description}</div>
+        <div className="text-[15px] font-bold text-primary">{label}</div>
+        {description && <div className="text-[13px] text-outline-variant">{description}</div>}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <button
           type="button"
-          onClick={() => handleDecrement(type)}
-          disabled={value[type] <= min}
-          className="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center text-outline disabled:opacity-30 disabled:cursor-not-allowed hover:bg-surface-container hover:text-primary transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (currentValue > min) onChange(type, currentValue - 1);
+          }}
+          disabled={currentValue <= min}
+          className="w-9 h-9 rounded-full border border-outline-variant/30 flex items-center justify-center text-outline disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#E9A227] hover:text-[#E9A227] hover:bg-orange-50/50 transition-colors"
         >
-          <Minus size={14} />
+          <Minus size={16} />
         </button>
-        <span className="w-4 text-center text-sm font-semibold text-on-surface inline-block">
-          {value[type]}
+        <span className="w-4 text-center text-[15px] font-bold text-primary inline-block">
+          {currentValue}
         </span>
         <button
           type="button"
-          onClick={() => handleIncrement(type)}
-          className="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center text-outline hover:bg-surface-container hover:text-primary transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (currentValue < max) onChange(type, currentValue + 1);
+          }}
+          disabled={currentValue >= max}
+          className="w-9 h-9 rounded-full border border-outline-variant/30 flex items-center justify-center text-outline disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#E9A227] hover:text-[#E9A227] hover:bg-orange-50/50 transition-colors"
         >
-          <Plus size={14} />
+          <Plus size={16} />
         </button>
       </div>
     </div>
   );
+}
+
+export default function TravellerSelector({ value, onChange }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [draft, setDraft] = useState<TravellersState>(value);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync draft when opened
+  useEffect(() => {
+    if (isOpen) setDraft(value);
+  }, [isOpen, value]);
+
+  const handleUpdate = (type: keyof TravellersState, val: number) => {
+    setDraft(prev => {
+      const next = { ...prev, [type]: val };
+      // Ensure at least 1 adult or senior if rooms > 0
+      if ((next.adults + next.seniors) === 0) {
+        if (type === 'children' || type === 'rooms') {
+           next.adults = 1;
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleApply = () => {
+    onChange(draft);
+    setIsOpen(false);
+  };
+
+  const handleReset = () => {
+    const defaultState = { adults: 2, children: 0, seniors: 0, rooms: 1 };
+    setDraft(defaultState);
+  };
+
+  const formatSummary = (state: TravellersState) => {
+    const parts = [];
+    if (state.adults > 0) parts.push(`${state.adults} Adult${state.adults > 1 ? 's' : ''}`);
+    if (state.seniors > 0) parts.push(`${state.seniors} Senior${state.seniors > 1 ? 's' : ''}`);
+    if (state.children > 0) parts.push(`${state.children} Child${state.children > 1 ? 'ren' : ''}`);
+    if (state.rooms > 0) parts.push(`${state.rooms} Room${state.rooms > 1 ? 's' : ''}`);
+    return parts.join(', ') || 'Select Travellers';
+  };
+
+  const handleTriggerKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  };
 
   return (
-    <div className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none text-left h-full justify-center group cursor-pointer" 
-         ref={containerRef}
-         onClick={() => setIsOpen(!isOpen)}>
-      <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer">Travellers</label>
-      <div className="flex items-center gap-2">
-        <Users size={18} className="text-primary flex-shrink-0" />
-        <div className="flex-grow font-body-md text-[15px] truncate text-on-surface">
-          <span className="hidden xl:inline">{desktopLabel}</span>
-          <span className="inline xl:hidden">{mobileLabel}</span>
+    <>
+      <div
+        className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors rounded-b-2xl md:rounded-r-2xl md:rounded-bl-none text-left h-full justify-center group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E9A227]"
+        ref={containerRef}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
+        tabIndex={0}
+        role="combobox"
+        aria-expanded={isOpen}
+      >
+        <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer select-none">
+          Travellers
+        </label>
+        <div className="flex items-center gap-2">
+          <Users size={18} className="text-primary flex-shrink-0" />
+          <div className="flex-grow font-body-md text-[15px] truncate text-on-surface select-none">
+            {formatSummary(value)}
+          </div>
+          <ChevronDown
+            size={16}
+            className={`text-outline flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+          />
         </div>
-        <ChevronDown size={16} className={`text-outline transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-[calc(100%+8px)] right-0 w-full md:w-[320px] bg-surface rounded-xl shadow-level-2 border border-outline-variant/20 z-50 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 flex flex-col divide-y divide-outline-variant/10">
-              <CounterRow label="Adults" description="Ages 18 - 59" type="adults" min={value.seniors > 0 ? 0 : 1} />
-              <CounterRow label="Seniors" description="Ages 60+" type="seniors" />
-              <CounterRow label="Children" description="Ages 2 - 12" type="children" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      <Popover
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        anchorRef={containerRef}
+        mobileTitle="Select Travellers"
+        className="w-full md:w-[400px]"
+      >
+        <div className="flex flex-col bg-white">
+          <div className="p-5 flex flex-col divide-y divide-outline-variant/15">
+            <CounterRow
+              label="Adults"
+              description="Ages 18 - 59"
+              type="adults"
+              min={draft.seniors > 0 ? 0 : 1}
+              value={draft}
+              onChange={handleUpdate}
+            />
+            <CounterRow
+              label="Children"
+              description="Ages 2 - 12"
+              type="children"
+              min={0}
+              value={draft}
+              onChange={handleUpdate}
+            />
+            <CounterRow
+              label="Seniors"
+              description="Ages 60+"
+              type="seniors"
+              min={0}
+              value={draft}
+              onChange={handleUpdate}
+            />
+            <CounterRow
+              label="Rooms"
+              type="rooms"
+              min={1}
+              max={5}
+              value={draft}
+              onChange={handleUpdate}
+            />
+          </div>
+          
+          <div className="flex items-center justify-between p-4 bg-surface-container-lowest border-t border-outline-variant/15">
+            <button 
+              type="button" 
+              onClick={handleReset}
+              className="text-[14px] font-bold text-secondary hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              Reset
+            </button>
+            <button 
+              type="button" 
+              onClick={handleApply}
+              className="bg-primary hover:bg-[#041F35] text-white px-6 py-2.5 rounded-lg text-[14px] font-bold shadow-sm transition-all hover:shadow active:scale-95"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      </Popover>
+    </>
   );
 }

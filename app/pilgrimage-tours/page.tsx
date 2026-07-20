@@ -70,18 +70,17 @@ export default function PilgrimageTours() {
                 transition={{ duration: 0.5, delay: 0.2, ease: easeQuint }}
                 className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto"
               >
-                <Link href="/packages?category=Pilgrimage">
+                <Link href="/packages?category=pilgrimage" className="w-full sm:w-auto">
                   <button className="bg-secondary text-on-secondary font-label-bold text-label-bold h-[56px] px-8 rounded-lg shadow-level-1 hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
                     Explore Pilgrimage Packages
                     <span className="material-symbols-outlined text-[18px]">explore</span>
                   </button>
                 </Link>
-                <button
-                  onClick={handleEnquireClick}
-                  className="bg-transparent border-2 border-on-primary text-on-primary font-label-bold text-label-bold h-[56px] px-8 rounded-lg hover:bg-on-primary/10 transition-all flex items-center justify-center cursor-pointer"
-                >
-                  Plan My Sacred Journey
-                </button>
+                <Link href="/ai-trip-planner" className="w-full sm:w-auto">
+                  <button className="bg-transparent border-2 border-on-primary text-on-primary font-label-bold text-label-bold h-[56px] px-8 rounded-lg hover:bg-on-primary/10 transition-all flex items-center justify-center cursor-pointer w-full" >
+                    Plan My Sacred Journey
+                  </button>
+                </Link>
               </motion.div>
             </div>
           </section>

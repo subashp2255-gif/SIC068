@@ -17,6 +17,7 @@ export default function PackageSearch() {
     adults: 2,
     children: 0,
     seniors: 0,
+    rooms: 1,
   });
   const [isSearching, setIsSearching] = useState(false);
 

@@ -32,7 +32,7 @@ export default function AboutUs() {
                 
                 <FadeUp delay={0.1}>
                   <p className="font-body-lg text-body-lg text-primary-fixed-dim max-w-xl leading-relaxed">
-                    For over 15 years, DharmaYatra has been dedicated to crafting serene, meticulously planned spiritual journeys, ensuring comfort, safety, and deep devotion for every pilgrim, especially our senior travellers.
+                    For over 15 years, OneJourney has been dedicated to crafting serene, meticulously planned spiritual journeys, ensuring comfort, safety, and deep devotion for every pilgrim, especially our senior travellers.
                   </p>
                 </FadeUp>
 

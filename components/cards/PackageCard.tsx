@@ -108,13 +108,17 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
 
         {/* Top Left Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-          <span className="px-2.5 py-1 rounded-lg font-bold text-[10px] shadow-sm uppercase tracking-wider bg-[#E8A63B] text-white animate-pulse">
-            {getUrgencyText()}
-          </span>
-          <span className="px-2.5 py-1 rounded-lg font-bold text-[10px] shadow-sm uppercase tracking-wider bg-red-600 text-white flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
-            Only {getSeatsRemaining()} Seats Left
-          </span>
+          {pkg.tags && pkg.tags.length > 0 && (
+            <span className="px-2.5 py-1 rounded-lg font-bold text-[10px] shadow-sm uppercase tracking-wider bg-[#E8A63B] text-white">
+              {pkg.tags[0]}
+            </span>
+          )}
+          {pkg.seatsLeft != null && (
+            <span className="px-2.5 py-1 rounded-lg font-bold text-[10px] shadow-sm uppercase tracking-wider bg-red-600 text-white flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+              Only {pkg.seatsLeft} Seats Left
+            </span>
+          )}
         </div>
 
         {/* Top Right Controls */}
@@ -163,16 +167,22 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
         </div>
 
         {/* Bottom Left Rating Overlays */}
-        <div className="absolute bottom-3 left-4 text-white z-10 flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-0.5 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-lg">
-            <Star size={11} className="fill-[#E8A63B] text-[#E8A63B]" />
-            <span className="font-bold">{pkg.rating}</span>
-            <span className="opacity-75">({pkg.reviewCount})</span>
+        {(pkg.rating != null || pkg.verified === true) && (
+          <div className="absolute bottom-3 left-4 text-white z-10 flex items-center gap-2 text-xs">
+            {pkg.rating != null && (
+              <div className="flex items-center gap-0.5 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-lg">
+                <Star size={11} className="fill-[#E8A63B] text-[#E8A63B]" />
+                <span className="font-bold">{pkg.rating}</span>
+                {pkg.reviewCount != null && <span className="opacity-75">({pkg.reviewCount})</span>}
+              </div>
+            )}
+            {pkg.verified === true && (
+              <span className="bg-emerald-600/80 backdrop-blur-sm px-2 py-0.5 rounded-lg font-bold text-[10px] uppercase tracking-wider flex items-center gap-0.5">
+                <ShieldCheck size={10} /> Verified
+              </span>
+            )}
           </div>
-          <span className="bg-emerald-600/80 backdrop-blur-sm px-2 py-0.5 rounded-lg font-bold text-[10px] uppercase tracking-wider flex items-center gap-0.5">
-            <ShieldCheck size={10} /> Verified
-          </span>
-        </div>
+        )}
 
         {/* Bottom Right Duration Overlays */}
         <div className="absolute bottom-3 right-4 text-white z-10 text-xs bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-lg font-bold">
@@ -217,13 +227,13 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
         {/* Quick Info Pills */}
         <div className="flex flex-wrap gap-1.5 select-none">
           <span className="inline-flex items-center gap-1 bg-[#FFF8E8] text-[#E8A63B] border border-[#E8A63B]/20 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <CalendarDays size={11} /> {getBestMonth()}
+            <CalendarDays size={11} /> {pkg.bestSeason || getBestMonth()}
           </span>
           <span className="inline-flex items-center gap-1 bg-slate-50 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <ActivityIcon size={11} /> {getDifficulty()}
+            <ActivityIcon size={11} /> {pkg.pace || getDifficulty()}
           </span>
           <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <Users size={11} /> Family Care
+            <Users size={11} /> {pkg.travellerType || "Family Care"}
           </span>
         </div>
 
@@ -253,51 +263,58 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
             </span>
           </div>
 
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow border-r border-slate-200/50">
+          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow">
             <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">person_pin_circle</span>
             <span className="text-[9px] font-bold text-slate-500 uppercase">Guide</span>
             <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
               Dedicated spiritual tour guide
             </span>
           </div>
-
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow">
-            <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">confirmation_number</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase">VIP Passes</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
-              Pre-booked VIP entry tickets
-            </span>
-          </div>
         </div>
 
         {/* Social Proof */}
-        <div className="text-left text-xs font-bold text-emerald-600 flex items-center gap-1.5">
-          <Activity size={12} className="animate-pulse" />
-          <span>Trending this week • Booked 140+ times recently</span>
-        </div>
+        {pkg.recentBookings != null && (
+          <div className="text-left text-xs font-bold text-emerald-600 flex items-center gap-1.5">
+            <Activity size={12} className="animate-pulse" />
+            <span>Trending this week • Booked {pkg.recentBookings}+ times recently</span>
+          </div>
+        )}
 
         {/* Pricing Rows */}
         <div className="flex justify-between items-end border-t border-slate-100 pt-3 text-left">
-          <div>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Starting From</span>
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-[20px] font-extrabold text-[#0B3A63]">
-                ₹{pkg.price.toLocaleString()}
-              </span>
-              <span className="text-xs text-slate-400 line-through">
-                ₹{(pkg.price * 1.25).toLocaleString()}
-              </span>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                Save ₹{Math.floor(pkg.price * 0.25).toLocaleString()}
+          {pkg.price != null ? (
+            <>
+              <div>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Starting From</span>
+                <div className="flex items-baseline gap-1.5 mt-0.5">
+                  <span className="text-[20px] font-extrabold text-[#0B3A63]">
+                    ₹{pkg.price.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-slate-400 line-through">
+                    ₹{(pkg.price * 1.25).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">EMI Options</span>
+                <span className="text-[11px] font-bold text-[#0B3A63] block mt-1">
+                  From ₹{Math.floor(pkg.price / 12).toLocaleString()}/mo
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="w-full flex justify-between items-center py-1">
+              <div>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Package Type</span>
+                <span className="text-sm font-bold text-[#0B3A63] flex items-center gap-1">
+                  <ShieldCheck size={14} className="text-[#E8A63B]" /> Customizable Package
+                </span>
+              </div>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                Enquire for Pricing
               </span>
             </div>
-          </div>
-          <div className="text-right">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">EMI Options</span>
-            <span className="text-[11px] font-bold text-[#0B3A63] block mt-1">
-              From ₹{Math.floor(pkg.price / 12).toLocaleString()}/mo
-            </span>
-          </div>
+          )}
         </div>
 
         {/* Expandable Accordion Tabs inside the card */}

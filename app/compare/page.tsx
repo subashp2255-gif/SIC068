@@ -205,8 +205,8 @@ export default function ComparePackages() {
                         {/* Package headers */}
                         {comparedPackages.map((pkg) => {
                           // Award tags
-                          const isBestValue = pkg.price < 15000 && pkg.rating >= 4.8;
-                          const isMostPopular = pkg.reviewCount > 200;
+                          const isBestValue = pkg.price < 15000 && (pkg.rating != null && pkg.rating >= 4.8);
+                          const isMostPopular = pkg.reviewCount != null && pkg.reviewCount > 200;
                           const isBestForSeniors = pkg.seniorFriendly && pkg.wheelchairAccess;
 
                           return (

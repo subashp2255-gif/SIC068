@@ -1,11 +1,11 @@
-# DharmaYatra - Plan Your Sacred Journey with Confidence
+# OneJourney | Trusted AI Travel & Pilgrimage Planner
 
-DharmaYatra is a premium, frontend-only Next.js application built for the hackathon project. It is designed to simplify and guide sacred journeys with trust, transparency, and utmost comfort, tailored especially for senior citizens and multigenerational family travels.
+OneJourney is a premium, frontend-only Next.js application built for the hackathon project. It is designed to simplify and guide sacred journeys with trust, transparency, and utmost comfort, tailored especially for senior citizens and multigenerational family travels.
 
 ## Hackathon Problem Statement & Solution
 
 **Problem**: Planning pilgrimage tours for seniors often suffers from high friction, lack of clarity, medical uncertainty, and complex logistics (VIP entry, wheelchair support, dietary restrictions).
-**Solution**: DharmaYatra offers a fully accessible web platform featuring:
+**Solution**: OneJourney offers a fully accessible web platform featuring:
 *   **Conversational AI Planner**: Guided chat wizard mapping user needs to matched itineraries.
 *   **Elder-Care Checklists**: Filters for ground floor rooms, wheelchair access, medical support, and Satvik meals.
 *   **Comparison & Favorites**: Side-by-side matrices comparing stays, transits, and guide options.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageTransition from "@/components/animations/PageTransition";
@@ -14,137 +14,291 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { easeQuint, getAssetPath } from "@/lib/animations";
 
-export default function PackageListContent() {
-  const searchParams = useSearchParams();
-  const { compareIds, toggleCompare, setCompareOpen, setEnquireOpen, setEnquirePackageId, recentlyViewed } = useApp();
-  
-  // Simulated Loading State for filters
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
+export interface PackageFilters {
+  searchText: string;
+  regions: string[];
+  mainCategory: "All" | "Family" | "Pilgrimage";
+  faith: string;
+  durations: string[];
+  seniorFriendlyOnly: boolean;
+  wheelchairOnly: boolean;
+  maxBudget: number;
+  sortBy: string;
+  meals: string[];
+  transports: string[];
+  seasons: string[];
+  travellerTypes: string[];
+}
 
-  // Search & Filter State
-  const [searchText, setSearchText] = useState("");
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
-  const [isSeniorFriendlyOnly, setIsSeniorFriendlyOnly] = useState(false);
-  const [isWheelchairOnly, setIsWheelchairOnly] = useState(false);
-  const [maxBudget, setMaxBudget] = useState(60000);
-  const [sortBy, setSortBy] = useState("Recommended");
-  const [selectedMeals, setSelectedMeals] = useState<string[]>([]);
-  const [selectedTransports, setSelectedTransports] = useState<string[]>([]);
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
+const defaultFilters: PackageFilters = {
+  searchText: "",
+  regions: [],
+  mainCategory: "All",
+  faith: "",
+  durations: [],
+  seniorFriendlyOnly: false,
+  wheelchairOnly: false,
+  maxBudget: 60000,
+  sortBy: "Recommended",
+  meals: [],
+  transports: [],
+  seasons: [],
+  travellerTypes: [],
+};
 
-  // Read URL params on mount
-  useEffect(() => {
-    const dest = searchParams.get("dest");
-    const month = searchParams.get("month");
-    const dur = searchParams.get("duration");
-
-    if (dest) setSearchText(dest);
-    
-    if (dur) {
-      if (dur === "1-3") setSelectedDurations(["1-3"]);
-      else if (dur === "4-7") setSelectedDurations(["4-7"]);
-      else if (dur === "8+") setSelectedDurations(["8+"]);
-    }
-  }, [searchParams]);
-
-  // Filter & Sort Logic
-  const filteredPackages = mockPackages.filter((pkg) => {
+const filterPackages = (packages: Package[], filters: PackageFilters): Package[] => {
+  return packages.filter((pkg) => {
     // Text search
-    if (searchText) {
-      const query = searchText.toLowerCase();
+    if (filters.searchText) {
+      const query = filters.searchText.toLowerCase();
       const matchTitle = pkg.title.toLowerCase().includes(query);
-      const matchDest = pkg.destinations.toLowerCase().includes(query);
-      if (!matchTitle && !matchDest) return false;
+      const matchDest = (pkg.destinations || "").toLowerCase().includes(query);
+      const matchLoc = (pkg.location || "").toLowerCase().includes(query);
+      if (!matchTitle && !matchDest && !matchLoc) return false;
     }
 
     // Regions
-    if (selectedRegions.length > 0) {
-      if (!selectedRegions.includes(pkg.region)) return false;
+    if (filters.regions.length > 0) {
+      if (!filters.regions.includes(pkg.region)) return false;
     }
 
-    // Categories
-    if (selectedCategories.length > 0) {
-      if (!selectedCategories.includes(pkg.category)) return false;
+    // Main Category
+    if (filters.mainCategory !== "All") {
+      const matchMain = pkg.mainCategory === filters.mainCategory || pkg.category === filters.mainCategory;
+      if (!matchMain) return false;
+    }
+
+    // Faith
+    if (filters.mainCategory === "Pilgrimage" && filters.faith) {
+      const matchFaith = pkg.subCategory?.toLowerCase() === filters.faith.toLowerCase();
+      if (!matchFaith) return false;
     }
 
     // Durations
-    if (selectedDurations.length > 0) {
+    if (filters.durations.length > 0) {
       const days = parseInt(pkg.duration.split(" ")[0]);
       let durationMatch = false;
-      if (selectedDurations.includes("1-3") && days >= 1 && days <= 3) durationMatch = true;
-      if (selectedDurations.includes("4-7") && days >= 4 && days <= 7) durationMatch = true;
-      if (selectedDurations.includes("8+") && days >= 8) durationMatch = true;
+      if (filters.durations.includes("1-3") && days >= 1 && days <= 3) durationMatch = true;
+      if (filters.durations.includes("4-7") && days >= 4 && days <= 7) durationMatch = true;
+      if (filters.durations.includes("8+") && days >= 8) durationMatch = true;
       if (!durationMatch) return false;
     }
 
     // Senior Friendly
-    if (isSeniorFriendlyOnly && !pkg.seniorFriendly) return false;
+    if (filters.seniorFriendlyOnly && !pkg.seniorFriendly) return false;
 
     // Wheelchair Access
-    if (isWheelchairOnly && !pkg.wheelchairAccess) return false;
+    if (filters.wheelchairOnly && !pkg.wheelchairAccess) return false;
 
     // Budget
-    if (pkg.price > maxBudget) return false;
+    if (pkg.price != null && pkg.price > filters.maxBudget) return false;
 
     // Meals
-    if (selectedMeals.length > 0) {
-      const match = selectedMeals.some(m => String(pkg.inclusions.meals).toLowerCase().includes(m.toLowerCase()));
+    if (filters.meals.length > 0) {
+      const match = filters.meals.some(m => String(pkg.inclusions.meals).toLowerCase().includes(m.toLowerCase()));
       if (!match) return false;
     }
 
     // Transport
-    if (selectedTransports.length > 0) {
-      const match = selectedTransports.some(t => String(pkg.inclusions.transit).toLowerCase().includes(t.toLowerCase()));
+    if (filters.transports.length > 0) {
+      const match = filters.transports.some(t => String(pkg.inclusions.transit).toLowerCase().includes(t.toLowerCase()));
+      if (!match) return false;
+    }
+
+    // Season
+    if (filters.seasons.length > 0) {
+      const pkgSeason = pkg.bestSeason || "";
+      const match = filters.seasons.some(s => pkgSeason.toLowerCase().includes(s.toLowerCase()));
+      if (!match) return false;
+    }
+
+    // Traveller Type
+    if (filters.travellerTypes.length > 0) {
+      const pkgType = pkg.travellerType || "";
+      const match = filters.travellerTypes.some(t => pkgType.toLowerCase().includes(t.toLowerCase()));
       if (!match) return false;
     }
 
     return true;
   });
+};
 
-  // Sort
-  const sortedPackages = [...filteredPackages].sort((a, b) => {
-    if (sortBy === "Price: Low to High") return a.price - b.price;
-    if (sortBy === "Price: High to Low") return b.price - a.price;
-    if (sortBy === "Highest Rated") return b.rating - a.rating;
-    return b.reviewCount - a.reviewCount; // Recommended fallback
+const sortPackages = (packages: Package[], sortBy: string): Package[] => {
+  return [...packages].sort((a, b) => {
+    if (sortBy === "Price: Low to High") return (a.price || 0) - (b.price || 0);
+    if (sortBy === "Price: High to Low") return (b.price || 0) - (a.price || 0);
+    if (sortBy === "Highest Rated") return (b.rating || 0) - (a.rating || 0);
+    return 0; // Recommended fallback
   });
+};
+
+export default function PackageListContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { compareIds, toggleCompare, setCompareOpen, setEnquireOpen, setEnquirePackageId, recentlyViewed } = useApp();
+
+  // Simulated Loading State for filters
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  // Search & Filter State
+  const [filters, setFilters] = useState<PackageFilters>(() => {
+    const categoryParam = searchParams.get("category");
+    const faithParam = searchParams.get("faith");
+    const dest = searchParams.get("dest");
+    const dur = searchParams.get("duration");
+
+    const initial: PackageFilters = { ...defaultFilters };
+
+    if (categoryParam?.toLowerCase() === "pilgrimage") {
+      initial.mainCategory = "Pilgrimage";
+    } else if (categoryParam?.toLowerCase() === "family") {
+      initial.mainCategory = "Family";
+    } else {
+      initial.mainCategory = "All";
+    }
+
+    if (initial.mainCategory === "Pilgrimage" && faithParam) {
+      const normalized = faithParam.toLowerCase();
+      if (normalized === "hinduism") initial.faith = "Hinduism";
+      else if (normalized === "buddhism") initial.faith = "Buddhism";
+      else if (normalized === "christianity") initial.faith = "Christianity";
+      else if (normalized === "islam") initial.faith = "Islam";
+    }
+
+    if (dest) initial.searchText = dest;
+    if (dur) {
+      if (dur === "1-3") initial.durations = ["1-3"];
+      else if (dur === "4-7") initial.durations = ["4-7"];
+      else if (dur === "8+") initial.durations = ["8+"];
+    }
+
+    return initial;
+  });
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Read URL params on mount & updates
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    const faithParam = searchParams.get("faith");
+    const dest = searchParams.get("dest");
+    const dur = searchParams.get("duration");
+
+    setFilters(prev => {
+      const newFilters = { ...prev };
+
+      // Parse main category
+      if (categoryParam?.toLowerCase() === "pilgrimage") {
+        newFilters.mainCategory = "Pilgrimage";
+      } else if (categoryParam?.toLowerCase() === "family") {
+        newFilters.mainCategory = "Family";
+      } else {
+        newFilters.mainCategory = "All";
+      }
+
+      // Parse faith subcategory
+      if (newFilters.mainCategory === "Pilgrimage" && faithParam) {
+        const normalized = faithParam.toLowerCase();
+        if (normalized === "hinduism") newFilters.faith = "Hinduism";
+        else if (normalized === "buddhism") newFilters.faith = "Buddhism";
+        else if (normalized === "christianity") newFilters.faith = "Christianity";
+        else if (normalized === "islam") newFilters.faith = "Islam";
+        else newFilters.faith = "";
+      } else {
+        newFilters.faith = "";
+      }
+
+      if (dest) newFilters.searchText = dest;
+      if (dur) {
+        if (dur === "1-3") newFilters.durations = ["1-3"];
+        else if (dur === "4-7") newFilters.durations = ["4-7"];
+        else if (dur === "8+") newFilters.durations = ["8+"];
+      }
+
+      return newFilters;
+    });
+  }, [searchParams]);
+
+  // Sync state changes back to URL without reloading
+  useEffect(() => {
+    const urlCategory = searchParams.get("category") || "";
+    const urlFaith = searchParams.get("faith") || "";
+
+    const stateCategory = filters.mainCategory === "Pilgrimage" ? "pilgrimage" : filters.mainCategory === "Family" ? "family" : "";
+    const stateFaith = filters.faith ? filters.faith.toLowerCase() : "";
+
+    // Only update URL if it differs from the current state
+    if (urlCategory !== stateCategory || urlFaith !== stateFaith) {
+      const params = new URLSearchParams(searchParams.toString());
+      
+      if (stateCategory) {
+        params.set("category", stateCategory);
+        if (stateCategory === "pilgrimage" && stateFaith) {
+          params.set("faith", stateFaith);
+        } else {
+          params.delete("faith");
+        }
+      } else {
+        params.delete("category");
+        params.delete("faith");
+      }
+
+      const queryString = params.toString();
+      const nextUrl = `/packages${queryString ? `?${queryString}` : ""}`;
+      router.push(nextUrl, { scroll: false });
+    }
+  }, [filters.mainCategory, filters.faith, searchParams, router]);
+
+  // Counts for Category refinement
+  const familyCount = mockPackages.filter(p => p.mainCategory === "Family" || p.category === "Family").length;
+  const pilgrimageCount = mockPackages.filter(p => p.mainCategory === "Pilgrimage" || p.category === "Pilgrimage").length;
+  
+  const getFaithCount = (faithVal: string) => {
+    return mockPackages.filter(p => 
+      (p.mainCategory === "Pilgrimage" || p.category === "Pilgrimage") && 
+      p.subCategory?.toLowerCase() === faithVal.toLowerCase()
+    ).length;
+  };
+
+  const toggleMainCategory = (cat: "Family" | "Pilgrimage") => {
+    setFilters(prev => {
+      let nextCat: "All" | "Family" | "Pilgrimage" = "All";
+      if (prev.mainCategory === "All") {
+        nextCat = cat === "Family" ? "Pilgrimage" : "Family";
+      } else if (prev.mainCategory === cat) {
+        nextCat = "All";
+      } else {
+        nextCat = "All";
+      }
+      
+      const nextFaith = nextCat === "Pilgrimage" ? prev.faith : "";
+      return {
+        ...prev,
+        mainCategory: nextCat,
+        faith: nextFaith
+      };
+    });
+    triggerFilterShimmer();
+  };
+
+  // Filter & Sort Logic
+  const filteredPackages = filterPackages(mockPackages, filters);
+  const sortedPackages = sortPackages(filteredPackages, filters.sortBy);
 
   // Toggle Filters
-  const handleRegionToggle = (region: string) => {
-    setSelectedRegions((prev) =>
-      prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region]
-    );
+  const updateFilter = <K extends keyof PackageFilters>(key: K, value: PackageFilters[K]) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
     triggerFilterShimmer();
   };
 
-  const handleCategoryToggle = (cat: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-    triggerFilterShimmer();
-  };
-
-  const handleDurationToggle = (dur: string) => {
-    setSelectedDurations((prev) =>
-      prev.includes(dur) ? prev.filter((d) => d !== dur) : [...prev, dur]
-    );
-    triggerFilterShimmer();
-  };
-
-  const handleMealToggle = (meal: string) => {
-    setSelectedMeals((prev) =>
-      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal]
-    );
-    triggerFilterShimmer();
-  };
-
-  const handleTransportToggle = (t: string) => {
-    setSelectedTransports((prev) =>
-      prev.includes(t) ? prev.filter((item) => item !== t) : [...prev, t]
-    );
+  const toggleArrayFilter = <K extends keyof PackageFilters>(key: K, item: string) => {
+    setFilters(prev => {
+      const arr = prev[key] as string[];
+      return {
+        ...prev,
+        [key]: arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item]
+      };
+    });
     triggerFilterShimmer();
   };
 
@@ -156,16 +310,7 @@ export default function PackageListContent() {
   };
 
   const handleClearAll = () => {
-    setSearchText("");
-    setSelectedRegions([]);
-    setSelectedCategories([]);
-    setSelectedDurations([]);
-    setIsSeniorFriendlyOnly(false);
-    setIsWheelchairOnly(false);
-    setMaxBudget(60000);
-    setSortBy("Recommended");
-    setSelectedMeals([]);
-    setSelectedTransports([]);
+    setFilters(defaultFilters);
     triggerFilterShimmer();
   };
 
@@ -177,7 +322,7 @@ export default function PackageListContent() {
       <Navbar />
       <PageTransition>
         <main className="w-full flex-grow max-w-container-max mx-auto px-margin-mobile md:px-12 py-10 flex flex-col gap-10">
-          
+
           {/* Header section with breadcrumbs */}
           <div className="flex flex-col gap-4 text-left select-none">
             <nav className="text-xs font-semibold text-outline flex items-center gap-1.5 font-body-sm">
@@ -185,14 +330,18 @@ export default function PackageListContent() {
               <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               <span className="text-on-surface font-bold">Packages</span>
             </nav>
-            
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
               <div>
                 <h1 className="font-display-lg-mobile md:font-display-lg text-primary font-bold">
-                  Explore Sacred Tour Packages
+                  {filters.mainCategory === "Pilgrimage" ? "Pilgrimage Tour Packages" : "Explore Sacred Tour Packages"}
                 </h1>
                 <p className="text-on-surface-variant font-medium text-sm mt-1.5">
-                  Showing {sortedPackages.length} of {mockPackages.length} Pilgrimage and Heritage Tours
+                  {filters.mainCategory === "Pilgrimage" ? (
+                    "Explore thoughtfully planned pilgrimage journeys across sacred destinations."
+                  ) : (
+                    `Showing ${sortedPackages.length} of ${mockPackages.length} Pilgrimage and Heritage Tours`
+                  )}
                 </p>
               </div>
 
@@ -200,10 +349,9 @@ export default function PackageListContent() {
               <div className="flex items-center gap-3 w-full md:w-auto">
                 <span className="text-xs font-bold text-outline uppercase tracking-wider whitespace-nowrap">Sort by</span>
                 <select
-                  value={sortBy}
+                  value={filters.sortBy}
                   onChange={(e) => {
-                    setSortBy(e.target.value);
-                    triggerFilterShimmer();
+                    updateFilter("sortBy", e.target.value);
                   }}
                   className="bg-surface-container-lowest text-on-surface p-2.5 rounded-lg border border-outline-variant focus:border-primary outline-none text-sm cursor-pointer"
                 >
@@ -216,61 +364,79 @@ export default function PackageListContent() {
             </div>
 
             {/* Active Filter Chips */}
-            {(selectedRegions.length > 0 || selectedCategories.length > 0 || selectedDurations.length > 0 || isSeniorFriendlyOnly || isWheelchairOnly || searchText) && (
+            {(filters.regions.length > 0 || filters.mainCategory !== "All" || filters.faith !== "" || filters.durations.length > 0 || filters.seniorFriendlyOnly || filters.wheelchairOnly || filters.searchText || filters.meals.length > 0 || filters.transports.length > 0 || filters.seasons.length > 0 || filters.travellerTypes.length > 0) && (
               <div className="flex flex-wrap gap-2 pt-2 items-center">
                 <span className="text-xs font-bold uppercase tracking-wider text-outline mr-2">Active filters:</span>
-                
-                {searchText && (
+
+                {filters.searchText && (
                   <span className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
-                    Search: &quot;{searchText}&quot;
-                    <button onClick={() => { setSearchText(""); triggerFilterShimmer(); }} className="hover:text-error transition-colors"><X size={12} /></button>
+                    Search: &quot;{filters.searchText}&quot;
+                    <button onClick={() => updateFilter("searchText", "")} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 )}
-                {isSeniorFriendlyOnly && (
+                {filters.seniorFriendlyOnly && (
                   <span className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     Senior-Friendly
-                    <button onClick={() => { setIsSeniorFriendlyOnly(false); triggerFilterShimmer(); }} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => updateFilter("seniorFriendlyOnly", false)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 )}
-                {isWheelchairOnly && (
+                {filters.wheelchairOnly && (
                   <span className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     Wheelchair Accessible
-                    <button onClick={() => { setIsWheelchairOnly(false); triggerFilterShimmer(); }} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => updateFilter("wheelchairOnly", false)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 )}
-                {selectedRegions.map((r) => (
+                {filters.regions.map((r) => (
                   <span key={r} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     {r}
-                    <button onClick={() => handleRegionToggle(r)} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => toggleArrayFilter("regions", r)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 ))}
-                {selectedCategories.map((c) => (
-                  <span key={c} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
-                    {c}
-                    <button onClick={() => handleCategoryToggle(c)} className="hover:text-error transition-colors"><X size={12} /></button>
+                {filters.mainCategory !== "All" && (
+                  <span className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    Category: {filters.mainCategory === "Pilgrimage" ? "Pilgrimage Tours" : "Family Tours"}
+                    <button onClick={() => toggleMainCategory(filters.mainCategory === "Pilgrimage" ? "Pilgrimage" : "Family")} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
-                ))}
-                {selectedDurations.map((d) => (
+                )}
+                {filters.mainCategory === "Pilgrimage" && filters.faith && (
+                  <span className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    Faith: {filters.faith}
+                    <button onClick={() => updateFilter("faith", "")} className="hover:text-error transition-colors"><X size={12} /></button>
+                  </span>
+                )}
+                {filters.durations.map((d) => (
                   <span key={d} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     {d} Days
-                    <button onClick={() => handleDurationToggle(d)} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => toggleArrayFilter("durations", d)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 ))}
-                {selectedMeals.map((m) => (
+                {filters.meals.map((m) => (
                   <span key={m} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     Food: {m}
-                    <button onClick={() => handleMealToggle(m)} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => toggleArrayFilter("meals", m)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 ))}
-                {selectedTransports.map((t) => (
+                {filters.transports.map((t) => (
                   <span key={t} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
                     Transit: {t}
-                    <button onClick={() => handleTransportToggle(t)} className="hover:text-error transition-colors"><X size={12} /></button>
+                    <button onClick={() => toggleArrayFilter("transports", t)} className="hover:text-error transition-colors"><X size={12} /></button>
+                  </span>
+                ))}
+                {filters.seasons.map((s) => (
+                  <span key={s} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    Season: {s}
+                    <button onClick={() => toggleArrayFilter("seasons", s)} className="hover:text-error transition-colors"><X size={12} /></button>
+                  </span>
+                ))}
+                {filters.travellerTypes.map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs font-semibold">
+                    {t}
+                    <button onClick={() => toggleArrayFilter("travellerTypes", t)} className="hover:text-error transition-colors"><X size={12} /></button>
                   </span>
                 ))}
 
-                <button 
-                  onClick={handleClearAll} 
+                <button
+                  onClick={handleClearAll}
                   className="text-secondary font-label-bold text-xs hover:underline ml-2"
                 >
                   Clear All
@@ -292,7 +458,7 @@ export default function PackageListContent() {
 
           {/* Main Grid: Sidebar + Results List */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-            
+
             {/* Sidebar Filters */}
             <aside className={`lg:col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-level-1 border border-outline-variant/15 flex flex-col gap-6 sticky top-28 select-none ${showMobileFilters ? "block" : "hidden lg:flex"}`}>
               <div className="flex justify-between items-center border-b border-outline-variant/10 pb-4">
@@ -300,7 +466,7 @@ export default function PackageListContent() {
                   <SlidersHorizontal size={18} className="text-secondary" />
                   Filter Tours
                 </h2>
-                <button 
+                <button
                   onClick={handleClearAll}
                   className="text-secondary font-body-sm text-xs hover:underline"
                 >
@@ -316,11 +482,8 @@ export default function PackageListContent() {
                   <input
                     type="text"
                     placeholder="Search temple or town..."
-                    value={searchText}
-                    onChange={(e) => {
-                      setSearchText(e.target.value);
-                      triggerFilterShimmer();
-                    }}
+                    value={filters.searchText}
+                    onChange={(e) => updateFilter("searchText", e.target.value)}
                     className="w-full bg-surface-container-low pl-9 pr-3 py-2.5 rounded-lg border border-outline-variant focus:border-primary text-sm outline-none"
                   />
                 </div>
@@ -335,11 +498,8 @@ export default function PackageListContent() {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isSeniorFriendlyOnly}
-                    onChange={(e) => {
-                      setIsSeniorFriendlyOnly(e.target.checked);
-                      triggerFilterShimmer();
-                    }}
+                    checked={filters.seniorFriendlyOnly}
+                    onChange={(e) => updateFilter("seniorFriendlyOnly", e.target.checked)}
                     className="sr-only peer"
                   />
                   <div className="w-10 h-5.5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-primary" />
@@ -355,11 +515,8 @@ export default function PackageListContent() {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isWheelchairOnly}
-                    onChange={(e) => {
-                      setIsWheelchairOnly(e.target.checked);
-                      triggerFilterShimmer();
-                    }}
+                    checked={filters.wheelchairOnly}
+                    onChange={(e) => updateFilter("wheelchairOnly", e.target.checked)}
                     className="sr-only peer"
                   />
                   <div className="w-10 h-5.5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-primary" />
@@ -374,8 +531,8 @@ export default function PackageListContent() {
                     <label key={region} className="flex items-center gap-3 cursor-pointer group select-none">
                       <input
                         type="checkbox"
-                        checked={selectedRegions.includes(region)}
-                        onChange={() => handleRegionToggle(region)}
+                        checked={filters.regions.includes(region)}
+                        onChange={() => toggleArrayFilter("regions", region)}
                         className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
                       />
                       <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
@@ -390,17 +547,16 @@ export default function PackageListContent() {
               <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
                 <div className="flex justify-between items-center mb-1">
                   <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline">Max Budget</h3>
-                  <span className="text-sm font-bold text-primary">₹{maxBudget.toLocaleString()}</span>
+                  <span className="text-sm font-bold text-primary">₹{filters.maxBudget.toLocaleString()}</span>
                 </div>
                 <input
                   type="range"
                   min="9000"
                   max="60000"
                   step="2000"
-                  value={maxBudget}
+                  value={filters.maxBudget}
                   onChange={(e) => {
-                    setMaxBudget(parseInt(e.target.value));
-                    triggerFilterShimmer();
+                    updateFilter("maxBudget", parseInt(e.target.value));
                   }}
                   className="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary"
                 />
@@ -410,23 +566,100 @@ export default function PackageListContent() {
                 </div>
               </div>
 
-              {/* Category check boxes */}
+              {/* Travel Category section */}
               <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
                 <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Travel Category</h3>
-                <div className="space-y-2.5">
-                  {["Pilgrimage", "Family Leisure", "Heritage"].map((cat) => (
-                    <label key={cat} className="flex items-center gap-3 cursor-pointer group select-none">
+                <div className="space-y-3">
+                  {/* Family Tours */}
+                  <label className="flex items-center justify-between cursor-pointer group select-none">
+                    <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={selectedCategories.includes(cat)}
-                        onChange={() => handleCategoryToggle(cat)}
+                        checked={filters.mainCategory === "Family" || filters.mainCategory === "All"}
+                        onChange={() => toggleMainCategory("Family")}
                         className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
                       />
                       <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
-                        {cat}
+                        Family Tours
+                      </span>
+                    </div>
+                    <span className="text-xs text-outline font-semibold bg-surface-container px-2 py-0.5 rounded-full">
+                      {familyCount}
+                    </span>
+                  </label>
+
+                  {/* Pilgrimage Tours */}
+                  <div className="flex flex-col gap-2.5">
+                    <label className="flex items-center justify-between cursor-pointer group select-none">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={filters.mainCategory === "Pilgrimage" || filters.mainCategory === "All"}
+                          onChange={() => toggleMainCategory("Pilgrimage")}
+                          className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
+                        />
+                        <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
+                          Pilgrimage Tours
+                        </span>
+                      </div>
+                      <span className="text-xs text-outline font-semibold bg-surface-container px-2 py-0.5 rounded-full">
+                        {pilgrimageCount}
                       </span>
                     </label>
-                  ))}
+
+                    {/* Faith Subcategories (visible only if Pilgrimage Tours is active) */}
+                    {(filters.mainCategory === "Pilgrimage" || filters.mainCategory === "All") && (
+                      <div className="ml-8 pl-2 border-l border-outline-variant/40 flex flex-col gap-2 mt-1">
+                        {/* All Pilgrimages */}
+                        <label className="flex items-center justify-between cursor-pointer group select-none text-xs">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="faith-filter"
+                              checked={!filters.faith}
+                              onChange={() => updateFilter("faith", "")}
+                              className="w-4 h-4 text-primary focus:ring-primary border-outline-variant"
+                            />
+                            <span className={`font-medium transition-colors ${!filters.faith ? "text-primary font-bold" : "text-on-surface-variant group-hover:text-primary"}`}>
+                              All Pilgrimages
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-outline font-medium">
+                            {pilgrimageCount}
+                          </span>
+                        </label>
+
+                        {/* Faiths */}
+                        {[
+                          { label: "Hinduism", value: "Hinduism" },
+                          { label: "Buddhism", value: "Buddhism" },
+                          { label: "Christianity", value: "Christianity" },
+                          { label: "Islam", value: "Islam" },
+                        ].map((faith) => {
+                          const isSelected = filters.faith === faith.value;
+                          return (
+                            <label key={faith.value} className="flex items-center justify-between cursor-pointer group select-none text-xs">
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="radio"
+                                  name="faith-filter"
+                                  checked={isSelected}
+                                  onChange={() => updateFilter("faith", faith.value)}
+                                  className="w-4 h-4 text-primary focus:ring-primary border-outline-variant"
+                                />
+                                <span className={`font-medium transition-colors ${isSelected ? "text-primary font-bold" : "text-on-surface-variant group-hover:text-primary"}`}>
+                                  {faith.label}
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-outline font-medium">
+                                {getFaithCount(faith.value)}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -442,8 +675,8 @@ export default function PackageListContent() {
                     <label key={dur.value} className="flex items-center gap-3 cursor-pointer group select-none">
                       <input
                         type="checkbox"
-                        checked={selectedDurations.includes(dur.value)}
-                        onChange={() => handleDurationToggle(dur.value)}
+                        checked={filters.durations.includes(dur.value)}
+                        onChange={() => toggleArrayFilter("durations", dur.value)}
                         className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
                       />
                       <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
@@ -462,8 +695,8 @@ export default function PackageListContent() {
                     <label key={meal} className="flex items-center gap-3 cursor-pointer group select-none">
                       <input
                         type="checkbox"
-                        checked={selectedMeals.includes(meal)}
-                        onChange={() => handleMealToggle(meal)}
+                        checked={filters.meals.includes(meal)}
+                        onChange={() => toggleArrayFilter("meals", meal)}
                         className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
                       />
                       <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
@@ -482,8 +715,48 @@ export default function PackageListContent() {
                     <label key={t} className="flex items-center gap-3 cursor-pointer group select-none">
                       <input
                         type="checkbox"
-                        checked={selectedTransports.includes(t)}
-                        onChange={() => handleTransportToggle(t)}
+                        checked={filters.transports.includes(t)}
+                        onChange={() => toggleArrayFilter("transports", t)}
+                        className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
+                      />
+                      <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
+                        {t}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Season Filter */}
+              <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
+                <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Best Season</h3>
+                <div className="space-y-2.5">
+                  {["Oct", "Mar", "Jul", "Aug", "May"].map((s) => (
+                    <label key={s} className="flex items-center gap-3 cursor-pointer group select-none">
+                      <input
+                        type="checkbox"
+                        checked={filters.seasons.includes(s)}
+                        onChange={() => toggleArrayFilter("seasons", s)}
+                        className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
+                      />
+                      <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
+                        {s}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Traveller Type Filter */}
+              <div className="flex flex-col gap-2 border-t border-outline-variant/10 pt-4 text-left">
+                <h3 className="font-label-bold text-xs uppercase tracking-wider text-outline mb-1">Traveller Type</h3>
+                <div className="space-y-2.5">
+                  {["Family Friendly", "Couple", "Solo", "Group"].map((t) => (
+                    <label key={t} className="flex items-center gap-3 cursor-pointer group select-none">
+                      <input
+                        type="checkbox"
+                        checked={filters.travellerTypes.includes(t)}
+                        onChange={() => toggleArrayFilter("travellerTypes", t)}
                         className="w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant"
                       />
                       <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">
@@ -502,8 +775,8 @@ export default function PackageListContent() {
                     {mockPackages
                       .filter((p) => recentlyViewed.includes(p.id))
                       .map((pkg) => (
-                        <Link 
-                          key={pkg.id} 
+                        <Link
+                          key={pkg.id}
                           href={`/packages/${pkg.id}`}
                           className="flex items-center gap-3 group/rv hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
                         >
@@ -605,30 +878,30 @@ export default function PackageListContent() {
                 className="fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant shadow-[0px_-10px_32px_rgba(18,59,93,0.15)] py-4 px-6 z-40 select-none"
               >
                 <div className="max-w-container-max mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-                  
+
                   {/* Left: Packages Thumbnails */}
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="text-xs font-bold text-outline uppercase tracking-wider mr-2 flex items-center gap-1.5">
                       <RefreshCw size={14} className="animate-spin-slow text-secondary" />
                       Comparison List:
                     </span>
-                    
+
                     <div className="flex gap-2.5">
                       {comparedPackages.map((pkg) => (
-                        <div 
-                          key={pkg.id} 
+                        <div
+                          key={pkg.id}
                           className="flex items-center gap-2 bg-surface-container-low border border-outline-variant/15 pr-3 pl-1 py-1 rounded-lg shadow-sm"
                         >
-                          <img 
-                            src={getAssetPath(pkg.image)} 
-                            alt={pkg.title} 
-                            className="w-8 h-8 rounded object-cover" 
+                          <img
+                            src={getAssetPath(pkg.image)}
+                            alt={pkg.title}
+                            className="w-8 h-8 rounded object-cover"
                           />
                           <div className="text-left">
                             <h4 className="text-[11px] font-bold text-primary line-clamp-1 max-w-[120px]">{pkg.title}</h4>
                             <span className="text-[9px] font-bold text-secondary">₹{pkg.price.toLocaleString()}</span>
                           </div>
-                          <button 
+                          <button
                             onClick={() => toggleCompare(pkg.id)}
                             className="hover:text-error transition-colors ml-1 p-0.5"
                           >
@@ -642,13 +915,13 @@ export default function PackageListContent() {
                   {/* Right: Drawer Actions */}
                   <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
                     <Link href="/compare">
-                      <button 
+                      <button
                         className="bg-primary text-on-primary px-6 py-2.5 rounded-lg text-xs font-bold hover:bg-primary-container transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                       >
                         Compare Now ({comparedPackages.length}) <ArrowRight size={14} />
                       </button>
                     </Link>
-                    <button 
+                    <button
                       onClick={() => {
                         comparedPackages.forEach(p => toggleCompare(p.id));
                       }}

@@ -100,7 +100,7 @@ export default function TrustStats() {
         {/* Top Header Text */}
         <div className="space-y-1 z-10 relative mb-5 text-center">
           <span className="text-[#E9A227] font-bold text-[11px] sm:text-[12px] uppercase tracking-widest block">
-            DharmaYatra Trust
+            OneJourney Trust
           </span>
           <h2 className="text-lg sm:text-[22px] md:text-[24px] font-extrabold text-[#062E4F] font-display leading-tight">
             Trusted by Thousands of Pilgrims Across India

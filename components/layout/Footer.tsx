@@ -86,7 +86,7 @@ export default function Footer() {
           <Link href="/">
             <div className="font-headline-lg text-secondary-fixed flex items-center gap-2 cursor-pointer">
               <span className="material-symbols-outlined text-[32px] icon-fill">temple_hindu</span>
-              <span className="font-bold text-2xl font-display">DharmaYatra</span>
+              <span className="font-bold text-2xl font-display">OneJourney</span>
             </div>
           </Link>
           <p className="text-primary-fixed/80 leading-relaxed max-w-sm">
@@ -164,7 +164,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-2">
               <Mail size={14} />
-              <span>support@dharmayatra.com</span>
+              <span>support@onejourney.com</span>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function Footer() {
 
       {/* Copyright border */}
       <div className="border-t border-primary-fixed-variant/10 pt-8 max-w-container-max mx-auto px-margin-mobile md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-primary-fixed/60 text-sm">
-        <p>© 2026 DharmaYatra Pilgrimage Services. All rights reserved.</p>
+        <p>© 2026 OneJourney. All Rights Reserved.</p>
         <div className="flex gap-4">
           <a href="#" className="hover:text-primary-fixed transition-colors">Privacy Policy</a>
           <span>•</span>

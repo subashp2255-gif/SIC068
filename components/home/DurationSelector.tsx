@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, KeyboardEvent } from "react";
 import { Clock, ChevronDown } from "lucide-react";
+import Popover from "@/components/ui/Popover";
 
 interface Props {
   value: string;
@@ -20,16 +20,6 @@ export default function DurationSelector({ value, onChange }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const selectedLabel = DURATIONS.find(d => d.value === value)?.label || "";
 
   const handleSelect = (val: string) => {
@@ -37,51 +27,63 @@ export default function DurationSelector({ value, onChange }: Props) {
     setIsOpen(false);
   };
 
+  const handleTriggerKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  };
+
   return (
-    <div className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors text-left h-full justify-center group cursor-pointer" 
-         ref={containerRef}
-         onClick={() => setIsOpen(true)}>
-      <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer">Duration</label>
-      <div className="flex items-center gap-2">
-        <Clock size={18} className="text-primary flex-shrink-0" />
-        <div className="flex-grow font-body-md text-[15px] truncate text-on-surface">
-          {selectedLabel || <span className="text-outline-variant">Any Duration</span>}
+    <>
+      <div 
+        className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors text-left h-full justify-center group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E9A227]" 
+        ref={containerRef}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
+        tabIndex={0}
+        role="combobox"
+        aria-expanded={isOpen}
+      >
+        <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer select-none">Duration</label>
+        <div className="flex items-center gap-2">
+          <Clock size={18} className="text-primary flex-shrink-0" />
+          <div className="flex-grow font-body-md text-[15px] truncate text-on-surface select-none">
+            {selectedLabel || <span className="text-outline-variant">Any Duration</span>}
+          </div>
+          <ChevronDown size={16} className={`text-outline transition-transform duration-300 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
         </div>
-        <ChevronDown size={16} className={`text-outline transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-[calc(100%+8px)] left-0 w-full md:w-[240px] bg-surface rounded-xl shadow-level-2 border border-outline-variant/20 z-50 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+      <Popover
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        anchorRef={containerRef}
+        mobileTitle="Select Duration"
+        className="w-full md:w-[280px]"
+      >
+        <div className="flex flex-col bg-white">
+          <button
+            type="button"
+            onClick={() => handleSelect("")}
+            className={`w-full text-left px-5 py-4 hover:bg-surface-container-lowest transition-colors border-b border-outline-variant/15
+              ${value === "" ? "bg-blue-50/50 text-primary font-bold" : "text-on-surface font-medium"}`}
           >
-            <div className="flex flex-col py-2">
-              <button
-                type="button"
-                onClick={() => handleSelect("")}
-                className={`w-full text-left px-4 py-3 hover:bg-surface-container transition-colors text-sm ${value === "" ? "font-bold text-primary bg-surface-container-low" : "text-on-surface"}`}
-              >
-                Any Duration
-              </button>
-              {DURATIONS.map((dur) => (
-                <button
-                  key={dur.value}
-                  type="button"
-                  onClick={() => handleSelect(dur.value)}
-                  className={`w-full text-left px-4 py-3 hover:bg-surface-container transition-colors text-sm ${value === dur.value ? "font-bold text-primary bg-surface-container-low" : "text-on-surface"}`}
-                >
-                  {dur.label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            Any Duration
+          </button>
+          {DURATIONS.map((dur) => (
+            <button
+              key={dur.value}
+              type="button"
+              onClick={() => handleSelect(dur.value)}
+              className={`w-full text-left px-5 py-4 hover:bg-surface-container-lowest transition-colors min-h-[48px]
+                ${value === dur.value ? "bg-blue-50/50 text-primary font-bold" : "text-on-surface font-medium"}`}
+            >
+              {dur.label}
+            </button>
+          ))}
+        </div>
+      </Popover>
+    </>
   );
 }

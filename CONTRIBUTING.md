@@ -1,4 +1,4 @@
-# Contributing to DharmaYatra
+# Contributing to OneJourney
 
 Thank you for contributing to our hackathon project! To maintain a clean and reliable codebase, please adhere to the following guidance:
 

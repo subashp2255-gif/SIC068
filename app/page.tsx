@@ -34,6 +34,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAssetPath } from "@/lib/animations";
 import HeroSection from "@/components/home/HeroSection";
 import TrustStats from "@/components/home/TrustStats";
+import DestinationsShowcase from "@/components/home/DestinationsShowcase";
 
 export default function Home() {
   const { setEnquireOpen, setEnquirePackageId } = useApp();
@@ -125,6 +126,9 @@ export default function Home() {
               </div>
             </StaggerContainer>
           </section>
+
+          {/* 3b. Local Tourist Destinations Showcase Section */}
+          <DestinationsShowcase />
 
           {/* 4. Specialized Elder Care Section */}
           <section className="w-full bg-white py-20 border-y border-slate-200">
@@ -386,7 +390,7 @@ export default function Home() {
                       {[...Array(5)].map((_, i) => <Star key={i} size={15} className="fill-[#E9A227] text-[#E9A227]" />)}
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      &quot;We were very anxious about traveling to Rameswaram because of my arthritis. DharmaYatra took care of everything—pre-arranged wheelchairs, zero walking in queues, and hotel just steps from the temple. A blessed experience!&quot;
+                      &quot;We were very anxious about traveling to Rameswaram because of my arthritis. OneJourney took care of everything—pre-arranged wheelchairs, zero walking in queues, and hotel just steps from the temple. A blessed experience!&quot;
                     </p>
                   </div>
                   <div className="flex items-center gap-3 border-t border-slate-100 pt-3">

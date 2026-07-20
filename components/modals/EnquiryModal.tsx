@@ -217,7 +217,7 @@ export default function EnquiryModal() {
                       Yatra Enquiry Submitted!
                     </h4>
                     <p className="text-on-surface-variant font-body-sm text-sm max-w-sm">
-                      Thank you for contacting DharmaYatra. A dedicated elder-care guide will call you within 2 hours to curate your customized sacred itinerary.
+                      Thank you for contacting OneJourney. A dedicated elder-care guide will call you within 2 hours to curate your customized sacred itinerary.
                     </p>
                     <button
                       onClick={() => setEnquireOpen(false)}

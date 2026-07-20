@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, KeyboardEvent } from "react";
 import { Calendar, ChevronDown, Sparkles } from "lucide-react";
+import Popover from "@/components/ui/Popover";
 
 interface Props {
   value: string;
@@ -13,33 +13,23 @@ export default function MonthSelector({ value, onChange }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const generateMonths = () => {
     const months = [];
     const date = new Date();
-    // Start from next month to show upcoming 8 months
+    // Start from next month to show upcoming 10 months
     date.setMonth(date.getMonth() + 1);
     
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 10; i++) {
       const monthName = date.toLocaleString('default', { month: 'long' });
       const year = date.getFullYear();
-      const value = `${monthName.toLowerCase()}-${year}`;
+      const val = `${monthName.toLowerCase()}-${year}`;
       const label = `${monthName} ${year}`;
       
       // Mark specific months as recommended (e.g., Oct, Nov, Feb)
       const m = date.getMonth();
       const isRecommended = m === 9 || m === 10 || m === 1; // Oct, Nov, Feb (0-indexed)
 
-      months.push({ value, label, isRecommended });
+      months.push({ value: val, label, isRecommended });
       date.setMonth(date.getMonth() + 1);
     }
     return months;
@@ -53,56 +43,87 @@ export default function MonthSelector({ value, onChange }: Props) {
     setIsOpen(false);
   };
 
+  const handleTriggerKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  };
+
   return (
-    <div className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors text-left h-full justify-center group cursor-pointer" 
-         ref={containerRef}
-         onClick={() => setIsOpen(true)}>
-      <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer">Travel Month</label>
-      <div className="flex items-center gap-2">
-        <Calendar size={18} className="text-primary flex-shrink-0" />
-        <div className="flex-grow font-body-md text-[15px] truncate text-on-surface">
-          {selectedLabel || <span className="text-outline-variant">Any Month</span>}
+    <>
+      <div 
+        className="relative flex flex-col p-4 hover:bg-surface-container-low transition-colors text-left h-full justify-center group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E9A227]" 
+        ref={containerRef}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
+        tabIndex={0}
+        role="combobox"
+        aria-expanded={isOpen}
+      >
+        <label className="font-label-bold text-[12px] uppercase tracking-wider text-outline mb-1 cursor-pointer select-none">Travel Month</label>
+        <div className="flex items-center gap-2">
+          <Calendar size={18} className="text-primary flex-shrink-0" />
+          <div className="flex-grow font-body-md text-[15px] truncate text-on-surface select-none">
+            {selectedLabel || <span className="text-outline-variant">Any Month</span>}
+          </div>
+          <ChevronDown size={16} className={`text-outline transition-transform duration-300 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
         </div>
-        <ChevronDown size={16} className={`text-outline transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-[calc(100%+8px)] left-0 w-full md:w-[320px] bg-surface rounded-xl shadow-level-2 border border-outline-variant/20 z-50 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+      <Popover
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        anchorRef={containerRef}
+        mobileTitle="Select Travel Month"
+        className="w-full md:w-[340px]"
+      >
+        <div className="flex flex-col bg-white">
+          <button
+            type="button"
+            onClick={() => handleSelect("")}
+            className={`w-full flex items-center justify-between p-4 border-b border-outline-variant/15 text-left transition-colors min-h-[48px]
+              ${value === "" ? "bg-blue-50/50 text-primary font-bold" : "hover:bg-surface-container-lowest text-on-surface font-medium"}
+            `}
           >
-            <div className="grid grid-cols-2 gap-2 p-3">
-              {monthsList.map((month) => (
-                <button
-                  key={month.value}
-                  type="button"
-                  onClick={() => handleSelect(month.value)}
-                  className={`flex flex-col items-start p-3 rounded-lg border transition-colors ${
-                    value === month.value
-                      ? "bg-primary-container/10 border-primary text-primary"
-                      : "border-transparent hover:bg-surface-container hover:border-outline-variant/30 text-on-surface"
-                  }`}
-                >
-                  <span className="text-sm font-semibold">{month.label.split(' ')[0]}</span>
-                  <div className="flex justify-between items-center w-full mt-1">
-                    <span className="text-xs text-outline-variant">{month.label.split(' ')[1]}</span>
-                    {month.isRecommended && (
-                      <span className="text-[10px] flex items-center text-secondary font-bold" title="Recommended Season">
-                        <Sparkles size={12} className="mr-0.5" /> Best
+            Flexible Dates
+          </button>
+          
+          <div className="p-3">
+            <div className="grid grid-cols-2 gap-2">
+              {monthsList.map((month) => {
+                const isSelected = value === month.value;
+                return (
+                  <button
+                    key={month.value}
+                    type="button"
+                    onClick={() => handleSelect(month.value)}
+                    className={`flex flex-col items-start p-3 rounded-xl border transition-colors min-h-[48px] ${
+                      isSelected
+                        ? "bg-primary-container/10 border-[#E9A227] text-primary"
+                        : "border-outline-variant/20 hover:bg-surface-container-low hover:border-outline-variant/40 text-on-surface"
+                    }`}
+                  >
+                    <span className={`text-sm ${isSelected ? "font-bold" : "font-semibold"}`}>
+                      {month.label.split(' ')[0]}
+                    </span>
+                    <div className="flex justify-between items-center w-full mt-1">
+                      <span className={`text-[11px] ${isSelected ? "text-primary/80" : "text-outline-variant"}`}>
+                        {month.label.split(' ')[1]}
                       </span>
-                    )}
-                  </div>
-                </button>
-              ))}
+                      {month.isRecommended && (
+                        <span className="text-[10px] flex items-center text-secondary font-bold" title="Recommended Season">
+                          <Sparkles size={12} className="mr-0.5" /> Best
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          </div>
+        </div>
+      </Popover>
+    </>
   );
 }

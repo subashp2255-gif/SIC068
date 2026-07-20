@@ -6,7 +6,6 @@ import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import PackageSearch from "./PackageSearch";
 import HeroTrustRow from "./HeroTrustRow";
-import ScrollIndicator from "./ScrollIndicator";
 import { getAssetPath } from "@/lib/animations";
 import { useApp } from "@/context/AppContext";
 
@@ -74,46 +73,58 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* Two-line Heading (refactored for sizing and height) */}
-        <div className="flex flex-col items-center">
-          <div className="overflow-hidden">
-            <motion.h1
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: "0%" }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="text-white text-[32px] sm:text-[40px] md:text-[50px] lg:text-[60px] font-display font-[800] leading-[1.08] drop-shadow-md text-balance"
+        {/* Headline */}
+        <div className="flex flex-col items-center max-w-[960px]">
+          <h1 className="text-[32px] sm:text-[42px] md:text-[52px] lg:text-[62px] font-display font-[800] leading-[1.12] drop-shadow-md text-center">
+            {/* "One Journey" with Golden Mask Reveal */}
+            <span className="relative inline-block text-[#F7C873] me-2 sm:me-3">
+              <motion.span
+                initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", opacity: 0 }}
+                animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="inline-block"
+              >
+                One Journey
+              </motion.span>
+            </span>
+
+            {/* "That Brings Us Together." Fade-up */}
+            <motion.span
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="text-white inline-block"
             >
-              Plan Your Sacred Journey
-            </motion.h1>
-          </div>
-          <div className="overflow-hidden mt-1">
-            <motion.h1
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: "0%" }}
-              transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[#FFF8E8] text-[32px] sm:text-[40px] md:text-[50px] lg:text-[60px] font-display font-[800] leading-[1.08] drop-shadow-md text-balance relative inline-block"
-            >
-              With Complete <span className="relative inline-block z-10 text-[#F7C873]">Confidence
-                <motion.span 
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
-                  className="absolute bottom-1 lg:bottom-2 left-0 h-[4px] lg:h-[5px] bg-[#E9A227] -z-10 rounded-full opacity-60" 
-                />
-              </span>
-            </motion.h1>
-          </div>
+              That Brings Us Together.
+            </motion.span>
+          </h1>
         </div>
 
-        {/* Supporting Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="text-[#FFF8E8]/90 font-body-lg text-[18px] md:text-[20px] max-w-[650px] leading-relaxed drop-shadow-md font-medium"
-        >
-          Accessible stays, Satvik meals and dependable medical support—carefully arranged for a comfortable and meaningful pilgrimage.
-        </motion.p>
+        {/* Supporting Description with Staggered Entrance */}
+        <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#FFF8E8]/90 font-body-lg text-[18px] md:text-[20px] max-w-[650px] leading-relaxed drop-shadow-md font-medium text-center">
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Many faiths.
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Many paths.
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.34, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[#F7C873] font-semibold"
+          >
+            One journey.
+          </motion.span>
+        </div>
 
         {/* Trust Row */}
         <HeroTrustRow />
@@ -149,8 +160,6 @@ export default function HeroSection() {
         </motion.div>
 
       </div>
-
-      <ScrollIndicator />
     </section>
   );
 }

@@ -1,23 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import TrustBar from "./TrustBar";
 import MainNavbar from "./MainNavbar";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40) {
+      const currentY = window.scrollY;
+      if (currentY > 40) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
+
+      // Detect fast downward scroll to compact navbar slightly
+      if (currentY > 100 && currentY - lastScrollY.current > 15) {
+        setIsCompact(true);
+      } else if (lastScrollY.current - currentY > 5 || currentY <= 70) {
+        setIsCompact(false);
+      }
+
+      lastScrollY.current = currentY;
     };
-    window.addEventListener("scroll", handleScroll);
+
+    // Initialize state on mount
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -25,15 +41,12 @@ export default function Navbar() {
   const showTransparent = isHomepage && !isScrolled;
 
   return (
-    <div
-      className={`w-full z-40 transition-all duration-300 ${
-        showTransparent
-          ? "absolute top-0 left-0 bg-transparent"
-          : "sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm"
-      }`}
-    >
-      <TrustBar showTransparent={showTransparent} />
-      <MainNavbar showTransparent={showTransparent} />
-    </div>
+    <>
+      <div className="fixed top-0 left-0 right-0 z-50 transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]">
+        <TrustBar showTransparent={showTransparent} isScrolled={isScrolled} />
+        <MainNavbar showTransparent={showTransparent} isCompact={isCompact} />
+      </div>
+      {!isHomepage && <div className="h-[114px] w-full shrink-0" aria-hidden="true" />}
+    </>
   );
 }
