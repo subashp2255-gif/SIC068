@@ -54,29 +54,7 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
     }
   };
 
-  // Mock details based on ID
-  const getSeatsRemaining = () => {
-    if (pkg.id === "divine-south") return 8;
-    if (pkg.id === "awadh-kashi") return 14;
-    if (pkg.id === "jyotirlinga-gujarat") return 5;
-    return 12;
-  };
 
-  const getUrgencyText = () => {
-    if (pkg.id === "divine-south") return "Early Bird 15% Off";
-    if (pkg.id === "jyotirlinga-gujarat") return "Festival Yatra Special";
-    return "Limited Seats Open";
-  };
-
-  const getBestMonth = () => {
-    if (pkg.region === "South India") return "Oct - Mar";
-    if (pkg.region === "North India") return "Nov - Feb";
-    return "Sep - Apr";
-  };
-
-  const getDifficulty = () => {
-    return pkg.seniorFriendly ? "Easy Paced" : "Moderate Paced";
-  };
 
   const toggleTab = (tab: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -208,68 +186,57 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
           </div>
         </div>
 
-        {/* Trust Row */}
-        <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-left">
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-            <Check size={12} className="text-emerald-600" /> Verified Stays
+        {/* Destination-Specific Benefits (Max 2) */}
+        {pkg.packageBenefits && pkg.packageBenefits.length > 0 && (
+          <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 text-left">
+            {pkg.packageBenefits.slice(0, 2).map((benefit) => (
+              <div key={benefit} className="flex items-center gap-1 text-[11px] font-bold text-slate-700 line-clamp-1">
+                <Check size={12} className="text-emerald-600 shrink-0 stroke-[2.5]" /> {benefit}
+              </div>
+            ))}
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-            <Check size={12} className="text-emerald-600" /> Expert Guides
-          </div>
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-            <Check size={12} className="text-emerald-600" /> No Hidden Fees
-          </div>
-          <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-            <Check size={12} className="text-emerald-600" /> GST Compliant
-          </div>
-        </div>
+        )}
 
         {/* Quick Info Pills */}
-        <div className="flex flex-wrap gap-1.5 select-none">
-          <span className="inline-flex items-center gap-1 bg-[#FFF8E8] text-[#E8A63B] border border-[#E8A63B]/20 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <CalendarDays size={11} /> {pkg.bestSeason || getBestMonth()}
+        <div className="flex flex-wrap gap-1.5 select-none font-sans font-bold">
+          <span className="inline-flex items-center gap-1 bg-[#FFF8E8] text-[#E8A63B] border border-[#E8A63B]/20 px-2.5 py-1 rounded-full text-[11px]">
+            <CalendarDays size={11} /> {pkg.bestSeason}
           </span>
-          <span className="inline-flex items-center gap-1 bg-slate-50 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <ActivityIcon size={11} /> {pkg.pace || getDifficulty()}
+          <span className="inline-flex items-center gap-1 bg-slate-50 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full text-[11px]">
+            <ActivityIcon size={11} /> {pkg.pace}
           </span>
-          <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            <Users size={11} /> {pkg.travellerType || "Family Care"}
-          </span>
+          {pkg.travellerTypes && pkg.travellerTypes.slice(0, 2).map((type) => (
+            <span key={type} className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full text-[11px]">
+              <Users size={11} /> {type}
+            </span>
+          ))}
         </div>
 
-        {/* Circular Inclusions Tray with Custom Tooltips */}
-        <div className="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100 select-none">
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow border-r border-slate-200/50">
-            <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">hotel</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase">Hotel</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
-              3-Star/Ashram stay near temple
-            </span>
-          </div>
-
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow border-r border-slate-200/50">
-            <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">restaurant</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase">Meals</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
-              Hygienic Pure Veg/Satvik meals
-            </span>
-          </div>
-
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow border-r border-slate-200/50">
-            <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">directions_bus</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase">Transit</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
-              AC SUV / Private Luxury Coach
-            </span>
-          </div>
-
-          <div className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow">
-            <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">person_pin_circle</span>
-            <span className="text-[9px] font-bold text-slate-500 uppercase">Guide</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
-              Dedicated spiritual tour guide
-            </span>
-          </div>
+        {/* Dynamic Inclusions Tray (Max 5) */}
+        <div className="flex justify-start items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100 select-none divide-x divide-slate-200/50">
+          {[
+            { key: "hotel" as const, icon: "hotel", label: "Hotel", tooltip: "Comfortable hotel stay" },
+            { key: "meals" as const, icon: "restaurant", label: "Meals", tooltip: "Hygienic meals included" },
+            { key: "transit" as const, icon: "directions_bus", label: "Transit", tooltip: "AC transit included" },
+            { key: "guide" as const, icon: "person_pin_circle", label: "Guide", tooltip: "Tour guide assistance" },
+            { key: "entryPasses" as const, icon: "confirmation_number", label: "Passes", tooltip: "Entry passes / VIP tickets" },
+            { key: "medicalSupport" as const, icon: "medical_services", label: "Medical", tooltip: "Medical & safety support" },
+            { key: "localExperience" as const, icon: "explore", label: "Activity", tooltip: "Local guided experiences" },
+          ]
+            .filter((item) => pkg.inclusions[item.key])
+            .slice(0, 5)
+            .map((item) => (
+              <div 
+                key={item.key} 
+                className="relative group/tooltip flex flex-col items-center gap-0.5 flex-grow flex-1 px-1"
+              >
+                <span className="material-symbols-outlined text-[18px] text-[#0B3A63] icon-fill">{item.icon}</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">{item.label}</span>
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-[10px] bg-slate-900 text-white rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow">
+                  {item.tooltip}
+                </span>
+              </div>
+            ))}
         </div>
 
         {/* Social Proof */}
@@ -345,19 +312,33 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
               >
                 {activeTab === "highlights" && (
                   <ul className="list-disc pl-4 space-y-1">
-                    <li>VIP Temple Darshan with coordinated fast-track guide assistance.</li>
-                    <li>Pure vegetarian Satvik meals at verified clean dining establishments.</li>
-                    <li>AC private SUVs with custom first-aid/luggage assistance.</li>
+                    {pkg.highlights && pkg.highlights.length > 0 ? (
+                      pkg.highlights.map((h, i) => <li key={i}>{h}</li>)
+                    ) : (
+                      <li>Explore the best spots at {pkg.destinationName}.</li>
+                    )}
                   </ul>
                 )}
                 {activeTab === "timings" && (
-                  <p>Morning prayers are coordinated between 5:30 AM and 11:30 AM. Sunset Aarti assemblies begin by 6:00 PM with coordinated seats reserved for elders.</p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    {pkg.itinerarySummary && pkg.itinerarySummary.length > 0 ? (
+                      pkg.itinerarySummary.map((h, i) => <li key={i}>{h}</li>)
+                    ) : (
+                      <li>Sightseeing itinerary planned beautifully.</li>
+                    )}
+                  </ul>
                 )}
                 {activeTab === "tips" && (
-                  <p>Carry valid government ID cards. Traditional decency wear is recommended. Avoid carrying electronics inside corridors.</p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    {pkg.tips && pkg.tips.length > 0 ? (
+                      pkg.tips.map((h, i) => <li key={i}>{h}</li>)
+                    ) : (
+                      <li>Follow all local destination guidelines.</li>
+                    )}
+                  </ul>
                 )}
                 {activeTab === "policy" && (
-                  <p>Get a 100% full refund on cancellations made up to 15 days before the departure. Rescheduling options are fully flexible.</p>
+                  <p>{pkg.cancellationSummary || "Standard 15 days cancellation policy applies."}</p>
                 )}
               </motion.div>
             )}

@@ -81,7 +81,7 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
 
   // Price calculations
   const pricePerPerson = pkg.price;
-  const totalPrice = (adults + seniors) * pricePerPerson;
+  const totalPrice = pricePerPerson != null ? (adults + seniors) * pricePerPerson : null;
 
   return (
     <>
@@ -184,53 +184,27 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   
-                  <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 bg-tertiary-container/30 text-tertiary rounded-full flex items-center justify-center shrink-0">
-                      <Check size={14} className="stroke-[3]" />
-                    </div>
-                    <div>
-                      <h4 className="font-label-bold text-sm text-primary font-bold">Accommodations Stay</h4>
-                      <p className="text-xs text-on-surface-variant mt-0.5">
-                        {pkg.inclusions.hotel ? String(pkg.inclusions.hotel) : "Ashram stay pre-booked"} Stays closer to temples.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 bg-tertiary-container/30 text-tertiary rounded-full flex items-center justify-center shrink-0">
-                      <Check size={14} className="stroke-[3]" />
-                    </div>
-                    <div>
-                      <h4 className="font-label-bold text-sm text-primary font-bold">Vegetarian Meals</h4>
-                      <p className="text-xs text-on-surface-variant mt-0.5">
-                        {pkg.inclusions.meals ? String(pkg.inclusions.meals) : "Pure Vegetarian food"} served at hygienically run kitchens.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 bg-tertiary-container/30 text-tertiary rounded-full flex items-center justify-center shrink-0">
-                      <Check size={14} className="stroke-[3]" />
-                    </div>
-                    <div>
-                      <h4 className="font-label-bold text-sm text-primary font-bold">AC Travel Transit</h4>
-                      <p className="text-xs text-on-surface-variant mt-0.5">
-                        {pkg.inclusions.transit ? String(pkg.inclusions.transit) : "AC SUV/Bus transport"} with regular rest breaks.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-7 h-7 bg-tertiary-container/30 text-tertiary rounded-full flex items-center justify-center shrink-0">
-                      <Check size={14} className="stroke-[3]" />
-                    </div>
-                    <div>
-                      <h4 className="font-label-bold text-sm text-primary font-bold">Dedicated Local Guide</h4>
-                      <p className="text-xs text-on-surface-variant mt-0.5">
-                        {pkg.inclusions.guide ? String(pkg.inclusions.guide) : "Devoted travel coordinator"} trained in first-aid and elder care.
-                      </p>
-                    </div>
-                  </div>
+                  {[
+                    { key: "hotel" as const, title: "Accommodations Stay", desc: "Comfortable pre-screened hotel or resort stay closer to main attractions." },
+                    { key: "meals" as const, title: "Hygienic Meals Included", desc: "Hygienic pure vegetarian or Satvik meals served at verified clean dining establishments." },
+                    { key: "transit" as const, title: "AC Travel Transit", desc: "AC private SUVs or luxury coaches for transfers, with regular rest breaks." },
+                    { key: "guide" as const, title: "Dedicated Local Guide", desc: "Dedicated professional guide trained in local history, culture, and safety." },
+                    { key: "entryPasses" as const, title: "Entry-Pass Assistance", desc: "Pre-arranged tickets, fast-track monument entry, or VIP Darshan passes." },
+                    { key: "medicalSupport" as const, title: "Medical & Safety Support", desc: "On-board first-aid kits, dynamic route check-ins, and emergency support." },
+                    { key: "localExperience" as const, title: "Local Guided Experience", desc: "Immersive local activities, houseboat cruises, cultural walks, or sightseeing sessions." },
+                  ]
+                    .filter(item => pkg.inclusions[item.key])
+                    .map(item => (
+                      <div key={item.key} className="flex items-start gap-3">
+                        <div className="w-7 h-7 bg-tertiary-container/30 text-tertiary rounded-full flex items-center justify-center shrink-0">
+                          <Check size={14} className="stroke-[3]" />
+                        </div>
+                        <div>
+                          <h4 className="font-label-bold text-sm text-primary font-bold">{item.title}</h4>
+                          <p className="text-xs text-on-surface-variant mt-0.5">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
 
                 </div>
               </div>
@@ -253,18 +227,20 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                     
                     // Detailed mock itinerary helper details
                     const details = {
-                      morning: "VIP Temple Darshan assembly. Assisted fast-track queue entry coordinated by our care guides.",
-                      afternoon: "Travel via air-conditioned group transit. Regular rest stops at certified hygienic Satvik restaurants.",
-                      evening: "Attend sunset Aarti prayers / Hotel check-in. Evening spiritual discourse or group relaxation session.",
-                      timings: "Darshan Pooja: 6:00 AM - 11:30 AM | Aarti prayers: 6:30 PM",
-                      food: "100% Satvik vegetarian meals prepared with minimal spices (Breakfast, Lunch, Dinner included)",
-                      accommodation: `${pkg.inclusions.hotel ? String(pkg.inclusions.hotel) : "Premium Hotel"} (Fully wheelchair accessible, elevators, western-style bathrooms, hot water)`,
-                      travelMode: `${pkg.inclusions.transit ? String(pkg.inclusions.transit) : "Luxury Coach"} with dedicated first-aid assistance`,
-                      distance: "Approx. 45 km to 120 km (depending on daily religious schedule)",
-                      weather: "Comfortable yatra weather: 22°C - 26°C with low humidity",
-                      dressCode: "Traditional / decent dress (Modest clothing, sari or dhoti/kurta). Slip-on shoes recommended.",
-                      thingsToCarry: "Yatra registration card, sun protection, personal regular medication, light shawl",
-                      walkingLevel: pkg.seniorFriendly ? "Elder-Friendly (Slow pace, ramps, flat surfaces, zero steep stairs)" : "Moderate Paced (Gentle walks, help guides on stand-by)"
+                      morning: day.schedule?.morning?.description || "",
+                      afternoon: day.schedule?.afternoon?.description || "",
+                      evening: day.schedule?.evening?.description || "",
+                      timings: day.details?.importantTimings || "",
+                      food: day.details?.meals || "",
+                      accommodation: day.details?.stay || "",
+                      travelMode: day.details?.transport || "",
+                      weather: day.details?.weather || "",
+                      dressCode: day.details?.dressCode || "",
+                      thingsToCarry: day.details?.packingSuggestions || "",
+                      walkingLevel: day.details?.walkingLevel || "",
+                      accessibility: day.details?.accessibility || "",
+                      visitorNote: day.details?.visitorNote || "",
+                      travelDuration: day.details?.travelDuration || ""
                     };
 
                     return (
@@ -306,7 +282,7 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                               >
                                 <div className="p-5 border-t border-slate-100 space-y-4 bg-white text-sm">
                                   <p className="text-slate-700 leading-relaxed text-[14.5px]">
-                                    {day.description}
+                                    {day.overview || (day as any).description}
                                   </p>
 
                                   {/* Multi-Period Timeline Segments */}
@@ -329,41 +305,64 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2">
                                     <div className="space-y-2">
                                       <div className="flex justify-between py-1 border-b border-slate-100">
-                                        <span className="text-slate-500 font-semibold">Temple Timings:</span>
-                                        <span className="text-slate-800 font-bold">{details.timings}</span>
+                                        <span className="text-slate-500 font-semibold">{pkg.category === "Pilgrimage" ? "Temple Timings:" : "Activity Timings:"}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.timings}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
-                                        <span className="text-slate-500 font-semibold">Satvik Meals:</span>
-                                        <span className="text-slate-800 font-bold">{details.food}</span>
+                                        <span className="text-slate-500 font-semibold">{pkg.category === "Pilgrimage" ? "Satvik Meals:" : "Meals Provided:"}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.food}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Travel Transit:</span>
-                                        <span className="text-slate-800 font-bold">{details.travelMode}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.travelMode}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Walking Level:</span>
-                                        <span className="text-[#E9A227] font-bold">{details.walkingLevel}</span>
+                                        <span className="text-[#E9A227] font-bold text-right ml-2">{details.walkingLevel}</span>
                                       </div>
+                                      {details.travelDuration && (
+                                        <div className="flex justify-between py-1 border-b border-slate-100">
+                                          <span className="text-slate-500 font-semibold">Travel Duration:</span>
+                                          <span className="text-slate-800 font-bold text-right ml-2">{details.travelDuration}</span>
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="space-y-2">
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Stay Hotel:</span>
-                                        <span className="text-slate-800 font-bold">{details.accommodation}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.accommodation}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Daily Weather:</span>
-                                        <span className="text-slate-800 font-bold">{details.weather}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.weather}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Dress Code:</span>
-                                        <span className="text-slate-800 font-bold">{details.dressCode}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.dressCode}</span>
                                       </div>
                                       <div className="flex justify-between py-1 border-b border-slate-100">
                                         <span className="text-slate-500 font-semibold">Suggested Packing:</span>
-                                        <span className="text-slate-800 font-bold">{details.thingsToCarry}</span>
+                                        <span className="text-slate-800 font-bold text-right ml-2">{details.thingsToCarry}</span>
                                       </div>
+                                      {details.accessibility && (
+                                        <div className="flex justify-between py-1 border-b border-slate-100">
+                                          <span className="text-slate-500 font-semibold">Accessibility:</span>
+                                          <span className="text-slate-800 font-bold text-right ml-2">{details.accessibility}</span>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
+
+                                  {/* Visitor Note Banner */}
+                                  {details.visitorNote && (
+                                    <div className="bg-[#FFF8E8] border border-[#E9A227]/20 p-3.5 rounded-xl text-xs flex gap-2 items-start text-left select-none mt-3">
+                                      <span className="material-symbols-outlined text-[16px] text-[#E9A227] shrink-0 mt-0.5">info</span>
+                                      <p className="text-slate-700 leading-normal font-semibold">
+                                        <span className="font-bold text-[#0B3A63] mr-1">Visitor Note:</span>
+                                        {details.visitorNote}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               </motion.div>
                             )}
@@ -386,9 +385,9 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                       <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Starting Price</span>
                       <div className="flex items-baseline gap-1 mt-1">
                         <span className="font-headline-lg text-[#062E4F] text-3xl font-extrabold font-display">
-                          ₹{pricePerPerson.toLocaleString()}
+                          {pricePerPerson != null ? `₹${pricePerPerson.toLocaleString()}` : "Price on Request"}
                         </span>
-                        <span className="text-xs font-semibold text-slate-500">/ person</span>
+                        {pricePerPerson != null && <span className="text-xs font-semibold text-slate-500">/ person</span>}
                       </div>
                     </div>
                     {/* Trust guarantee badge */}
@@ -449,60 +448,72 @@ export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps)
                   </div>
 
                   {/* Pricing Breakdown Cards */}
-                  <div className="bg-slate-50 p-5 rounded-2xl space-y-3 border border-slate-100">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block border-b border-slate-200 pb-1.5">Cost breakdown</span>
-                    
-                    <div className="space-y-1.5 text-xs text-slate-600 font-medium">
-                      <div className="flex justify-between">
-                        <span>Base Package cost:</span>
-                        <span>₹{(pricePerPerson * 0.5 * (adults + seniors)).toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Hotel Stay share:</span>
-                        <span>₹{(pricePerPerson * 0.2 * (adults + seniors)).toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Transport & Guides:</span>
-                        <span>₹{(pricePerPerson * 0.25 * (adults + seniors)).toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>VIP entry passes & GST:</span>
-                        <span>₹{(pricePerPerson * 0.05 * (adults + seniors)).toLocaleString()}</span>
-                      </div>
-                    </div>
-
-                    {/* Discounts section */}
-                    {(seniors > 0 || (adults + seniors >= 4)) && (
-                      <div className="space-y-1.5 text-xs font-semibold border-t border-slate-200 pt-2 text-emerald-700">
+                  {pricePerPerson != null && totalPrice != null ? (
+                    <div className="bg-slate-50 p-5 rounded-2xl space-y-3 border border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block border-b border-slate-200 pb-1.5">Cost breakdown</span>
+                      
+                      <div className="space-y-1.5 text-xs text-slate-600 font-medium">
                         <div className="flex justify-between">
-                          <span>Early Booking Discount:</span>
-                          <span>- ₹1,500</span>
+                          <span>Base Package cost:</span>
+                          <span>₹{(pricePerPerson * 0.5 * (adults + seniors)).toLocaleString()}</span>
                         </div>
-                        {seniors > 0 && (
-                          <div className="flex justify-between">
-                            <span>Senior citizen concession:</span>
-                            <span>- ₹{(seniors * 1000).toLocaleString()}</span>
-                          </div>
-                        )}
-                        {adults + seniors >= 4 && (
-                          <div className="flex justify-between">
-                            <span>Group booking rebate:</span>
-                            <span>- ₹2,000</span>
-                          </div>
-                        )}
+                        <div className="flex justify-between">
+                          <span>Hotel Stay share:</span>
+                          <span>₹{(pricePerPerson * 0.2 * (adults + seniors)).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Transport & Guides:</span>
+                          <span>₹{(pricePerPerson * 0.25 * (adults + seniors)).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>VIP entry passes & GST:</span>
+                          <span>₹{(pricePerPerson * 0.05 * (adults + seniors)).toLocaleString()}</span>
+                        </div>
                       </div>
-                    )}
 
-                    <div className="border-t border-slate-200 pt-3 flex justify-between text-[15px] font-bold text-[#062E4F]">
-                      <span>Final Net Price</span>
-                      <span>
-                        ₹{Math.max(
-                          0,
-                          totalPrice - 1500 - (seniors * 1000) - (adults + seniors >= 4 ? 2000 : 0)
-                        ).toLocaleString()}
-                      </span>
+                      {/* Discounts section */}
+                      {(seniors > 0 || (adults + seniors >= 4)) && (
+                        <div className="space-y-1.5 text-xs font-semibold border-t border-slate-200 pt-2 text-emerald-700">
+                          <div className="flex justify-between">
+                            <span>Early Booking Discount:</span>
+                            <span>- ₹1,500</span>
+                          </div>
+                          {seniors > 0 && (
+                            <div className="flex justify-between">
+                              <span>Senior citizen concession:</span>
+                              <span>- ₹{(seniors * 1000).toLocaleString()}</span>
+                            </div>
+                          )}
+                          {adults + seniors >= 4 && (
+                            <div className="flex justify-between">
+                              <span>Group booking rebate:</span>
+                              <span>- ₹2,000</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="border-t border-slate-200 pt-3 flex justify-between text-[15px] font-bold text-[#062E4F]">
+                        <span>Final Net Price</span>
+                        <span>
+                          ₹{Math.max(
+                            0,
+                            totalPrice - 1500 - (seniors * 1000) - (adults + seniors >= 4 ? 2000 : 0)
+                          ).toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="bg-slate-50 p-5 rounded-2xl space-y-3 border border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block border-b border-slate-200 pb-1.5">Cost breakdown</span>
+                      <p className="text-xs text-slate-500 font-medium py-2">Detailed pricing and custom cost options will be sent upon inquiry verification.</p>
+                      
+                      <div className="border-t border-slate-200 pt-3 flex justify-between text-[15px] font-bold text-[#062E4F]">
+                        <span>Final Net Price</span>
+                        <span>Price on Request</span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Booking CTA Button */}
                   <button

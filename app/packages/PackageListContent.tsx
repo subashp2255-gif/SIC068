@@ -88,21 +88,24 @@ const filterPackages = (packages: Package[], filters: PackageFilters): Package[]
     if (filters.seniorFriendlyOnly && !pkg.seniorFriendly) return false;
 
     // Wheelchair Access
-    if (filters.wheelchairOnly && !pkg.wheelchairAccess) return false;
+    if (filters.wheelchairOnly && pkg.accessibilityStatus === "Not Wheelchair Accessible") return false;
 
     // Budget
     if (pkg.price != null && pkg.price > filters.maxBudget) return false;
 
     // Meals
     if (filters.meals.length > 0) {
-      const match = filters.meals.some(m => String(pkg.inclusions.meals).toLowerCase().includes(m.toLowerCase()));
+      const match = filters.meals.some(m => {
+        if (m === "Veg") return pkg.vegMeals;
+        if (m === "Meals") return pkg.inclusions.meals;
+        return false;
+      });
       if (!match) return false;
     }
 
     // Transport
     if (filters.transports.length > 0) {
-      const match = filters.transports.some(t => String(pkg.inclusions.transit).toLowerCase().includes(t.toLowerCase()));
-      if (!match) return false;
+      if (!pkg.inclusions.transit) return false;
     }
 
     // Season
@@ -114,8 +117,17 @@ const filterPackages = (packages: Package[], filters: PackageFilters): Package[]
 
     // Traveller Type
     if (filters.travellerTypes.length > 0) {
-      const pkgType = pkg.travellerType || "";
-      const match = filters.travellerTypes.some(t => pkgType.toLowerCase().includes(t.toLowerCase()));
+      const match = filters.travellerTypes.some(t => {
+        const search = t.toLowerCase();
+        return pkg.travellerTypes.some(type => {
+          const typeLower = type.toLowerCase();
+          if (search.includes("family") && typeLower.includes("famil")) return true;
+          if (search.includes("couple") && typeLower.includes("coupl")) return true;
+          if (search.includes("solo") && typeLower.includes("solo")) return true;
+          if (search.includes("group") && typeLower.includes("group")) return true;
+          return typeLower.includes(search);
+        });
+      });
       if (!match) return false;
     }
 
@@ -360,6 +372,55 @@ export default function PackageListContent() {
                   <option>Price: High to Low</option>
                   <option>Highest Rated</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Global Trust Banner */}
+            <div className="bg-surface-container-lowest border border-outline-variant/15 rounded-xl p-4 mt-6 flex flex-wrap justify-between items-center gap-4 text-left select-none shadow-level-1">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Check size={16} className="stroke-[3]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary font-sans uppercase tracking-wide">Verified Stays</h4>
+                  <p className="text-[10.5px] text-slate-500 font-medium">Clean, pre-screened rooms</p>
+                </div>
+              </div>
+              
+              <div className="h-8 w-px bg-outline-variant/15 hidden md:block" />
+
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Check size={16} className="stroke-[3]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary font-sans uppercase tracking-wide">Expert Guides</h4>
+                  <p className="text-[10.5px] text-slate-500 font-medium">Local support & guidance</p>
+                </div>
+              </div>
+
+              <div className="h-8 w-px bg-outline-variant/15 hidden md:block" />
+
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Check size={16} className="stroke-[3]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary font-sans uppercase tracking-wide">No Hidden Fees</h4>
+                  <p className="text-[10.5px] text-slate-500 font-medium">100% transparent pricing</p>
+                </div>
+              </div>
+
+              <div className="h-8 w-px bg-outline-variant/15 hidden md:block" />
+
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Check size={16} className="stroke-[3]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-primary font-sans uppercase tracking-wide">GST Compliant</h4>
+                  <p className="text-[10.5px] text-slate-500 font-medium">Tax-registered packages</p>
+                </div>
               </div>
             </div>
 
@@ -788,7 +849,7 @@ export default function PackageListContent() {
                               {pkg.title}
                             </h4>
                             <span className="text-[10px] font-extrabold text-[#062E4F] mt-0.5 block">
-                              ₹{pkg.price.toLocaleString()}
+                              {pkg.price != null ? `₹${pkg.price.toLocaleString()}` : "Price on Request"}
                             </span>
                           </div>
                         </Link>
@@ -899,7 +960,9 @@ export default function PackageListContent() {
                           />
                           <div className="text-left">
                             <h4 className="text-[11px] font-bold text-primary line-clamp-1 max-w-[120px]">{pkg.title}</h4>
-                            <span className="text-[9px] font-bold text-secondary">₹{pkg.price.toLocaleString()}</span>
+                            <span className="text-[9px] font-bold text-secondary">
+                              {pkg.price != null ? `₹${pkg.price.toLocaleString()}` : "Price on Request"}
+                            </span>
                           </div>
                           <button
                             onClick={() => toggleCompare(pkg.id)}

@@ -27,7 +27,7 @@ export default function GroupTours() {
   // Group Tours packages (filter out packages with group tags/sizes)
   const groupPackages = mockPackages.filter((pkg) => {
     // Only return packages suited for groups/families
-    if (pkg.category !== "Family" && pkg.category !== "Heritage" && !pkg.tags.includes("Best for Families")) {
+    if (pkg.category !== "Family" && !pkg.tags.includes("Best for Families")) {
       // Allow others too but prioritize these
     }
 

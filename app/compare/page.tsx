@@ -25,6 +25,7 @@ export default function ComparePackages() {
 
   // Helper mappings for additional fields
   const getPackageTier = (pkg: Package) => {
+    if (pkg.price == null) return "Customizable Tier";
     if (pkg.price >= 35000) return "Premium Gold Tier";
     if (pkg.price >= 18000) return "VIP Silver Tier";
     return "Standard Comfort Tier";
@@ -45,7 +46,7 @@ export default function ComparePackages() {
   };
 
   const getCancellationPolicy = (pkg: Package) => {
-    if (pkg.price >= 30000) return "Free cancellation up to 72 hours before departure";
+    if (pkg.price != null && pkg.price >= 30000) return "Free cancellation up to 72 hours before departure";
     return "100% Refund within 7 days, 50% refund afterwards";
   };
 
@@ -71,11 +72,13 @@ export default function ComparePackages() {
 
   const getIncludedServices = (pkg: Package) => {
     const list = [];
-    if (pkg.inclusions.hotel) list.push(`${pkg.inclusions.hotel}`);
+    if (pkg.inclusions.hotel) list.push("Comfortable hotel stay");
     if (pkg.inclusions.meals) list.push("Pure Veg/Satvik Meals");
-    if (pkg.inclusions.transit) list.push(`${pkg.inclusions.transit}`);
+    if (pkg.inclusions.transit) list.push("AC transit coach/SUV");
     if (pkg.inclusions.guide) list.push("Spiritual Guide Services");
-    if (pkg.inclusions.darshan) list.push("VIP Special entry darshan tickets");
+    if (pkg.inclusions.entryPasses) list.push("VIP Special entry darshan tickets / Monument entry");
+    if (pkg.inclusions.medicalSupport) list.push("Emergency Medical support");
+    if (pkg.inclusions.localExperience) list.push("Local guided experiences");
     return list.join(", ");
   };
 
@@ -205,7 +208,7 @@ export default function ComparePackages() {
                         {/* Package headers */}
                         {comparedPackages.map((pkg) => {
                           // Award tags
-                          const isBestValue = pkg.price < 15000 && (pkg.rating != null && pkg.rating >= 4.8);
+                          const isBestValue = pkg.price != null && pkg.price < 15000 && (pkg.rating != null && pkg.rating >= 4.8);
                           const isMostPopular = pkg.reviewCount != null && pkg.reviewCount > 200;
                           const isBestForSeniors = pkg.seniorFriendly && pkg.wheelchairAccess;
 
@@ -254,7 +257,7 @@ export default function ComparePackages() {
                                 </h3>
                                 
                                 <span className="font-extrabold text-[#062E4F] text-xl">
-                                  ₹{pkg.price.toLocaleString()} <span className="text-[11px] font-normal text-slate-500">/person</span>
+                                  {pkg.price != null ? `₹${pkg.price.toLocaleString()}` : "Price on Request"} {pkg.price != null && <span className="text-[11px] font-normal text-slate-500">/person</span>}
                                 </span>
                               </div>
                             </th>
