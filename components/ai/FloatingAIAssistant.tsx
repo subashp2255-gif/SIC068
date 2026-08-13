@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Send, Bot, User, Minimize2, ChevronRight, PhoneCall, RefreshCw } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { easeQuint } from "@/lib/animations";
+import OneJourneyTempleIcon from "@/components/ui/OneJourneyTempleIcon";
 
 interface Message {
   id: string;
@@ -140,7 +141,7 @@ export default function FloatingAIAssistant() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="hidden sm:flex items-center gap-2 bg-[#102F4A] text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-level-2 border border-white/20"
               >
-                <Sparkles size={14} className="text-[#E6B85C] animate-pulse" />
+                <OneJourneyTempleIcon size={16} className="text-[#E6B85C]" />
                 <span>Ask OneJourney AI Travel Assistant</span>
                 <button
                   onClick={() => setShowTooltip(false)}
@@ -161,9 +162,9 @@ export default function FloatingAIAssistant() {
               whileHover={{ scale: 1.06, y: -2 }}
               whileTap={{ scale: 0.94 }}
               className="w-14 h-14 bg-gradient-to-br from-[#102F4A] to-[#1D5E85] text-white rounded-full shadow-level-3 border-2 border-[#E6B85C] flex items-center justify-center relative cursor-pointer group focus-visible:ring-2 focus-visible:ring-[#E6B85C] outline-none"
-              aria-label="Open OneJourney AI Travel Assistant"
+              aria-label={isOpen ? "Close One Journey AI Trip Planner" : "Open One Journey AI Trip Planner"}
             >
-              <Sparkles size={24} className="text-[#E6B85C] group-hover:rotate-12 transition-transform duration-300" />
+              <OneJourneyTempleIcon size={26} className="text-[#E6B85C] group-hover:drop-shadow-[0_0_8px_rgba(230,184,92,0.85)] transition-all duration-300" />
               {/* Soft Pulse Ring */}
               <span className="absolute inset-0 rounded-full border border-[#E6B85C] animate-ping opacity-30 pointer-events-none" />
             </motion.button>
@@ -189,7 +190,7 @@ export default function FloatingAIAssistant() {
             <div className="bg-gradient-to-r from-[#102F4A] to-[#1D5E85] text-white p-3.5 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-[#E6B85C]/20 border border-[#E6B85C]/40 flex items-center justify-center">
-                  <Sparkles size={16} className="text-[#E6B85C]" />
+                  <OneJourneyTempleIcon size={18} className="text-[#E6B85C]" />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm leading-tight flex items-center gap-1.5 font-display">

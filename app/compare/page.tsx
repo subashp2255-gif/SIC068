@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -16,7 +16,24 @@ export default function ComparePackages() {
   const { compareIds, toggleCompare, setEnquireOpen, setEnquirePackageId } = useApp();
   const [highlightDifferences, setHighlightDifferences] = useState(false);
 
-  const comparedPackages = mockPackages.filter((pkg) => compareIds.includes(pkg.id));
+  const [packagesList, setPackagesList] = useState<Package[]>(mockPackages);
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackagesList(data);
+        }
+      } catch (err) {
+        console.warn("Supabase compare page fetch fallback to local:", err);
+      }
+    }
+    loadPackages();
+  }, []);
+
+  const comparedPackages = packagesList.filter((pkg) => compareIds.includes(pkg.id));
 
   const handleEnquireClick = (id: string) => {
     setEnquirePackageId(id);

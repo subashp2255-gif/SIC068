@@ -1,12 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageTransition from "@/components/animations/PageTransition";
 import ScrollProgress from "@/components/animations/ScrollProgress";
 import PackageCard from "@/components/cards/PackageCard";
-import { mockPackages } from "@/data/packages";
+import { mockPackages, Package } from "@/data/packages";
 import { useApp } from "@/context/AppContext";
 import { Heart, Search, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +16,24 @@ import { easeQuint } from "@/lib/animations";
 export default function SavedPackages() {
   const { savedIds } = useApp();
 
-  const savedPackages = mockPackages.filter((pkg) => savedIds.includes(pkg.id));
+  const [packages, setPackages] = useState<Package[]>(mockPackages);
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackages(data);
+        }
+      } catch (err) {
+        console.warn("Supabase saved packages fetch fallback to local:", err);
+      }
+    }
+    loadPackages();
+  }, []);
+
+  const savedPackages = packages.filter((pkg) => savedIds.includes(pkg.id));
 
   return (
     <>

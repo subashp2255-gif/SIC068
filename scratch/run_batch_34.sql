@@ -1,0 +1,80 @@
+DO $$
+BEGIN
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Spiritual darshan and guided temple tour in Basilica of Saint Peter, Vatican City', 0 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Experience peaceful aarti assemblies and sacred rituals', 1 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Comfortable transfers to all holy sites', 2 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Carry valid government ID cards for verification.', 0 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Traditional decency wear is recommended inside temple corridors.', 1 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Avoid carrying electronics inside the inner sanctum.', 2 FROM public.packages WHERE slug = 'christianity-basilica-of-saint-peter-vatican-city';
+DELETE FROM public.package_features WHERE package_id = (SELECT id FROM public.packages WHERE slug = 'christianity-bethlehem-palestine');
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Hotel Stay', 0 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Meals Included', 1 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'AC Transit', 2 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Expert Guide', 3 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Entry Passes', 4 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Spiritual darshan and guided temple tour in Bethlehem', 0 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Experience peaceful aarti assemblies and sacred rituals', 1 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Comfortable transfers to all holy sites', 2 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Carry valid government ID cards for verification.', 0 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Traditional decency wear is recommended inside temple corridors.', 1 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Avoid carrying electronics inside the inner sanctum.', 2 FROM public.packages WHERE slug = 'christianity-bethlehem-palestine';
+DELETE FROM public.package_features WHERE package_id = (SELECT id FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain');
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Hotel Stay', 0 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Meals Included', 1 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'AC Transit', 2 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Expert Guide', 3 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Entry Passes', 4 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Spiritual darshan and guided temple tour in Camino de Santiago, Spain', 0 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Experience peaceful aarti assemblies and sacred rituals', 1 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Comfortable transfers to all holy sites', 2 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Carry valid government ID cards for verification.', 0 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Traditional decency wear is recommended inside temple corridors.', 1 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Avoid carrying electronics inside the inner sanctum.', 2 FROM public.packages WHERE slug = 'christianity-camino-de-santiago-spain';
+DELETE FROM public.package_features WHERE package_id = (SELECT id FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england');
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Hotel Stay', 0 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Meals Included', 1 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'AC Transit', 2 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Expert Guide', 3 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'inclusion', 'Entry Passes', 4 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Spiritual darshan and guided temple tour in Canterbury Cathedral', 0 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Experience peaceful aarti assemblies and sacred rituals', 1 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'highlight', 'Comfortable transfers to all holy sites', 2 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+INSERT INTO public.package_features (package_id, feature_type, title, display_order)
+SELECT id, 'tip', 'Carry valid government ID cards for verification.', 0 FROM public.packages WHERE slug = 'christianity-canterbury-cathedral-england';
+END $$;

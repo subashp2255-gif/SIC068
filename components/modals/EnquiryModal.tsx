@@ -7,9 +7,8 @@ import { mockPackages } from "@/data/packages";
 import { 
   X, Check, AlertCircle, Minus, Plus, 
   MapPin, Calendar, Users, HeartHandshake, 
-  Phone, Mail, User, ShieldCheck, MessageSquare 
+  Phone, Mail, ShieldCheck 
 } from "lucide-react";
-import { easeQuint } from "@/lib/animations";
 import { toast } from "sonner";
 
 interface PackageEnquiry {
@@ -44,9 +43,9 @@ interface PackageEnquiry {
 }
 
 const INITIAL_FORM_STATE: PackageEnquiry = {
-  packageId: "",
-  packageTitle: "",
-  destination: "",
+  packageId: "general",
+  packageTitle: "General Pilgrimage Enquiry",
+  destination: "India",
   travelPreference: "flexible-month",
   preferredMonth: "",
   departureDate: "",
@@ -107,6 +106,7 @@ export default function EnquiryModal() {
   const [cityFocused, setCityFocused] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const lastActiveElement = useRef<HTMLElement | null>(null);
   const selectedPackage = mockPackages.find((p) => p.id === enquirePackageId);
 
   // Check if form data is dirty
@@ -131,8 +131,10 @@ export default function EnquiryModal() {
     );
   };
 
-  // Close attempt handler
+  // Safe Close Handler
   const handleCloseAttempt = () => {
+    if (isSubmitting) return;
+
     if (isDirty() && !isSuccess) {
       const confirmDiscard = window.confirm(
         "You have entered information in the enquiry form. Are you sure you want to discard your progress and close?"
@@ -145,68 +147,119 @@ export default function EnquiryModal() {
     }
   };
 
-  // Trap focus & scroll lock
+  // Absolute Scroll Lock Hook & Focus Restoration
+  useEffect(() => {
+    if (!isEnquireOpen) return;
+
+    lastActiveElement.current = document.activeElement as HTMLElement;
+
+    const scrollY = window.scrollY;
+
+    const previousStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      paddingRight: document.body.style.paddingRight,
+    };
+
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    setTimeout(() => {
+      modalRef.current?.focus();
+    }, 50);
+
+    return () => {
+      document.body.style.overflow = previousStyles.overflow;
+      document.body.style.position = previousStyles.position;
+      document.body.style.top = previousStyles.top;
+      document.body.style.width = previousStyles.width;
+      document.body.style.paddingRight = previousStyles.paddingRight;
+
+      window.scrollTo(0, scrollY);
+
+      if (lastActiveElement.current) {
+        lastActiveElement.current.focus();
+      }
+    };
+  }, [isEnquireOpen]);
+
+  // Load saved draft & sync package selection
   useEffect(() => {
     if (isEnquireOpen) {
-      document.body.style.overflow = "hidden";
-      modalRef.current?.focus();
-      
-      // Load drafts
       try {
         const savedDraft = localStorage.getItem("onejourney_enquiry_draft");
         if (savedDraft) {
           const parsed = JSON.parse(savedDraft);
-          // Keep preselected package fields updated
           setFormData((prev) => ({
             ...prev,
             ...parsed,
-            packageId: selectedPackage?.id || "",
-            packageTitle: selectedPackage?.title || "",
-            destination: selectedPackage?.location || ""
+            packageId: selectedPackage?.id || "general",
+            packageTitle: selectedPackage?.title || "General Pilgrimage Enquiry",
+            destination: selectedPackage?.location || "India"
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            packageId: selectedPackage?.id || "general",
+            packageTitle: selectedPackage?.title || "General Pilgrimage Enquiry",
+            destination: selectedPackage?.location || "India"
           }));
         }
       } catch (e) {
-        console.error(e);
+        // Ignore draft parse issues silently
       }
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isEnquireOpen, selectedPackage]);
 
-  // Sync preselected package when it changes
-  useEffect(() => {
-    if (selectedPackage) {
-      setFormData((prev) => ({
-        ...prev,
-        packageId: selectedPackage.id,
-        packageTitle: selectedPackage.title,
-        destination: selectedPackage.location
-      }));
+      setStep(1);
+      setIsSuccess(false);
+      setErrors({});
     }
-    setStep(1);
-    setIsSuccess(false);
-    setErrors({});
   }, [selectedPackage, isEnquireOpen]);
 
-  // Handle Input Changes
+  // Update form fields & persist draft
   const updateField = <K extends keyof PackageEnquiry>(name: K, value: PackageEnquiry[K]) => {
     const updated = { ...formData, [name]: value };
     setFormData(updated);
-    setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error
-    localStorage.setItem("onejourney_enquiry_draft", JSON.stringify(updated));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+    try {
+      localStorage.setItem("onejourney_enquiry_draft", JSON.stringify(updated));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  };
+
+  // Change Travel Timing Preference Mode
+  const handlePreferenceModeChange = (mode: "flexible-month" | "exact-dates" | "undecided") => {
+    updateField("travelPreference", mode);
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.preferredMonth;
+      delete copy.departureDate;
+      delete copy.returnDate;
+      delete copy.travelPreference;
+      return copy;
+    });
   };
 
   // Stepper traveller counts
   const updateTravellerCount = (type: "adults" | "seniors" | "children" | "infants", delta: number) => {
-    const current = formData[type];
-    const updatedValue = Math.max(0, current + delta);
+    const current = formData[type] || 0;
+    const updatedValue = Math.min(20, Math.max(0, current + delta));
     updateField(type, updatedValue);
+    setErrors((prev) => ({ ...prev, travellers: "" }));
   };
 
-  // Assistance checkbox cards
+  // Toggle Assistance
   const toggleAssistance = (optionId: string) => {
     const current = formData.assistance;
     const updatedList = current.includes(optionId)
@@ -220,9 +273,6 @@ export default function EnquiryModal() {
     const newErrors: Record<string, string> = {};
 
     if (currentStep === 1) {
-      if (!formData.packageId) {
-        newErrors.package = "Package selection is required.";
-      }
       if (!formData.departureCity.trim()) {
         newErrors.departureCity = "Please enter your departure city.";
       }
@@ -238,9 +288,16 @@ export default function EnquiryModal() {
         if (!formData.returnDate) {
           newErrors.returnDate = "Return date is required.";
         }
+
         if (formData.departureDate && formData.returnDate) {
           const dep = new Date(formData.departureDate);
           const ret = new Date(formData.returnDate);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          if (dep < today) {
+            newErrors.departureDate = "Departure date cannot be in the past.";
+          }
           if (ret < dep) {
             newErrors.returnDate = "Return date cannot be earlier than departure date.";
           }
@@ -249,7 +306,7 @@ export default function EnquiryModal() {
     }
 
     if (currentStep === 2) {
-      const total = formData.adults + formData.seniors + formData.children + formData.infants;
+      const total = (formData.adults || 0) + (formData.seniors || 0) + (formData.children || 0) + (formData.infants || 0);
       if (total < 1) {
         newErrors.travellers = "Please specify at least 1 traveller.";
       }
@@ -259,20 +316,30 @@ export default function EnquiryModal() {
       if (!formData.fullName.trim()) {
         newErrors.fullName = "Please enter your full name.";
       }
-      if (!formData.phone.trim()) {
+
+      const trimmedPhone = formData.phone.trim();
+      if (!trimmedPhone) {
         newErrors.phone = "Phone number is required.";
       } else {
-        const cleanPhone = formData.phone.replace(/[\s\-()]/g, "");
-        if (!/^[0-9]{7,15}$/.test(cleanPhone)) {
-          newErrors.phone = "Please enter a valid phone number.";
+        const cleanPhone = trimmedPhone.replace(/[\s\-()]/g, "");
+        if (formData.phoneCountryCode === "+91") {
+          if (!/^[6-9]\d{9}$/.test(cleanPhone) && !/^\+91[6-9]\d{9}$/.test(cleanPhone)) {
+            newErrors.phone = "Please enter a valid 10-digit Indian mobile number.";
+          }
+        } else {
+          if (!/^[0-9]{7,15}$/.test(cleanPhone)) {
+            newErrors.phone = "Please enter a valid phone number.";
+          }
         }
       }
+
       if (formData.email && formData.email.trim() !== "") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email.trim())) {
           newErrors.email = "Please enter a valid email address.";
         }
       }
+
       if (!formData.contactConsent) {
         newErrors.contactConsent = "You must agree to be contacted to submit this enquiry.";
       }
@@ -282,7 +349,7 @@ export default function EnquiryModal() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Keyboard navigation Tab Trap
+  // Trap Focus keyboard handler
   const handleTabTrap = (e: React.KeyboardEvent) => {
     if (e.key !== "Tab" || !modalRef.current) return;
     const focusable = modalRef.current.querySelectorAll(
@@ -305,12 +372,11 @@ export default function EnquiryModal() {
     }
   };
 
-  // Navigation CTAs
+  // Step Navigation CTAs
   const handleContinue = () => {
     if (validateForm(step)) {
       setStep((s) => Math.min(3, s + 1));
     } else {
-      // Focus first error field
       setTimeout(() => {
         const firstErr = document.querySelector("[aria-invalid='true']") as HTMLElement;
         firstErr?.focus();
@@ -322,9 +388,27 @@ export default function EnquiryModal() {
     setStep((s) => Math.max(1, s - 1));
   };
 
-  // Form Submit Action
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Keyboard Form Intercept (prevent accidental submit on Enter on steps 1 & 2)
+  const handleKeyDownInForm = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "TEXTAREA" || target.tagName === "BUTTON") {
+        return;
+      }
+      e.preventDefault();
+      if (step < 3) {
+        handleContinue();
+      } else {
+        handleFormSubmit(e);
+      }
+    }
+  };
+
+  // Submit Handler
+  const handleFormSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (isSubmitting) return;
+
     if (!validateForm(3)) {
       setTimeout(() => {
         const firstErr = document.querySelector("[aria-invalid='true']") as HTMLElement;
@@ -334,18 +418,56 @@ export default function EnquiryModal() {
     }
 
     setIsSubmitting(true);
+    const totalTravellers = (formData.adults || 0) + (formData.seniors || 0) + (formData.children || 0) + (formData.infants || 0);
+
+    const payload = {
+      packageId: formData.packageId || "general",
+      packageName: formData.packageTitle || (formData.packageId === "general" ? "General Pilgrimage Enquiry" : ""),
+      packageTitle: formData.packageTitle || (formData.packageId === "general" ? "General Pilgrimage Enquiry" : ""),
+      destination: formData.destination || "India",
+      travelTiming: formData.travelPreference,
+      travelPreference: formData.travelPreference,
+      preferredMonth: formData.preferredMonth,
+      startDate: formData.departureDate,
+      departureDate: formData.departureDate,
+      endDate: formData.returnDate,
+      returnDate: formData.returnDate,
+      departureCity: formData.departureCity.trim(),
+      dateFlexibility: formData.dateFlexibility,
+      adults: formData.adults,
+      children: formData.children,
+      seniorCitizens: formData.seniors,
+      seniors: formData.seniors,
+      infants: formData.infants,
+      totalTravellers,
+      specialAssistance: formData.assistance,
+      assistance: formData.assistance,
+      fullName: formData.fullName.trim(),
+      email: formData.email ? formData.email.trim() : "",
+      phoneCountryCode: formData.phoneCountryCode,
+      phone: formData.phone.trim(),
+      preferredContactMethod: formData.preferredContactMethod,
+      preferredContactTime: formData.preferredContactTime,
+      message: formData.additionalRequests ? formData.additionalRequests.trim() : "",
+      additionalRequests: formData.additionalRequests ? formData.additionalRequests.trim() : "",
+      consent: formData.contactConsent,
+      contactConsent: formData.contactConsent,
+      whatsappUpdates: formData.whatsappUpdates,
+      source: selectedPackage ? `package_${selectedPackage.id}` : "general_enquiry"
+    };
+
     try {
       const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const resData = await response.json();
       if (response.ok && resData.success) {
         setIsSuccess(true);
         setSuccessData({
-          reference: resData.reference,
+          reference: resData.reference || "OJ-2026-1042",
           contactMethod: formData.preferredContactMethod
         });
         localStorage.removeItem("onejourney_enquiry_draft");
@@ -354,14 +476,12 @@ export default function EnquiryModal() {
         toast.error(resData.message || "Failed to submit enquiry. Please review the details and try again.");
       }
     } catch (err) {
-      console.error(err);
       toast.error("We could not submit your enquiry right now. Your entered information has been preserved. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Accessibility variables
   const travellerSummary = [
     formData.adults > 0 ? `${formData.adults} Adult${formData.adults > 1 ? "s" : ""}` : "",
     formData.seniors > 0 ? `${formData.seniors} Senior${formData.seniors > 1 ? "s" : ""}` : "",
@@ -372,17 +492,17 @@ export default function EnquiryModal() {
   return (
     <AnimatePresence>
       {isEnquireOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-4 select-none">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
           {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
+            animate={{ opacity: 0.65 }}
             exit={{ opacity: 0 }}
             onClick={handleCloseAttempt}
             className="fixed inset-0 bg-[#041F35] backdrop-blur-sm"
           />
 
-          {/* Modal Content Box */}
+          {/* Modal Container */}
           <motion.div
             ref={modalRef}
             role="dialog"
@@ -391,40 +511,41 @@ export default function EnquiryModal() {
             tabIndex={-1}
             onKeyDown={(e) => {
               handleTabTrap(e);
-              if (e.key === "Escape") handleCloseAttempt();
+              if (e.key === "Escape" && !isSubmitting) handleCloseAttempt();
             }}
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
             style={{ fontFamily: "'Inter', sans-serif" }}
-            className="relative bg-white w-full md:max-w-2xl h-full md:h-[680px] md:max-h-[85vh] md:rounded-3xl shadow-2xl flex flex-col overflow-hidden z-50 focus:outline-none"
+            className="relative bg-white w-full max-w-2xl h-[calc(100dvh-2rem)] md:h-[620px] max-h-[calc(100dvh-2rem)] md:max-h-[85vh] flex flex-col overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl z-50 focus:outline-none"
           >
-            {/* Header Area */}
-            <div className="shrink-0 p-5 border-b border-slate-100 flex justify-between items-start text-left bg-white">
+            {/* Fixed Header */}
+            <header className="shrink-0 p-4 sm:p-5 border-b border-slate-100 flex justify-between items-start text-left bg-white">
               <div className="min-w-0">
                 <span className="text-[10px] font-bold text-[#E8A63B] uppercase tracking-wider block">
-                  {selectedPackage?.category === "Pilgrimage" ? "Pilgrimage Yatra" : "Family Vacation"}
+                  {selectedPackage?.category === "Pilgrimage" ? "Pilgrimage Yatra" : "Sacred Journey"}
                 </span>
                 <h3 id="enquiry-modal-title" className="font-bold text-xl text-[#0B3A63] font-display mt-0.5 tracking-tight">
                   Enquire about your journey
                 </h3>
                 <p className="text-xs text-slate-500 font-medium truncate mt-0.5 max-w-[450px]">
-                  {selectedPackage ? selectedPackage.title : "Sacred Destination Journey Plan"}
+                  {selectedPackage ? selectedPackage.title : "General Sacred Pilgrimage Enquiry"}
                 </p>
               </div>
               <button
                 onClick={handleCloseAttempt}
                 aria-label="Close Enquiry modal"
-                className="w-10 h-10 -mr-2 rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-all cursor-pointer border border-transparent"
+                disabled={isSubmitting}
+                className="w-9 h-9 sm:w-10 sm:h-10 -mr-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-all cursor-pointer border border-transparent disabled:opacity-50"
               >
                 <X size={20} />
               </button>
-            </div>
+            </header>
 
-            {/* Clear Progress Indicator Bar */}
+            {/* Fixed Progress Indicator Bar */}
             {!isSuccess && (
-              <div className="shrink-0 bg-slate-50 border-b border-slate-100 py-3 px-6 flex items-center justify-between text-[11px] font-bold text-slate-500 select-none">
+              <div className="shrink-0 bg-slate-50 border-b border-slate-100 py-3 px-4 sm:px-6 flex items-center justify-between text-[11px] font-bold text-slate-500 select-none">
                 <div 
                   className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors" 
                   onClick={() => step > 1 && setStep(1)}
@@ -440,7 +561,7 @@ export default function EnquiryModal() {
                   </div>
                   <span className={step === 1 ? "text-[#0B3A63] font-extrabold" : ""}>Preferences</span>
                 </div>
-                <div className="flex-grow h-0.5 bg-slate-200 mx-3 rounded" />
+                <div className="flex-grow h-0.5 bg-slate-200 mx-2 sm:mx-3 rounded" />
                 
                 <div 
                   className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors" 
@@ -459,7 +580,7 @@ export default function EnquiryModal() {
                   </div>
                   <span className={step === 2 ? "text-[#0B3A63] font-extrabold" : ""}>Travellers</span>
                 </div>
-                <div className="flex-grow h-0.5 bg-slate-200 mx-3 rounded" />
+                <div className="flex-grow h-0.5 bg-slate-200 mx-2 sm:mx-3 rounded" />
 
                 <div 
                   className="flex items-center gap-1.5 cursor-pointer hover:text-primary transition-colors"
@@ -479,10 +600,13 @@ export default function EnquiryModal() {
               </div>
             )}
 
-            {/* Scrollable Form Body */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-5 md:p-6 text-left">
+            {/* Scrollable Form Body Container */}
+            <div 
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-4 sm:p-5 md:p-6 text-left"
+              style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
+            >
               
-              {/* Package Summary Block (Compact) */}
+              {/* Package Summary Block */}
               {!isSuccess && selectedPackage && (
                 <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 mb-5 flex gap-3 items-center select-none">
                   <img 
@@ -512,13 +636,13 @@ export default function EnquiryModal() {
 
               <AnimatePresence mode="wait">
                 {isSuccess ? (
-                  /* Dynamic Success State */
+                  /* Dynamic Success Confirmation State */
                   <motion.div
                     key="success"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center text-center py-10 space-y-4"
+                    className="flex flex-col items-center justify-center text-center py-6 sm:py-10 space-y-4"
                   >
                     <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shadow-sm">
                       <ShieldCheck size={36} className="stroke-[2.5]" />
@@ -528,8 +652,8 @@ export default function EnquiryModal() {
                       <h4 className="font-bold text-[#0B3A63] text-xl font-display">
                         Enquiry submitted successfully
                       </h4>
-                      <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-                        Thank you, <span className="font-bold text-slate-800">{formData.fullName}</span>. Our travel advisor will contact you shortly about the <span className="font-bold text-slate-800">{selectedPackage?.title}</span>.
+                      <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed px-2">
+                        Thank you, <span className="font-bold text-slate-800">{formData.fullName}</span>. Our travel advisor will contact you shortly regarding <span className="font-bold text-slate-800">{selectedPackage ? selectedPackage.title : "your pilgrimage enquiry"}</span>.
                       </p>
                     </div>
 
@@ -548,7 +672,7 @@ export default function EnquiryModal() {
                       </div>
                     </div>
 
-                    <div className="pt-6 flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                    <div className="pt-4 sm:pt-6 flex flex-col sm:flex-row gap-3 w-full max-w-sm">
                       <button
                         onClick={() => setEnquireOpen(false)}
                         className="flex-1 bg-[#0B3A63] hover:bg-[#124d80] text-white py-3 rounded-xl font-bold text-xs transition-colors cursor-pointer"
@@ -564,9 +688,9 @@ export default function EnquiryModal() {
                     </div>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleFormSubmit} className="space-y-5" noValidate>
+                  <form onSubmit={handleFormSubmit} onKeyDown={handleKeyDownInForm} className="space-y-5" noValidate>
                     {step === 1 && (
-                      /* Step 1: Journey Preferences */
+                      /* Step 1: Preferences */
                       <motion.div
                         key="step1"
                         initial={{ opacity: 0, x: 10 }}
@@ -581,17 +705,17 @@ export default function EnquiryModal() {
                           </h4>
                         </div>
 
-                        {/* Destination select card (Read only) */}
+                        {/* Destination select card */}
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                             Destination Package
                           </label>
-                          <div className="bg-slate-100/80 border border-slate-200/80 rounded-xl px-4 py-3 text-sm text-slate-600 font-bold select-none cursor-not-allowed">
+                          <div className="bg-slate-100/80 border border-slate-200/80 rounded-xl px-4 py-3 text-sm text-slate-600 font-bold select-none">
                             {selectedPackage ? selectedPackage.title : "No package preselected"}
                           </div>
                         </div>
 
-                        {/* Travel Date Preference Mode */}
+                        {/* Travel Timing Options */}
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
                             When would you like to travel?
@@ -605,7 +729,7 @@ export default function EnquiryModal() {
                               <button
                                 key={mode.id}
                                 type="button"
-                                onClick={() => updateField("travelPreference", mode.id as any)}
+                                onClick={() => handlePreferenceModeChange(mode.id as any)}
                                 className={`py-3 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
                                   formData.travelPreference === mode.id
                                     ? "bg-slate-50 border-[#E8A63B] text-[#0B3A63] shadow-sm"
@@ -626,7 +750,7 @@ export default function EnquiryModal() {
                             </label>
                             <select
                               name="preferredMonth"
-                              value={formData.preferredMonth}
+                              value={formData.preferredMonth || ""}
                               onChange={(e) => updateField("preferredMonth", e.target.value)}
                               aria-invalid={!!errors.preferredMonth}
                               className={`w-full bg-slate-50 text-slate-700 p-3 rounded-xl border outline-none text-xs font-semibold cursor-pointer ${
@@ -652,7 +776,7 @@ export default function EnquiryModal() {
                         {/* Exact Dates Option Selection */}
                         {formData.travelPreference === "exact-dates" && (
                           <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                                   Departure Date *
@@ -695,7 +819,7 @@ export default function EnquiryModal() {
                           </div>
                         )}
 
-                        {/* Departure City */}
+                        {/* Departure City Input */}
                         <div className="relative">
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                             Departure City *
@@ -718,7 +842,7 @@ export default function EnquiryModal() {
                             </p>
                           )}
 
-                          {/* Quick City suggestions drop panel */}
+                          {/* Quick City suggestions panel */}
                           {cityFocused && (
                             <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg p-2.5 z-50 text-left">
                               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5 px-1">Suggested Cities</span>
@@ -738,7 +862,7 @@ export default function EnquiryModal() {
                           )}
                         </div>
 
-                        {/* Trip Date Flexibility Options */}
+                        {/* Trip Date Flexibility */}
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
                             Trip Date Flexibility
@@ -767,7 +891,7 @@ export default function EnquiryModal() {
                             Anything we should consider at this stage? <span className="text-slate-400 font-medium">(Optional)</span>
                           </label>
                           <textarea
-                            value={formData.additionalRequests}
+                            value={formData.additionalRequests || ""}
                             onChange={(e) => updateField("additionalRequests", e.target.value)}
                             placeholder="E.g., Preferred temple timings, special occasion yatra details, avoid night trains..."
                             rows={2}
@@ -779,7 +903,7 @@ export default function EnquiryModal() {
                     )}
 
                     {step === 2 && (
-                      /* Step 2: Who is travelling? */
+                      /* Step 2: Travellers */
                       <motion.div
                         key="step2"
                         initial={{ opacity: 0, x: 10 }}
@@ -836,7 +960,7 @@ export default function EnquiryModal() {
                             <span className="font-extrabold text-[#0B3A63]">{travellerSummary}</span>
                           </div>
                           {errors.travellers && (
-                            <p className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1">
+                            <p aria-invalid="true" className="text-red-500 text-[10px] font-bold mt-1 flex items-center gap-1">
                               <AlertCircle size={10} /> {errors.travellers}
                             </p>
                           )}
@@ -848,10 +972,10 @@ export default function EnquiryModal() {
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                               <HeartHandshake size={14} className="text-[#E8A63B]" /> Comfort and assistance
                             </label>
-                            <span className="text-[10px] text-slate-400 font-medium block">Select all support requirements for elder pilgrims.</span>
+                            <span className="text-[10px] text-slate-400 font-medium block">Select all support requirements for senior pilgrims and families.</span>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[220px] overflow-y-auto pr-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {ASSISTANCE_OPTIONS.map((opt) => {
                               const isSelected = formData.assistance.includes(opt.id);
                               return (
@@ -868,7 +992,7 @@ export default function EnquiryModal() {
                                   <span className="material-symbols-outlined text-[20px] text-[#0B3A63] shrink-0 mt-0.5 select-none">{opt.icon}</span>
                                   <div className="min-w-0 flex-1 pr-4">
                                     <h5 className="text-[11.5px] font-bold text-slate-800 leading-snug">{opt.label}</h5>
-                                    <p className="text-[9.5px] text-slate-500 font-medium mt-0.5 leading-relaxed leading-normal">{opt.desc}</p>
+                                    <p className="text-[9.5px] text-slate-500 font-medium mt-0.5 leading-normal">{opt.desc}</p>
                                   </div>
                                   
                                   {/* Selection Checkbox Pill */}
@@ -884,7 +1008,6 @@ export default function EnquiryModal() {
                             })}
                           </div>
 
-                          {/* Advisory disclaimer */}
                           <p className="text-[9px] text-slate-400 font-medium leading-normal mt-2">
                             * Assistance requests will be reviewed and confirmed by the travel team. Stays are custom assigned.
                           </p>
@@ -931,7 +1054,7 @@ export default function EnquiryModal() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {/* Phone input with Country code prefix */}
+                          {/* Phone input */}
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                               Phone Number *
@@ -966,7 +1089,7 @@ export default function EnquiryModal() {
                             )}
                           </div>
 
-                          {/* Email Address (optional) */}
+                          {/* Email Address */}
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                               Email Address <span className="text-slate-400 font-medium">(Optional)</span>
@@ -1040,7 +1163,8 @@ export default function EnquiryModal() {
                               type="checkbox"
                               checked={formData.contactConsent}
                               onChange={(e) => updateField("contactConsent", e.target.checked)}
-                              className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary border-slate-300"
+                              aria-invalid={!!errors.contactConsent}
+                              className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary border-slate-300 cursor-pointer"
                             />
                             <span className="text-[10px] text-slate-600 font-bold leading-normal">
                               I agree to be contacted regarding this enquiry. *
@@ -1057,7 +1181,7 @@ export default function EnquiryModal() {
                               type="checkbox"
                               checked={formData.whatsappUpdates}
                               onChange={(e) => updateField("whatsappUpdates", e.target.checked)}
-                              className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary border-slate-300"
+                              className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary border-slate-300 cursor-pointer"
                             />
                             <span className="text-[10px] text-slate-500 font-medium leading-normal">
                               Send itinerary updates and coordinates on WhatsApp
@@ -1073,7 +1197,9 @@ export default function EnquiryModal() {
                             <div className="flex justify-between items-center">
                               <span>Journey:</span>
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-[#0B3A63] text-right truncate max-w-[180px]">{selectedPackage?.title}</span>
+                                <span className="font-bold text-[#0B3A63] text-right truncate max-w-[180px]">
+                                  {selectedPackage ? selectedPackage.title : "General Pilgrimage Enquiry"}
+                                </span>
                               </div>
                             </div>
                             
@@ -1082,12 +1208,12 @@ export default function EnquiryModal() {
                               <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-slate-800 text-right">
                                   {formData.travelPreference === "flexible-month" 
-                                    ? formData.preferredMonth 
+                                    ? (formData.preferredMonth || "Flexible Month")
                                     : formData.travelPreference === "exact-dates"
-                                      ? `${formData.departureDate} to ${formData.returnDate}`
+                                      ? `${formData.departureDate || "Start"} to ${formData.returnDate || "End"}`
                                       : "Undecided Month"} (From {formData.departureCity || "N/A"})
                                 </span>
-                                <button type="button" onClick={() => setStep(1)} className="text-[#E8A63B] font-bold hover:underline">Edit</button>
+                                <button type="button" onClick={() => setStep(1)} className="text-[#E8A63B] font-bold hover:underline cursor-pointer">Edit</button>
                               </div>
                             </div>
 
@@ -1095,7 +1221,7 @@ export default function EnquiryModal() {
                               <span>Travellers:</span>
                               <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-slate-800 text-right">{travellerSummary}</span>
-                                <button type="button" onClick={() => setStep(2)} className="text-[#E8A63B] font-bold hover:underline">Edit</button>
+                                <button type="button" onClick={() => setStep(2)} className="text-[#E8A63B] font-bold hover:underline cursor-pointer">Edit</button>
                               </div>
                             </div>
 
@@ -1107,7 +1233,7 @@ export default function EnquiryModal() {
                                     ? formData.assistance.map(id => ASSISTANCE_OPTIONS.find(o => o.id === id)?.label).join(", ")
                                     : "None Selected"}
                                 </span>
-                                <button type="button" onClick={() => setStep(2)} className="text-[#E8A63B] font-bold hover:underline">Edit</button>
+                                <button type="button" onClick={() => setStep(2)} className="text-[#E8A63B] font-bold hover:underline cursor-pointer">Edit</button>
                               </div>
                             </div>
 
@@ -1115,9 +1241,9 @@ export default function EnquiryModal() {
                               <span>Contact Details:</span>
                               <div className="flex items-center gap-1.5">
                                 <span className="font-bold text-slate-800 text-right">
-                                  {formData.phoneCountryCode} {formData.phone} ({formData.preferredContactMethod})
+                                  {formData.phoneCountryCode} {formData.phone || "N/A"} ({formData.preferredContactMethod})
                                 </span>
-                                <button type="button" onClick={() => setStep(3)} className="text-[#E8A63B] font-bold hover:underline">Edit</button>
+                                <button type="button" onClick={() => setStep(3)} className="text-[#E8A63B] font-bold hover:underline cursor-pointer">Edit</button>
                               </div>
                             </div>
                           </div>
@@ -1129,14 +1255,15 @@ export default function EnquiryModal() {
               </AnimatePresence>
             </div>
 
-            {/* Sticky Actions Footer */}
+            {/* Fixed Actions Footer */}
             {!isSuccess && (
-              <div className="shrink-0 p-4 border-t border-slate-100 flex justify-between items-center bg-white select-none">
+              <footer className="shrink-0 p-4 border-t border-slate-100 flex justify-between items-center bg-white select-none">
                 {step > 1 ? (
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="h-11 px-6 border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1"
+                    disabled={isSubmitting}
+                    className="h-11 px-6 border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1 disabled:opacity-50"
                   >
                     Back
                   </button>
@@ -1144,7 +1271,8 @@ export default function EnquiryModal() {
                   <button
                     type="button"
                     onClick={handleCloseAttempt}
-                    className="h-11 px-6 border border-slate-200 text-slate-500 hover:bg-slate-50 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1"
+                    disabled={isSubmitting}
+                    className="h-11 px-6 border border-slate-200 text-slate-500 hover:bg-slate-50 font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1 disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -1161,7 +1289,7 @@ export default function EnquiryModal() {
                 ) : (
                   <button
                     type="button"
-                    onClick={handleFormSubmit}
+                    onClick={() => handleFormSubmit()}
                     disabled={isSubmitting}
                     className="h-11 px-8 bg-[#E8A63B] hover:bg-[#d6952a] text-white font-bold rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:hover:bg-[#E8A63B]"
                   >
@@ -1175,7 +1303,7 @@ export default function EnquiryModal() {
                     )}
                   </button>
                 )}
-              </div>
+              </footer>
             )}
           </motion.div>
         </div>

@@ -1,25 +1,16 @@
 import type { Metadata } from "next";
-import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import SmoothScroll from "@/components/animations/SmoothScroll";
 import { AppProvider } from "@/context/AppContext";
+import { AuthProvider } from "@/context/AuthContext";
 import EnquiryModal from "@/components/modals/EnquiryModal";
 import AccessibilityProvider from "@/components/layout/AccessibilityProvider";
 import FloatingAIAssistant from "@/components/ai/FloatingAIAssistant";
 import CompareTray from "@/components/cards/CompareTray";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const manrope = { variable: "font-sans" };
+const inter = { variable: "font-inter" };
 
 export const metadata: Metadata = {
   title: "OneJourney | Trusted AI Travel & Pilgrimage Planner",
@@ -43,16 +34,18 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface">
-        <AppProvider>
-          <AccessibilityProvider>
-            <SmoothScroll>
-              {children}
-            </SmoothScroll>
-            <EnquiryModal />
-            <CompareTray />
-            <FloatingAIAssistant />
-          </AccessibilityProvider>
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            <AccessibilityProvider>
+              <SmoothScroll>
+                {children}
+              </SmoothScroll>
+              <EnquiryModal />
+              <CompareTray />
+              <FloatingAIAssistant />
+            </AccessibilityProvider>
+          </AppProvider>
+        </AuthProvider>
         <Toaster position="bottom-right" richColors closeButton />
       </body>
     </html>

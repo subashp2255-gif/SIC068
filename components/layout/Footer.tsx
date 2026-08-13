@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, ArrowUp, Send } from "lucide-react";
 import { easeQuint } from "@/lib/animations";
+import OneJourneyTempleIcon from "@/components/ui/OneJourneyTempleIcon";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -85,7 +86,7 @@ export default function Footer() {
         <div className="lg:col-span-2 space-y-5">
           <Link href="/">
             <div className="font-headline-lg text-secondary-fixed flex items-center gap-2 cursor-pointer">
-              <span className="material-symbols-outlined text-[32px] icon-fill">temple_hindu</span>
+              <OneJourneyTempleIcon size={32} />
               <span className="font-bold text-2xl font-display">OneJourney</span>
             </div>
           </Link>

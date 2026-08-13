@@ -8,6 +8,7 @@ import PageTransition from "@/components/animations/PageTransition";
 import { FadeIn, FadeUp, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations/Reveals";
 import PackageCard from "@/components/cards/PackageCard";
 import { mockPackages, Package } from "@/data/packages";
+import { fetchPackagesFromSupabase } from "@/lib/services/packages";
 import { useApp } from "@/context/AppContext";
 import { Search, MapPin, SlidersHorizontal, Check, RefreshCw, X, AlertTriangle, Eye, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
@@ -261,12 +262,28 @@ export default function PackageListContent() {
     }
   }, [filters.mainCategory, filters.faith, searchParams, router]);
 
+  const [packagesData, setPackagesData] = useState<Package[]>(mockPackages);
+
+  useEffect(() => {
+    async function loadSupabasePackages() {
+      try {
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackagesData(data);
+        }
+      } catch (err) {
+        console.warn("Supabase package fetch fallback to local data:", err);
+      }
+    }
+    loadSupabasePackages();
+  }, []);
+
   // Counts for Category refinement
-  const familyCount = mockPackages.filter(p => p.mainCategory === "Family" || p.category === "Family").length;
-  const pilgrimageCount = mockPackages.filter(p => p.mainCategory === "Pilgrimage" || p.category === "Pilgrimage").length;
+  const familyCount = packagesData.filter(p => p.mainCategory === "Family" || p.category === "Family").length;
+  const pilgrimageCount = packagesData.filter(p => p.mainCategory === "Pilgrimage" || p.category === "Pilgrimage").length;
   
   const getFaithCount = (faithVal: string) => {
-    return mockPackages.filter(p => 
+    return packagesData.filter(p => 
       (p.mainCategory === "Pilgrimage" || p.category === "Pilgrimage") && 
       p.subCategory?.toLowerCase() === faithVal.toLowerCase()
     ).length;
@@ -286,7 +303,7 @@ export default function PackageListContent() {
   };
 
   // Filter & Sort Logic
-  const filteredPackages = filterPackages(mockPackages, filters);
+  const filteredPackages = filterPackages(packagesData, filters);
   const sortedPackages = sortPackages(filteredPackages, filters.sortBy);
 
   // Toggle Filters

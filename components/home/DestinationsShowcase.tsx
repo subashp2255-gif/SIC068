@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, ArrowRight, Compass, Sparkles } from "lucide-react";
 import { destinationsData, Destination } from "@/data/destinations";
+import { fetchDestinationsFromSupabase } from "@/lib/services/packages";
 import { useApp } from "@/context/AppContext";
 import { getAssetPath } from "@/lib/animations";
 
@@ -12,6 +13,22 @@ export default function DestinationsShowcase() {
   const [primaryFilter, setPrimaryFilter] = useState<"All" | "Family" | "Pilgrimage">("All");
   const [faithFilter, setFaithFilter] = useState<"All" | "Hinduism" | "Buddhism" | "Christianity" | "Islam">("All");
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  const [destinationsList, setDestinationsList] = useState<Destination[]>(destinationsData);
+
+  useEffect(() => {
+    async function loadDestinations() {
+      try {
+        const data = await fetchDestinationsFromSupabase();
+        if (data && data.length > 0) {
+          setDestinationsList(data);
+        }
+      } catch (err) {
+        console.warn("Supabase destinations fetch fallback to local:", err);
+      }
+    }
+    loadDestinations();
+  }, []);
 
   const handleImageError = (id: string) => {
     setFailedImages((prev) => ({ ...prev, [id]: true }));
@@ -24,7 +41,7 @@ export default function DestinationsShowcase() {
 
   // Filtered destinations list
   const filteredDestinations = useMemo(() => {
-    return destinationsData.filter((item) => {
+    return destinationsList.filter((item) => {
       if (primaryFilter === "Family") {
         return item.mainCategory === "Family";
       }
@@ -37,7 +54,7 @@ export default function DestinationsShowcase() {
       }
       return true;
     });
-  }, [primaryFilter, faithFilter]);
+  }, [destinationsList, primaryFilter, faithFilter]);
 
   return (
     <section className="w-full max-w-container-max mx-auto px-margin-mobile md:px-12 py-20 select-none flex flex-col gap-10">

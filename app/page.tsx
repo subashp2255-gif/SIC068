@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageTransition from "@/components/animations/PageTransition";
@@ -40,8 +40,25 @@ export default function Home() {
   const { setEnquireOpen, setEnquirePackageId } = useApp();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
+  const [packagesList, setPackagesList] = useState(mockPackages);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackagesList(data);
+        }
+      } catch (err) {
+        console.warn("Supabase homepage fetch fallback to local:", err);
+      }
+    }
+    loadFeatured();
+  }, []);
+
   // Get first 3 featured packages
-  const featuredPackages = mockPackages.slice(0, 3);
+  const featuredPackages = packagesList.slice(0, 3);
 
   const handleEnquireClick = () => {
     setEnquirePackageId(null);

@@ -12,16 +12,30 @@ export default function CompareTray() {
   const [isMounted, setIsMounted] = useState(false);
   const { compareIds, toggleCompare } = useApp();
 
+  const [packagesList, setPackagesList] = useState<Package[]>(mockPackages);
+
   useEffect(() => {
     setIsMounted(true);
+    async function loadPackages() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackagesList(data);
+        }
+      } catch (err) {
+        console.warn("Supabase compare tray fetch fallback to local:", err);
+      }
+    }
+    loadPackages();
   }, []);
 
   // Ensure component only renders client-side after hydration to prevent SSR mismatch
   if (!isMounted) return null;
 
-  // Find valid matched packages in mockPackages
+  // Find valid matched packages
   const comparedPackages = compareIds
-    .map((id) => mockPackages.find((p) => p.id === id))
+    .map((id) => packagesList.find((p) => p.id === id))
     .filter((pkg): pkg is Package => Boolean(pkg));
 
   // If no valid tours are selected, do not render compare box at all

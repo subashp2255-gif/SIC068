@@ -18,9 +18,26 @@ interface PackageDetailsClientProps {
   pkg: Package | undefined;
 }
 
-export default function PackageDetailsClient({ pkg }: PackageDetailsClientProps) {
+export default function PackageDetailsClient({ pkg: initialPkg }: PackageDetailsClientProps) {
   const router = useRouter();
   const { savedIds, toggleSave, setEnquireOpen, setEnquirePackageId, addToRecentlyViewed } = useApp();
+
+  const [currentPkg, setCurrentPkg] = useState<Package | undefined>(initialPkg);
+
+  useEffect(() => {
+    async function loadFromSupabase() {
+      if (initialPkg?.id) {
+        const { fetchPackageByIdFromSupabase } = await import("@/lib/services/packages");
+        const dbData = await fetchPackageByIdFromSupabase(initialPkg.id);
+        if (dbData) {
+          setCurrentPkg(dbData);
+        }
+      }
+    }
+    loadFromSupabase();
+  }, [initialPkg?.id]);
+
+  const pkg = currentPkg || initialPkg;
 
   const isSaved = savedIds.includes(pkg?.id || "");
 

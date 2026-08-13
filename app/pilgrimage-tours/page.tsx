@@ -8,7 +8,7 @@ import PageTransition from "@/components/animations/PageTransition";
 import ScrollProgress from "@/components/animations/ScrollProgress";
 import { FadeIn, FadeUp, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations/Reveals";
 import { useApp } from "@/context/AppContext";
-import { ShieldCheck, HeartHandshake, Utensils, ShieldAlert, Compass, Calendar, BookOpen, Clock, MapPin, ChevronRight, Activity, Heart, ArrowRight } from "lucide-react";
+import { ShieldCheck, HeartHandshake, Utensils, ShieldAlert, Compass, Calendar, BookOpen, Clock, MapPin, ChevronRight, Activity, Heart, ArrowRight, Sparkles } from "lucide-react";
 import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function PilgrimageTours() {
@@ -33,55 +33,119 @@ export default function PilgrimageTours() {
       <PageTransition>
         <main className="w-full flex-grow">
 
-          {/* 1. Hero Section */}
-          <section className="relative w-full h-[600px] flex items-center justify-center overflow-hidden select-none">
-            {/* Background image */}
+          {/* 1. Enhanced Premium Hero Section */}
+          <section className="relative w-full min-h-[calc(100svh-80px)] md:min-h-[700px] flex items-center justify-center overflow-hidden select-none bg-[#041F35] text-white py-12 md:py-20">
+            {/* Background image with focal positioning on temple architecture */}
             <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat w-full h-full z-0 transform scale-102"
+              className="absolute inset-0 bg-cover bg-[position:80%_center] md:bg-[position:85%_center] bg-no-repeat w-full h-full z-0 transform scale-105 transition-transform duration-1000 ease-out"
               style={{
                 backgroundImage: `url("${getAssetPath("/images/hero_dawn_temple.png")}")`
               }}
             />
-            {/* Dark gradient mask for legibility */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/95 to-primary/45 z-10" />
 
-            <div className="relative z-20 max-w-container-max mx-auto px-margin-mobile md:px-12 w-full text-left flex flex-col items-start gap-6 pt-12">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: easeQuint }}
-                className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary max-w-3xl leading-tight"
-              >
-                Sacred Journeys,<br /> Carefully Organised
-              </motion.h1>
+            {/* Layered Overlays for Optimal Legibility & Warm Ambiance */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#041F35] via-[#041F35]/95 to-transparent z-10 w-full sm:w-4/5 md:w-3/5" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#041F35] via-[#041F35]/40 to-transparent z-10" />
+            <div className="absolute right-0 top-1/4 w-[500px] h-[500px] bg-[#E8A63B]/10 rounded-full blur-3xl pointer-events-none z-10 hidden md:block" />
 
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1, ease: easeQuint }}
-                className="font-body-lg text-body-lg text-surface-container-high max-w-2xl"
-              >
-                Experience spiritual fulfillment with our expertly guided pilgrimage tours. Designed for comfort, safety, and deep reverence, ensuring peace of mind for every generation of your family.
-              </motion.p>
-
+            {/* Centered Content Container */}
+            <div className="relative z-20 max-w-container-max mx-auto px-margin-mobile md:px-12 w-full text-left flex flex-col justify-center gap-6">
+              
+              {/* Eyebrow Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2, ease: easeQuint }}
-                className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto"
+                transition={{ duration: 0.5, ease: easeQuint }}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8A63B]/15 border border-[#E8A63B]/35 backdrop-blur-md shadow-sm w-fit"
+              >
+                <Sparkles size={14} className="text-[#E8A63B] shrink-0" />
+                <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-[#E8A63B]">
+                  Curated Pilgrimage Experiences
+                </span>
+              </motion.div>
+
+              {/* Main Heading with Accent Line */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1, ease: easeQuint }}
+                className="border-l-4 border-[#E8A63B] pl-4 sm:pl-6 space-y-1 text-left"
+              >
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-display leading-[1.08] tracking-tight text-white max-w-3xl">
+                  <span className="text-[#E8A63B] drop-shadow-sm">Sacred Journeys,</span><br />
+                  <span>Carefully Organised</span>
+                </h1>
+              </motion.div>
+
+              {/* Supporting Text */}
+              <motion.p
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: easeQuint }}
+                className="text-base sm:text-lg text-slate-200/90 max-w-[640px] leading-relaxed font-normal"
+              >
+                Experience spiritual fulfilment with expertly guided pilgrimage tours—designed for comfort, safety, and deep reverence, with complete peace of mind for every generation of your family.
+              </motion.p>
+
+              {/* CTA Action Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: easeQuint }}
+                className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto"
               >
                 <Link href="/packages?category=pilgrimage" className="w-full sm:w-auto">
-                  <button className="bg-secondary text-on-secondary font-label-bold text-label-bold h-[56px] px-8 rounded-lg shadow-level-1 hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
-                    Explore Pilgrimage Packages
-                    <span className="material-symbols-outlined text-[18px]">explore</span>
+                  <button className="w-full sm:w-auto h-[52px] px-8 bg-[#E8A63B] hover:bg-[#F3B34C] text-[#041F35] font-bold text-sm rounded-xl shadow-lg shadow-[#E8A63B]/20 hover:shadow-[#E8A63B]/30 transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer group focus:ring-2 focus:ring-[#E8A63B] focus:ring-offset-2 focus:ring-offset-[#041F35]">
+                    <span>Explore Pilgrimage Packages</span>
+                    <Compass size={18} className="group-hover:rotate-45 transition-transform duration-300" />
                   </button>
                 </Link>
-                <Link href="/ai-trip-planner" className="w-full sm:w-auto">
-                  <button className="bg-transparent border-2 border-on-primary text-on-primary font-label-bold text-label-bold h-[56px] px-8 rounded-lg hover:bg-on-primary/10 transition-all flex items-center justify-center cursor-pointer w-full" >
-                    Plan My Sacred Journey
-                  </button>
-                </Link>
+
+                <button
+                  onClick={handleEnquireClick}
+                  className="w-full sm:w-auto h-[52px] px-8 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/50 backdrop-blur-md text-white font-bold text-sm rounded-xl transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#041F35]"
+                >
+                  <Sparkles size={18} className="text-[#E8A63B]" />
+                  <span>Plan My Sacred Journey</span>
+                </button>
               </motion.div>
+
+              {/* Integrated Trust Indicators Row */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4, ease: easeQuint }}
+                className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-8 mt-4 border-t border-white/15 w-full max-w-[720px]"
+              >
+                <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-[#E8A63B]/15 border border-[#E8A63B]/30 flex items-center justify-center text-[#E8A63B] shrink-0">
+                    <ShieldCheck size={16} />
+                  </div>
+                  <span>Verified Stays & Transport</span>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-[#E8A63B]/15 border border-[#E8A63B]/30 flex items-center justify-center text-[#E8A63B] shrink-0">
+                    <HeartHandshake size={16} />
+                  </div>
+                  <span>Senior-Friendly Planning</span>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-[#E8A63B]/15 border border-[#E8A63B]/30 flex items-center justify-center text-[#E8A63B] shrink-0">
+                    <Utensils size={16} />
+                  </div>
+                  <span>Pure Veg / Satvik Meals</span>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-xs text-slate-200 font-medium">
+                  <div className="w-8 h-8 rounded-lg bg-[#E8A63B]/15 border border-[#E8A63B]/30 flex items-center justify-center text-[#E8A63B] shrink-0">
+                    <Clock size={16} />
+                  </div>
+                  <span>24/7 Journey Support</span>
+                </div>
+              </motion.div>
+
             </div>
           </section>
 
@@ -479,12 +543,14 @@ export default function PilgrimageTours() {
                 </ul>
               </div>
 
-              <button
-                onClick={handleEnquireClick}
-                className="w-full mt-8 bg-secondary text-on-secondary font-label-bold text-sm h-[48px] rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors cursor-pointer"
-              >
-                Read Care Guidelines
-              </button>
+              <Link href="/senior-care-guidelines" className="w-full mt-8 block">
+                <button
+                  className="w-full bg-secondary text-on-secondary font-label-bold text-sm h-[48px] rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>Read Care Guidelines</span>
+                  <ArrowRight size={16} />
+                </button>
+              </Link>
             </div>
 
           </section>

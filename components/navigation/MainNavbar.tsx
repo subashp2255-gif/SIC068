@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import { easeQuint } from "@/lib/animations";
-import { Menu, X, Heart, RefreshCw, PhoneCall, Sparkles, Eye, Type, Contrast } from "lucide-react";
+import OneJourneyTempleIcon from "@/components/ui/OneJourneyTempleIcon";
+import { Menu, X, Heart, RefreshCw, PhoneCall, Sparkles, Eye, Type, Contrast, User as UserIcon, LogIn, LogOut } from "lucide-react";
 
 interface Props {
   showTransparent?: boolean;
@@ -25,6 +27,8 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
     highContrast,
     setHighContrast
   } = useApp();
+
+  const { user, signOut } = useAuth();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -94,13 +98,12 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
             whileHover={{ y: -1, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <span
-              className={`material-symbols-outlined text-[28px] icon-fill transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(216,154,50,0.7)] ${
+            <OneJourneyTempleIcon
+              size={28}
+              className={`transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(216,154,50,0.7)] ${
                 showTransparent ? "text-[#E6B85C]" : "text-[#D89A32]"
               }`}
-            >
-              temple_hindu
-            </span>
+            />
             <span className="font-display tracking-tight text-xl font-extrabold">OneJourney</span>
           </motion.div>
         </Link>
@@ -275,6 +278,40 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
             </Link>
           </div>
 
+          {/* User Auth Profile / Sign In button */}
+          {user ? (
+            <div className="relative group">
+              <button
+                onClick={() => signOut()}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-label-bold text-xs transition-all cursor-pointer ${
+                  showTransparent
+                    ? "text-white hover:bg-white/10"
+                    : "text-[#102F4A] hover:bg-slate-100"
+                }`}
+                title={`Signed in as ${user.name || user.email}. Click to Sign Out.`}
+              >
+                <div className="w-6 h-6 rounded-full bg-[#D89A32] text-white flex items-center justify-center font-bold text-[10px]">
+                  {(user.name || user.email).slice(0, 1).toUpperCase()}
+                </div>
+                <span className="hidden xl:inline max-w-[90px] truncate">{user.name || "User"}</span>
+                <LogOut size={14} className="opacity-70" />
+              </button>
+            </div>
+          ) : (
+            <Link href="/login">
+              <button
+                className={`hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl font-label-bold text-xs border transition-all cursor-pointer ${
+                  showTransparent
+                    ? "border-white/30 text-white hover:bg-white/10"
+                    : "border-[#DDE4E8] text-[#102F4A] hover:bg-[#FFF9F0] hover:border-[#D89A32]"
+                }`}
+              >
+                <LogIn size={15} className="text-[#D89A32]" />
+                <span>Sign In</span>
+              </button>
+            </Link>
+          )}
+
           {/* Enquire Now Primary CTA */}
           <motion.button
             onClick={handleEnquireClick}
@@ -351,7 +388,7 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
               <div className="flex flex-col gap-6">
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                   <span className="font-bold text-[#102F4A] flex items-center gap-2 text-lg font-display">
-                    <span className="material-symbols-outlined text-[#D89A32] icon-fill text-[24px]">temple_hindu</span>
+                    <OneJourneyTempleIcon size={24} className="text-[#D89A32]" />
                     OneJourney
                   </span>
                   <button

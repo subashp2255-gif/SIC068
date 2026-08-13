@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
@@ -18,6 +18,23 @@ export default function GroupTours() {
   const { setEnquireOpen, setEnquirePackageId } = useApp();
   const [activeView, setActiveView] = useState<"landing" | "listing">("landing");
 
+  const [allPackages, setAllPackages] = useState(mockPackages);
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setAllPackages(data);
+        }
+      } catch (err) {
+        console.warn("Supabase group tours fetch fallback to local:", err);
+      }
+    }
+    loadPackages();
+  }, []);
+
   // Search/Filter states for the listing view
   const [searchText, setSearchText] = useState("");
   const [selectedRegion, setSelectedRegion] = useState<string>("All");
@@ -25,15 +42,10 @@ export default function GroupTours() {
   const [isSeniorFriendlyOnly, setIsSeniorFriendlyOnly] = useState(false);
 
   // Group Tours packages (filter out packages with group tags/sizes)
-  const groupPackages = mockPackages.filter((pkg) => {
-    // Only return packages suited for groups/families
-    if (pkg.category !== "Family" && !pkg.tags.includes("Best for Families")) {
-      // Allow others too but prioritize these
-    }
-
+  const groupPackages = allPackages.filter((pkg) => {
     if (searchText) {
       const matchTitle = pkg.title.toLowerCase().includes(searchText.toLowerCase());
-      const matchDest = pkg.destinations.toLowerCase().includes(searchText.toLowerCase());
+      const matchDest = (pkg.destinations || "").toLowerCase().includes(searchText.toLowerCase());
       if (!matchTitle && !matchDest) return false;
     }
 

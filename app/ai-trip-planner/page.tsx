@@ -11,9 +11,9 @@ import { useApp } from "@/context/AppContext";
 import { easeQuint } from "@/lib/animations";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { 
-  Sparkles, MessageSquare, ArrowRight, RotateCcw, Save, ShieldAlert, 
-  BadgeInfo, Users, Map, Calendar, Settings, ShieldCheck, HeartPulse, 
+import {
+  Sparkles, MessageSquare, ArrowRight, RotateCcw, Save, ShieldAlert,
+  BadgeInfo, Users, Map, Calendar, Settings, ShieldCheck, HeartPulse,
   Edit2, Check, User, CalendarDays, MapPin, Smile, Globe, Coins, Heart,
   MoreHorizontal
 } from "lucide-react";
@@ -52,7 +52,7 @@ export default function AITripPlanner() {
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  
+
 
   const [preferences, setPreferences] = useState({
     travelers: "",
@@ -65,11 +65,6 @@ export default function AITripPlanner() {
     budget: "",
     transport: "",
   });
-
-  // Start conversation
-  useEffect(() => {
-    startConversation();
-  }, []);
 
   const startConversation = () => {
     setMessages([
@@ -88,6 +83,11 @@ export default function AITripPlanner() {
       }
     ]);
   };
+
+  // Start conversation
+  useEffect(() => {
+    startConversation();
+  }, []);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -115,11 +115,11 @@ export default function AITripPlanner() {
             sender: "bot",
             text: "Great. What kind of journey are you planning?",
             options: [
-              { label: "Pilgrimage", value: "Pilgrimage", icon: <Sparkles size={18}/>, desc: "Sacred and devotional" },
-              { label: "Family holiday", value: "Family holiday", icon: <Smile size={18}/>, desc: "Relaxing and fun" },
-              { label: "Cultural journey", value: "Cultural journey", icon: <Map size={18}/>, desc: "Heritage and history" },
-              { label: "Group tour", value: "Group tour", icon: <Users size={18}/>, desc: "Shared experience" },
-              { label: "Mixed spiritual and leisure trip", value: "Mixed spiritual & leisure", icon: <Globe size={18}/>, desc: "Best of both worlds" }
+              { label: "Pilgrimage", value: "Pilgrimage", icon: <Sparkles size={18} />, desc: "Sacred and devotional" },
+              { label: "Family holiday", value: "Family holiday", icon: <Smile size={18} />, desc: "Relaxing and fun" },
+              { label: "Cultural journey", value: "Cultural journey", icon: <Map size={18} />, desc: "Heritage and history" },
+              { label: "Group tour", value: "Group tour", icon: <Users size={18} />, desc: "Shared experience" },
+              { label: "Mixed spiritual and leisure trip", value: "Mixed spiritual & leisure", icon: <Globe size={18} />, desc: "Best of both worlds" }
             ],
             field: "journeyType"
           }
@@ -132,10 +132,10 @@ export default function AITripPlanner() {
             sender: "bot",
             text: "Where would you like to go? You can choose one or let me suggest.",
             options: [
-              { label: "Suggest for me", value: "Suggest", icon: <Sparkles size={18}/> },
-              { label: "North India (Char Dham, Varanasi)", value: "North India", icon: <MapPin size={18}/> },
-              { label: "South India (Madurai, Rameswaram)", value: "South India", icon: <MapPin size={18}/> },
-              { label: "Maharashtra (Jyotirlinga, Shirdi)", value: "Maharashtra", icon: <MapPin size={18}/> }
+              { label: "Suggest for me", value: "Suggest", icon: <Sparkles size={18} /> },
+              { label: "North India (Char Dham, Varanasi)", value: "North India", icon: <MapPin size={18} /> },
+              { label: "South India (Madurai, Rameswaram)", value: "South India", icon: <MapPin size={18} /> },
+              { label: "Maharashtra (Jyotirlinga, Shirdi)", value: "Maharashtra", icon: <MapPin size={18} /> }
             ],
             field: "destination",
             multiSelect: true
@@ -149,10 +149,10 @@ export default function AITripPlanner() {
             sender: "bot",
             text: "When are you planning to travel and for how long?",
             options: [
-              { label: "Flexible Dates (Recommend best time)", value: "Flexible Dates", icon: <CalendarDays size={18}/> },
-              { label: "Next 3 Months", value: "Next 3 Months", icon: <Calendar size={18}/> },
-              { label: "Short Trip (1-3 Days)", value: "Short Trip", icon: <Map size={18}/> },
-              { label: "Long Trip (5+ Days)", value: "Long Trip", icon: <Globe size={18}/> }
+              { label: "Flexible Dates (Recommend best time)", value: "Flexible Dates", icon: <CalendarDays size={18} /> },
+              { label: "Next 3 Months", value: "Next 3 Months", icon: <Calendar size={18} /> },
+              { label: "Short Trip (1-3 Days)", value: "Short Trip", icon: <Map size={18} /> },
+              { label: "Long Trip (5+ Days)", value: "Long Trip", icon: <Globe size={18} /> }
             ],
             field: "dates",
             multiSelect: true
@@ -166,11 +166,11 @@ export default function AITripPlanner() {
             sender: "bot",
             text: "Safety and comfort are priority. Please select any special assistance or meal requirements:",
             options: [
-              { label: "Senior-friendly route", value: "Senior-friendly route", icon: <HeartPulse size={18}/> },
-              { label: "Minimal walking & Rest breaks", value: "Minimal walking", icon: <User size={18}/> },
-              { label: "Wheelchair accessibility", value: "Wheelchair accessibility", icon: <ShieldCheck size={18}/> },
-              { label: "Satvik meals (no onion/garlic)", value: "Satvik meals", icon: <Heart size={18}/> },
-              { label: "No special requirements", value: "None", icon: <Check size={18}/> }
+              { label: "Senior-friendly route", value: "Senior-friendly route", icon: <HeartPulse size={18} /> },
+              { label: "Minimal walking & Rest breaks", value: "Minimal walking", icon: <User size={18} /> },
+              { label: "Wheelchair accessibility", value: "Wheelchair accessibility", icon: <ShieldCheck size={18} /> },
+              { label: "Satvik meals (no onion/garlic)", value: "Satvik meals", icon: <Heart size={18} /> },
+              { label: "No special requirements", value: "None", icon: <Check size={18} /> }
             ],
             field: "needs",
             multiSelect: true
@@ -184,9 +184,9 @@ export default function AITripPlanner() {
             sender: "bot",
             text: "Lastly, what is your preferred budget and accommodation style?",
             options: [
-              { label: "Premium / Luxury", value: "Premium / Luxury", icon: <Sparkles size={18}/>, desc: "5-Star, VIP Darshan, Private SUV" },
-              { label: "Comfort Standard", value: "Comfort Standard", icon: <Check size={18}/>, desc: "3/4-Star, AC Transport, Guided" },
-              { label: "Budget Friendly", value: "Budget Friendly", icon: <Coins size={18}/>, desc: "Ashrams, Standard Transport" }
+              { label: "Premium / Luxury", value: "Premium / Luxury", icon: <Sparkles size={18} />, desc: "5-Star, VIP Darshan, Private SUV" },
+              { label: "Comfort Standard", value: "Comfort Standard", icon: <Check size={18} />, desc: "3/4-Star, AC Transport, Guided" },
+              { label: "Budget Friendly", value: "Budget Friendly", icon: <Coins size={18} />, desc: "Ashrams, Standard Transport" }
             ],
             field: "budget"
           }
@@ -208,7 +208,7 @@ export default function AITripPlanner() {
   // When a user selects an option
   const handleOptionSelect = (option: Option, field: string, isMulti?: boolean) => {
     // Determine if it's the final action for this field
-    let moveNext = !isMulti; 
+    const moveNext = !isMulti;
     let newValue: any;
 
     if (isMulti) {
@@ -257,28 +257,28 @@ export default function AITripPlanner() {
 
     // Special case handling
     if (field === "journeyType" && preferences.journeyType === "Pilgrimage") {
-       // Ask Faith
-       setIsTyping(true);
-       setTimeout(() => {
-         setIsTyping(false);
-         setMessages((prev) => [
-           ...prev,
-           {
-             id: `bot-faith-${Date.now()}`,
-             sender: "bot",
-             text: "Which spiritual path would you like to explore?",
-             options: [
-               { label: "Hinduism", value: "Hinduism" },
-               { label: "Buddhism", value: "Buddhism" },
-               { label: "Christianity", value: "Christianity" },
-               { label: "Islam", value: "Islam" },
-               { label: "Multi-faith", value: "Multi-faith" },
-               { label: "No specific preference", value: "No specific preference" }
-             ],
-             field: "faith"
-           }
-         ]);
-       }, 800);
+      // Ask Faith
+      setIsTyping(true);
+      setTimeout(() => {
+        setIsTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `bot-faith-${Date.now()}`,
+            sender: "bot",
+            text: "Which spiritual path would you like to explore?",
+            options: [
+              { label: "Hinduism", value: "Hinduism" },
+              { label: "Buddhism", value: "Buddhism" },
+              { label: "Christianity", value: "Christianity" },
+              { label: "Islam", value: "Islam" },
+              { label: "Multi-faith", value: "Multi-faith" },
+              { label: "No specific preference", value: "No specific preference" }
+            ],
+            field: "faith"
+          }
+        ]);
+      }, 800);
     } else if (field === "faith") {
       triggerNextQuestion(2);
     } else {
@@ -317,9 +317,26 @@ export default function AITripPlanner() {
     return Math.round((currentStepIndex / 6) * 100);
   };
 
-  const matchedPackages = mockPackages.filter((p) => {
+  const [packagesList, setPackagesList] = useState(mockPackages);
+
+  useEffect(() => {
+    async function loadPackages() {
+      try {
+        const { fetchPackagesFromSupabase } = await import("@/lib/services/packages");
+        const data = await fetchPackagesFromSupabase();
+        if (data && data.length > 0) {
+          setPackagesList(data);
+        }
+      } catch (err) {
+        console.warn("Supabase AI Trip Planner fetch fallback to local:", err);
+      }
+    }
+    loadPackages();
+  }, []);
+
+  const matchedPackages = packagesList.filter((p) => {
     if (preferences.destination.length > 0 && !preferences.destination.includes("Suggest")) {
-      const matchRegion = preferences.destination.some(d => p.region.includes(d) || p.destinations.includes(d));
+      const matchRegion = preferences.destination.some(d => p.region.includes(d) || (p.destinations || "").includes(d));
       if (!matchRegion) return false;
     }
     if (preferences.journeyType === "Pilgrimage" && preferences.faith && preferences.faith !== "Multi-faith" && preferences.faith !== "No specific preference") {
@@ -334,7 +351,7 @@ export default function AITripPlanner() {
       <Navbar />
       <PageTransition>
         <main className="w-full flex-grow mx-auto flex flex-col pt-6 pb-12">
-          
+
           {/* Hero Section */}
           <section className="flex flex-col gap-3 items-center text-center select-none pb-4 px-4 md:px-12 max-w-4xl mx-auto">
             <span className="px-3 py-1 rounded-full bg-secondary-fixed/50 text-on-secondary-fixed text-[10px] font-bold flex items-center gap-1 shadow-sm uppercase tracking-wider">
@@ -372,11 +389,10 @@ export default function AITripPlanner() {
                       {i !== 0 && (
                         <div className={`absolute top-3 right-[50%] left-[-50%] h-[2px] -z-10 transition-colors duration-300 ${isCompleted || isCurrent ? "bg-[#E9A227]" : "bg-outline-variant/30"}`} />
                       )}
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                        isCompleted ? "bg-[#E9A227] text-white" :
-                        isCurrent ? "bg-[#062E4F] border-2 border-[#E9A227] text-white" :
-                        "bg-surface-variant text-on-surface-variant border border-outline-variant/30"
-                      }`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${isCompleted ? "bg-[#E9A227] text-white" :
+                          isCurrent ? "bg-[#062E4F] border-2 border-[#E9A227] text-white" :
+                            "bg-surface-variant text-on-surface-variant border border-outline-variant/30"
+                        }`}>
                         {isCompleted ? <Check size={12} /> : i + 1}
                       </div>
                       <span className={`text-[10px] font-bold ${isCurrent ? "text-primary" : "text-outline"} text-center max-w-[80px]`}>
@@ -392,10 +408,10 @@ export default function AITripPlanner() {
 
               {/* Responsive Two-Column Layout */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full h-auto lg:h-[620px]">
-                
+
                 {/* Left Column: AI Conversation */}
                 <div className="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-2xl shadow-level-1 border border-outline-variant/15 overflow-hidden">
-                  
+
                   {/* Chat Area */}
                   <div ref={chatContainerRef} className="flex-grow p-4 md:p-6 overflow-y-auto space-y-6" aria-live="polite">
                     <AnimatePresence>
@@ -415,18 +431,17 @@ export default function AITripPlanner() {
                                   <Sparkles size={14} />
                                 </div>
                               )}
-                              
+
                               <div className="flex flex-col gap-2">
                                 <div
-                                  className={`rounded-2xl p-4 text-[15px] leading-relaxed shadow-sm ${
-                                    isBot
+                                  className={`rounded-2xl p-4 text-[15px] leading-relaxed shadow-sm ${isBot
                                       ? "bg-[#F0F4F8] text-[#062E4F] rounded-tl-none font-medium border border-[#E1E8F0]"
                                       : "bg-[#062E4F] text-white rounded-tr-none font-semibold"
-                                  }`}
+                                    }`}
                                 >
                                   {msg.text}
                                 </div>
-                                
+
                                 {/* Option Cards */}
                                 {isBot && msg.options && (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 select-none">
@@ -436,11 +451,10 @@ export default function AITripPlanner() {
                                         <button
                                           key={opt.label}
                                           onClick={() => handleOptionSelect(opt, msg.field!, msg.multiSelect)}
-                                          className={`text-left p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-1 focus:outline-none focus:ring-2 focus:ring-[#E9A227]/50 min-h-[44px] ${
-                                            isSelected
+                                          className={`text-left p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-1 focus:outline-none focus:ring-2 focus:ring-[#E9A227]/50 min-h-[44px] ${isSelected
                                               ? "bg-[#FFF9F0] border-[#E9A227] shadow-sm"
                                               : "bg-white border-outline-variant/30 hover:border-[#E9A227]/60 hover:bg-slate-50"
-                                          }`}
+                                            }`}
                                         >
                                           <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
@@ -461,7 +475,7 @@ export default function AITripPlanner() {
                                     })}
                                   </div>
                                 )}
-                                
+
                                 {/* Submit button for multi-select */}
                                 {isBot && msg.options && msg.multiSelect && (
                                   <button
@@ -469,7 +483,7 @@ export default function AITripPlanner() {
                                     disabled={!(preferences as any)[msg.field!]?.length}
                                     className="self-end mt-2 bg-[#062E4F] text-white text-xs font-bold px-5 py-2.5 rounded-lg disabled:opacity-50 hover:bg-[#0B426D] transition-colors flex items-center gap-1.5"
                                   >
-                                    Confirm <ArrowRight size={14}/>
+                                    Confirm <ArrowRight size={14} />
                                   </button>
                                 )}
 
@@ -485,7 +499,7 @@ export default function AITripPlanner() {
 
                                 {/* Edit button for completed user answer */}
                                 {!isBot && (
-                                  <button onClick={() => {}} className="text-[10px] text-outline self-end hover:text-primary flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
+                                  <button onClick={() => { }} className="text-[10px] text-outline self-end hover:text-primary flex items-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
                                     <Edit2 size={10} /> Edit
                                   </button>
                                 )}
@@ -501,14 +515,14 @@ export default function AITripPlanner() {
                     {isTyping && (
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
                         <div className="flex gap-3">
-                           <div className="w-8 h-8 rounded-full bg-[#062E4F] flex items-center justify-center text-[#E9A227] mt-1">
-                             <Sparkles size={14} />
-                           </div>
-                           <div className="bg-[#F0F4F8] text-primary rounded-2xl rounded-tl-none p-4 flex items-center gap-1.5 border border-[#E1E8F0]">
+                          <div className="w-8 h-8 rounded-full bg-[#062E4F] flex items-center justify-center text-[#E9A227] mt-1">
+                            <Sparkles size={14} />
+                          </div>
+                          <div className="bg-[#F0F4F8] text-primary rounded-2xl rounded-tl-none p-4 flex items-center gap-1.5 border border-[#E1E8F0]">
                             <span className="w-1.5 h-1.5 bg-[#062E4F] rounded-full animate-[bounce_1s_infinite]" />
                             <span className="w-1.5 h-1.5 bg-[#062E4F] rounded-full animate-[bounce_1s_infinite_0.2s]" />
                             <span className="w-1.5 h-1.5 bg-[#062E4F] rounded-full animate-[bounce_1s_infinite_0.4s]" />
-                           </div>
+                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -527,14 +541,14 @@ export default function AITripPlanner() {
 
                   {/* Summary Content */}
                   <div className="flex-grow mt-6 space-y-5">
-                    <SummaryItem label="Travellers" value={preferences.travelers} icon={<Users size={16}/>} />
-                    <SummaryItem label="Journey Type" value={preferences.journeyType} icon={<Map size={16}/>} />
-                    {preferences.faith && <SummaryItem label="Faith" value={preferences.faith} icon={<Sparkles size={16}/>} />}
-                    <SummaryItem label="Destination" value={preferences.destination.join(", ")} icon={<MapPin size={16}/>} />
-                    <SummaryItem label="Dates & Duration" value={preferences.dates.join(", ")} icon={<Calendar size={16}/>} />
-                    <SummaryItem label="Accessibility" value={preferences.needs.join(", ")} icon={<ShieldCheck size={16}/>} />
-                    <SummaryItem label="Budget Level" value={preferences.budget} icon={<Coins size={16}/>} />
-                    
+                    <SummaryItem label="Travellers" value={preferences.travelers} icon={<Users size={16} />} />
+                    <SummaryItem label="Journey Type" value={preferences.journeyType} icon={<Map size={16} />} />
+                    {preferences.faith && <SummaryItem label="Faith" value={preferences.faith} icon={<Sparkles size={16} />} />}
+                    <SummaryItem label="Destination" value={preferences.destination.join(", ")} icon={<MapPin size={16} />} />
+                    <SummaryItem label="Dates & Duration" value={preferences.dates.join(", ")} icon={<Calendar size={16} />} />
+                    <SummaryItem label="Accessibility" value={preferences.needs.join(", ")} icon={<ShieldCheck size={16} />} />
+                    <SummaryItem label="Budget Level" value={preferences.budget} icon={<Coins size={16} />} />
+
                     {currentStepIndex === 0 && (
                       <p className="text-sm text-outline italic text-center mt-10">
                         Your journey summary will appear here as you answer the questions.
@@ -548,8 +562,8 @@ export default function AITripPlanner() {
                       <span className="text-xs font-bold text-[#E9A227]">{getCompletionPercentage()}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden">
-                      <motion.div 
-                        className="h-full bg-[#E9A227]" 
+                      <motion.div
+                        className="h-full bg-[#E9A227]"
                         initial={{ width: 0 }}
                         animate={{ width: `${getCompletionPercentage()}%` }}
                         transition={{ duration: 0.5, ease: easeQuint }}
@@ -633,7 +647,7 @@ export default function AITripPlanner() {
                     <Sparkles className="text-[#E9A227]" size={24} />
                     Recommended Tour Packages:
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-8 gap-y-10 pt-2">
                     {matchedPackages.map((pkg, idx) => (
                       <PackageCard key={pkg.id} pkg={pkg} index={idx} />
@@ -655,7 +669,7 @@ export default function AITripPlanner() {
                     <Save size={18} /> Save & Download Plan
                   </button>
                   <button
-                    onClick={() => {}}
+                    onClick={() => { }}
                     className="border border-[#062E4F] text-[#062E4F] font-bold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer transition-all active:scale-97"
                   >
                     Enquire About This Journey
@@ -669,7 +683,7 @@ export default function AITripPlanner() {
           {/* Full Screen Loader overlay during plan creation */}
           <AnimatePresence>
             {isLoading && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="fixed inset-0 z-50 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center gap-4"
               >
@@ -679,8 +693,8 @@ export default function AITripPlanner() {
                 </div>
                 <h4 className="font-headline-lg text-primary font-bold mt-2">Preparing your itinerary...</h4>
                 <div className="flex flex-col items-center gap-2 mt-4 text-sm font-bold text-slate-500">
-                   <span className="flex items-center gap-2"><Check size={16} className="text-[#E9A227]"/> Checking travel preferences</span>
-                   <span className="flex items-center gap-2"><Check size={16} className="text-[#E9A227]"/> Finding suitable destinations</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-[#E9A227]" /> Checking travel preferences</span>
+                  <span className="flex items-center gap-2"><Check size={16} className="text-[#E9A227]" /> Finding suitable destinations</span>
                 </div>
               </motion.div>
             )}
@@ -696,7 +710,7 @@ export default function AITripPlanner() {
 function SummaryItem({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) {
   if (!value) return null;
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       className="flex items-start gap-3"
