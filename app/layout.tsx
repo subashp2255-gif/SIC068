@@ -6,6 +6,8 @@ import SmoothScroll from "@/components/animations/SmoothScroll";
 import { AppProvider } from "@/context/AppContext";
 import EnquiryModal from "@/components/modals/EnquiryModal";
 import AccessibilityProvider from "@/components/layout/AccessibilityProvider";
+import FloatingAIAssistant from "@/components/ai/FloatingAIAssistant";
+import CompareTray from "@/components/cards/CompareTray";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -21,7 +23,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "OneJourney | Trusted AI Travel & Pilgrimage Planner",
-  description: "OneJourney is a trusted AI-powered travel platform for spiritual journeys, pilgrimage tours, group travel, and personalized travel planning.",
+  description: "OneJourney is a trusted travel platform focused on pilgrimage tours, family tour packages, group tours, and AI-powered trip planning.",
 };
 
 export default function RootLayout({
@@ -47,6 +49,8 @@ export default function RootLayout({
               {children}
             </SmoothScroll>
             <EnquiryModal />
+            <CompareTray />
+            <FloatingAIAssistant />
           </AccessibilityProvider>
         </AppProvider>
         <Toaster position="bottom-right" richColors closeButton />

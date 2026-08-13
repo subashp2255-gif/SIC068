@@ -274,15 +274,7 @@ export default function PackageListContent() {
 
   const toggleMainCategory = (cat: "Family" | "Pilgrimage") => {
     setFilters(prev => {
-      let nextCat: "All" | "Family" | "Pilgrimage" = "All";
-      if (prev.mainCategory === "All") {
-        nextCat = cat === "Family" ? "Pilgrimage" : "Family";
-      } else if (prev.mainCategory === cat) {
-        nextCat = "All";
-      } else {
-        nextCat = "All";
-      }
-      
+      const nextCat = prev.mainCategory === cat ? "All" : cat;
       const nextFaith = nextCat === "Pilgrimage" ? prev.faith : "";
       return {
         ...prev,
@@ -916,7 +908,7 @@ export default function PackageListContent() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-8 gap-y-10"
                   >
                     {sortedPackages.map((pkg, index) => (
                       <PackageCard key={pkg.id} pkg={pkg} index={index} />

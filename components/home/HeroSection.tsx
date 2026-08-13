@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight, Compass, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import PackageSearch from "./PackageSearch";
 import HeroTrustRow from "./HeroTrustRow";
@@ -14,16 +14,16 @@ export default function HeroSection() {
   const { scrollY } = useScroll();
   const { setEnquireOpen } = useApp();
 
-  // Parallax background (very slow and smooth using spring)
-  const yTransform = useTransform(scrollY, [0, 1000], [0, 120]);
+  // Parallax background (slow and smooth using spring)
+  const yTransform = useTransform(scrollY, [0, 1000], [0, 100]);
   const y = useSpring(yTransform, { stiffness: 400, damping: 90, mass: 0.1 });
 
   return (
     <section 
       ref={containerRef}
-      className="relative w-full min-h-screen md:min-h-[760px] lg:min-h-[720px] flex flex-col items-center justify-center pt-32 md:pt-40 pb-24 px-6 md:px-10 select-none overflow-hidden"
+      className="relative w-full min-h-screen md:min-h-[740px] lg:min-h-[700px] flex flex-col items-center justify-center pt-32 md:pt-36 pb-20 px-6 md:px-10 select-none overflow-hidden"
     >
-      {/* Background Parallax Image & Overlays */}
+      {/* Parallax Background Image & Dark Navy Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <motion.div
           initial={{ scale: 1.05 }}
@@ -37,62 +37,53 @@ export default function HeroSection() {
           className="absolute inset-0 bg-cover bg-center w-full h-[120%]"
         />
         
-        {/* Symmetrical dark tint to even out left/right contrast */}
-        <div className="absolute inset-0 bg-[#041F35]/45 mix-blend-multiply" />
+        {/* Dark Navy tint overlay for high contrast legibility */}
+        <div className="absolute inset-0 bg-[#102F4A]/50 mix-blend-multiply" />
         
-        {/* Navy gradient to darken the top section for transparent navbar readability */}
-        <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#041F35]/80 via-[#041F35]/40 to-transparent" />
+        {/* Navy top gradient */}
+        <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#102F4A]/85 via-[#102F4A]/40 to-transparent" />
         
-        {/* Soft vignette around outer edges */}
-        <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.6)]" />
+        {/* Soft edge vignette */}
+        <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.5)]" />
 
-        {/* Floating particles (subtle) */}
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.8) 1px, transparent 0)", backgroundSize: "120px 120px" }} />
-
-        {/* Bottom soft cream gradient transition (reduced to prevent blocking the temple image) */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f7f9ff] to-transparent" />
+        {/* Soft bottom cream transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#F5F7F8] to-transparent" />
       </div>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 w-full max-w-[1180px] mx-auto flex flex-col items-center text-center gap-6 md:gap-8">
+      {/* Hero Content Box */}
+      <div className="relative z-10 w-full max-w-[1180px] mx-auto flex flex-col items-center text-center gap-6 md:gap-7">
         
-        {/* Animated Spiritual Badge */}
+        {/* Trust Eyebrow Badge */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative group"
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-2 px-4 py-1.5 bg-[#FFF9F0] border border-[#D89A32]/40 text-[#102F4A] rounded-full shadow-sm"
         >
-          <motion.div
-            animate={{ y: [0, -4, 0] }}
-            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-            className="flex items-center gap-2 px-4 py-1.5 bg-[#FFF8E8] border border-[#E9A227]/30 text-[#041F35] rounded-full shadow-sm"
-          >
-            <Sparkles size={14} className="text-[#E9A227]" />
-            <span className="font-label-bold text-[13px] tracking-wide">Curated Spiritual Experiences</span>
-          </motion.div>
+          <Sparkles size={14} className="text-[#D89A32]" />
+          <span className="font-label-bold text-[13px] tracking-wide">Trusted Pilgrimage & Family Tour Platform</span>
         </motion.div>
 
-        {/* Headline */}
+        {/* Main Headline */}
         <div className="flex flex-col items-center max-w-[960px]">
-          <h1 className="text-[32px] sm:text-[42px] md:text-[52px] lg:text-[62px] font-display font-[800] leading-[1.12] drop-shadow-md text-center">
-            {/* "One Journey" with Golden Mask Reveal */}
-            <span className="relative inline-block text-[#F7C873] me-2 sm:me-3">
+          <h1 className="text-[34px] sm:text-[44px] md:text-[54px] lg:text-[64px] font-display font-extrabold leading-[1.1] drop-shadow-md text-center">
+            {/* Signature animated "One Journey" */}
+            <span className="relative inline-block text-[#E6B85C] me-2 sm:me-3">
               <motion.span
                 initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)", opacity: 0 }}
                 animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.85, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 className="inline-block"
               >
                 One Journey
               </motion.span>
             </span>
 
-            {/* "That Brings Us Together." Fade-up */}
+            {/* "That Brings Us Together." */}
             <motion.span
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
               className="text-white inline-block"
             >
               That Brings Us Together.
@@ -100,64 +91,81 @@ export default function HeroSection() {
           </h1>
         </div>
 
-        {/* Supporting Description with Staggered Entrance */}
-        <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#FFF8E8]/90 font-body-lg text-[18px] md:text-[20px] max-w-[650px] leading-relaxed drop-shadow-md font-medium text-center">
+        {/* Supporting Tagline */}
+        <div className="flex flex-wrap justify-center items-center gap-x-2.5 text-[#FFF9F0] font-body-lg text-[18px] md:text-[21px] max-w-[720px] leading-relaxed drop-shadow-md font-medium text-center">
           <motion.span
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
           >
             Many faiths.
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.22, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 1.12, ease: [0.22, 1, 0.36, 1] }}
           >
             Many paths.
           </motion.span>
           <motion.span
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.34, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#F7C873] font-semibold"
+            transition={{ duration: 0.5, delay: 1.24, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[#E6B85C] font-semibold"
           >
             One journey.
           </motion.span>
         </div>
 
-        {/* Trust Row */}
-        <HeroTrustRow />
-
-        {/* Search Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full relative z-30 flex flex-col items-center"
+        {/* Supporting Paragraph */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="text-slate-200 text-sm md:text-base max-w-2xl leading-relaxed"
         >
-          <PackageSearch />
-        </motion.div>
+          Explore transparent pilgrimage, family, and group tour packages with verified stays, senior citizen guidance, and AI-powered trip planning.
+        </motion.p>
 
-        {/* Secondary Actions for users not ready to search */}
+        {/* CTAs Row */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 mt-2 text-sm font-semibold select-none"
+          transition={{ duration: 0.6, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-wrap justify-center items-center gap-3 md:gap-4 mt-1"
         >
-          <span className="text-[#FFF8E8]/70">Not ready to search?</span>
-          <Link href="/pilgrimage-tours" className="text-[#F7C873] hover:text-[#E9A227] underline underline-offset-4 decoration-[#F7C873]/40 transition-colors">
-            Explore Pilgrimage Tours
+          <Link href="/packages">
+            <button className="bg-[#D89A32] hover:bg-[#E6B85C] text-[#102F4A] font-label-bold px-6 py-3 rounded-xl shadow-level-1 hover:shadow-level-2 transition-all flex items-center gap-2 cursor-pointer">
+              <span>Explore Packages</span>
+              <Compass size={17} />
+            </button>
           </Link>
-          <span className="text-white/20 hidden sm:inline">|</span>
-          <button 
+          <Link href="/ai-trip-planner">
+            <button className="bg-white/15 hover:bg-white/25 text-white border border-white/30 font-label-bold px-6 py-3 rounded-xl backdrop-blur-md transition-all flex items-center gap-2 cursor-pointer">
+              <Sparkles size={16} className="text-[#E6B85C]" />
+              <span>Plan with AI</span>
+            </button>
+          </Link>
+          <button
             onClick={() => setEnquireOpen(true)}
-            className="text-[#F7C873] hover:text-[#E9A227] underline underline-offset-4 decoration-[#F7C873]/40 transition-colors cursor-pointer"
+            className="text-[#E6B85C] hover:text-white text-sm font-semibold underline underline-offset-4 decoration-[#E6B85C]/40 transition-colors cursor-pointer px-2 py-1"
           >
             Talk to a Travel Expert
           </button>
         </motion.div>
+
+        {/* Search Component Container */}
+        <motion.div
+          initial={{ opacity: 0, y: 25, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full relative z-30 flex flex-col items-center mt-3"
+        >
+          <PackageSearch />
+        </motion.div>
+
+        {/* Hero Trust Indicators Row */}
+        <HeroTrustRow />
 
       </div>
     </section>

@@ -41,17 +41,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Recently Viewed
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
 
-  // Load from LocalStorage
+  // Load from LocalStorage & validate matching IDs
   useEffect(() => {
     try {
       const saved = localStorage.getItem("onejourney_saved") || localStorage.getItem("dharmayatra_saved");
-      if (saved) setSavedIds(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSavedIds(parsed.filter((id) => mockPackages.some((p) => p.id === id)));
+        }
+      }
 
       const compare = localStorage.getItem("onejourney_compare") || localStorage.getItem("dharmayatra_compare");
-      if (compare) setCompareIds(JSON.parse(compare));
+      if (compare) {
+        const parsed = JSON.parse(compare);
+        if (Array.isArray(parsed)) {
+          setCompareIds(parsed.filter((id) => mockPackages.some((p) => p.id === id)));
+        }
+      }
 
       const rv = localStorage.getItem("onejourney_recently_viewed") || localStorage.getItem("dharmayatra_recently_viewed");
-      if (rv) setRecentlyViewed(JSON.parse(rv));
+      if (rv) {
+        const parsed = JSON.parse(rv);
+        if (Array.isArray(parsed)) {
+          setRecentlyViewed(parsed.filter((id) => mockPackages.some((p) => p.id === id)));
+        }
+      }
 
       const fs = localStorage.getItem("onejourney_fontsize") || localStorage.getItem("dharmayatra_fontsize");
       if (fs) setFontSizeClass(fs as "text-normal" | "text-large");
@@ -108,7 +123,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Add to Recently Viewed
   const addToRecentlyViewed = (id: string) => {
     if (recentlyViewed.includes(id)) return;
-    const updated = [id, ...recentlyViewed.filter(x => x !== id)].slice(0, 4);
+    const updated = [id, ...recentlyViewed.filter((x) => x !== id)].slice(0, 4);
     setRecentlyViewed(updated);
     localStorage.setItem("onejourney_recently_viewed", JSON.stringify(updated));
   };
@@ -142,7 +157,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         highContrast,
         setHighContrast: handleSetHighContrast,
         recentlyViewed,
-        addToRecentlyViewed
+        addToRecentlyViewed,
       }}
     >
       {children}

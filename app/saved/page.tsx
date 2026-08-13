@@ -80,7 +80,7 @@ export default function SavedPackages() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter text-left"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-8 gap-y-10 text-left"
                 >
                   {savedPackages.map((pkg, index) => (
                     <PackageCard key={pkg.id} pkg={pkg} index={index} />

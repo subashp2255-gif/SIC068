@@ -287,7 +287,7 @@ export default function GroupTours() {
                         </button>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-8 gap-y-10">
                         {groupPackages.map((pkg, i) => (
                           <PackageCard key={pkg.id} pkg={pkg} index={i} />
                         ))}

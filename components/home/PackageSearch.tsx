@@ -25,10 +25,10 @@ export default function PackageSearch() {
     e.preventDefault();
     setIsSearching(true);
     
-    // Simulate loading state for 600-900ms
-    await new Promise(resolve => setTimeout(resolve, 750));
+    // Simulate loading transition state
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Build query params
+    // Build URL Query Params
     const params = new URLSearchParams();
     if (destination) params.append("dest", destination);
     if (travelMonth) params.append("month", travelMonth);
@@ -44,35 +44,35 @@ export default function PackageSearch() {
   return (
     <form
       onSubmit={handleSearchSubmit}
-      className="w-full max-w-6xl bg-white/95 backdrop-blur-md p-4 md:p-3 rounded-[24px] shadow-level-2 border border-slate-200/80 flex flex-col md:flex-row items-stretch md:items-center gap-4 transition-all duration-300 hover:shadow-level-3"
+      className="w-full max-w-6xl bg-white/95 backdrop-blur-md p-4 md:p-3 rounded-2xl shadow-level-2 border border-[#DDE4E8] flex flex-col md:flex-row items-stretch md:items-center gap-4 transition-all duration-300 hover:shadow-level-3 relative z-30"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 grow divide-y md:divide-y-0 md:divide-x divide-slate-100">
-        <div className="h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 grow divide-y md:divide-y-0 md:divide-x divide-[#DDE4E8]/60">
+        <div className="h-full relative">
           <DestinationSelector value={destination} onChange={setDestination} />
         </div>
-        <div className="h-full">
+        <div className="h-full relative">
           <MonthSelector value={travelMonth} onChange={setTravelMonth} />
         </div>
-        <div className="h-full">
+        <div className="h-full relative">
           <DurationSelector value={duration} onChange={setDuration} />
         </div>
-        <div className="h-full">
+        <div className="h-full relative">
           <TravellerSelector value={travellers} onChange={setTravellers} />
         </div>
       </div>
 
-      {/* Saffron Primary Search CTA button */}
+      {/* Saffron Primary Search Button */}
       <button
         type="submit"
         disabled={isSearching}
-        className="bg-[#E9A227] hover:bg-[#d58e1c] text-white h-16 md:h-auto lg:h-[72px] px-12 rounded-2xl font-label-bold text-lg hover:shadow-md active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-85 disabled:scale-100 group flex-shrink-0"
+        className="bg-[#D89A32] hover:bg-[#E6B85C] text-[#102F4A] h-14 md:h-auto lg:h-[68px] px-8 lg:px-10 rounded-xl font-label-bold text-base hover:shadow-md active:scale-98 transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-80 disabled:scale-100 group shrink-0"
       >
         {isSearching ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#102F4A] border-t-transparent rounded-full animate-spin" />
         ) : (
-          <Search size={22} className="group-hover:scale-110 transition-transform" />
+          <Search size={20} className="group-hover:scale-110 transition-transform text-[#102F4A]" />
         )}
-        <span className="inline">{isSearching ? "Searching..." : "Find Packages"}</span>
+        <span className="inline font-bold">{isSearching ? "Searching..." : "Find Packages"}</span>
       </button>
     </form>
   );

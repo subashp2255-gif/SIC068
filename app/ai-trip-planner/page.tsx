@@ -634,7 +634,7 @@ export default function AITripPlanner() {
                     Recommended Tour Packages:
                   </h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-8 gap-y-10 pt-2">
                     {matchedPackages.map((pkg, idx) => (
                       <PackageCard key={pkg.id} pkg={pkg} index={idx} />
                     ))}
