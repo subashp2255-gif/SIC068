@@ -1,4 +1,5 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createEnquiry } from "./enquiryService";
 
 export interface EnquiryPayload {
   packageId?: string;
@@ -11,42 +12,31 @@ export interface EnquiryPayload {
 }
 
 /**
- * Submits a customer tour enquiry to Supabase.
+ * Submits a customer tour enquiry to Supabase using the centralized service.
  */
 export async function submitEnquiryToSupabase(payload: EnquiryPayload): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = getSupabaseBrowserClient();
-    
-    // Get current user session if authenticated
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id || null;
-
-    const isUuid = payload.packageId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.packageId);
-
-    const row: any = {
-      package_id: isUuid ? payload.packageId : null,
-      package_title: !isUuid && payload.packageId !== "general" ? payload.packageId : null,
-      user_id: userId,
-      full_name: payload.fullName,
-      email: payload.email || null,
+    const result = await createEnquiry({
+      packageId: payload.packageId,
+      fullName: payload.fullName,
+      email: payload.email,
       phone: payload.phone,
-      travel_timing: payload.travelDates || null,
-      preferred_month: payload.travelDates || null,
-      message: payload.specialRequirements || null,
+      travelTiming: "flexible_month",
+      preferredMonth: payload.travelDates || "Flexible",
+      departureCity: "India",
       adults: 1,
       children: 0,
+      seniorCitizens: 0,
       infants: 0,
-      senior_citizens: 0,
-      status: "new",
+      message: payload.specialRequirements,
+      consent: true,
+      source: "user_actions",
+    });
+
+    return {
+      success: result.success,
+      error: result.error,
     };
-
-    const { error } = await (supabase.from("enquiries") as any).insert(row);
-    if (error) {
-      console.error("Supabase submitEnquiry error:", error.message);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true };
   } catch (err: any) {
     console.error("submitEnquiryToSupabase exception:", err);
     return { success: false, error: err?.message || "Failed to submit enquiry" };

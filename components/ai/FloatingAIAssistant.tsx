@@ -19,7 +19,7 @@ interface Message {
 export default function FloatingAIAssistant() {
   const pathname = usePathname();
   const router = useRouter();
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -120,8 +120,7 @@ export default function FloatingAIAssistant() {
       router.push("/packages");
     } else if (action === "Talk to Expert" || action === "Speak to Expert" || action === "Talk to Travel Expert") {
       setIsOpen(false);
-      setEnquirePackageId(null);
-      setEnquireOpen(true);
+      openEnquiryModal(null, "ai_trip_planner");
     } else {
       handleSendMessage(action);
     }

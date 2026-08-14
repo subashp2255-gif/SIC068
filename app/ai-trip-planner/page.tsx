@@ -45,14 +45,13 @@ const STEPS = [
 ];
 
 export default function AITripPlanner() {
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
 
   const [preferences, setPreferences] = useState({
     travelers: "",
@@ -65,6 +64,24 @@ export default function AITripPlanner() {
     budget: "",
     transport: "",
   });
+
+  const handleOpenEnquiry = () => {
+    try {
+      const existingDraft = localStorage.getItem("onejourney_enquiry_draft");
+      const parsed = existingDraft ? JSON.parse(existingDraft) : {};
+      const destinationStr = preferences.destination.join(", ");
+      const updated = {
+        ...parsed,
+        destination: destinationStr || parsed.destination || "India",
+        additionalRequests: parsed.additionalRequests || `Custom AI Plan requested for ${preferences.travelers || "family"}. Destination: ${destinationStr || "Custom route"}.`,
+        assistance: preferences.needs.length > 0 ? preferences.needs : parsed.assistance,
+      };
+      localStorage.setItem("onejourney_enquiry_draft", JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+    openEnquiryModal(null, "ai_trip_planner");
+  };
 
   const startConversation = () => {
     setMessages([
@@ -669,7 +686,7 @@ export default function AITripPlanner() {
                     <Save size={18} /> Save & Download Plan
                   </button>
                   <button
-                    onClick={() => { }}
+                    onClick={handleOpenEnquiry}
                     className="border border-[#062E4F] text-[#062E4F] font-bold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50 cursor-pointer transition-all active:scale-97"
                   >
                     Enquire About This Journey

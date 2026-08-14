@@ -30,7 +30,7 @@ interface PackageCardProps {
 }
 
 export default function PackageCard({ pkg, index }: PackageCardProps) {
-  const { savedIds, toggleSave, compareIds, toggleCompare, setEnquireOpen, setEnquirePackageId } = useApp();
+  const { savedIds, toggleSave, compareIds, toggleCompare, openEnquiryModal } = useApp();
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const isSaved = savedIds.includes(pkg.id);
@@ -39,8 +39,7 @@ export default function PackageCard({ pkg, index }: PackageCardProps) {
   const handleEnquireClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setEnquirePackageId(pkg.id);
-    setEnquireOpen(true);
+    openEnquiryModal(pkg.id, "package_card");
   };
 
   const handleShareClick = (e: React.MouseEvent) => {

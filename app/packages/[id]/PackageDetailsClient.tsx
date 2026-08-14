@@ -20,7 +20,7 @@ interface PackageDetailsClientProps {
 
 export default function PackageDetailsClient({ pkg: initialPkg }: PackageDetailsClientProps) {
   const router = useRouter();
-  const { savedIds, toggleSave, setEnquireOpen, setEnquirePackageId, addToRecentlyViewed } = useApp();
+  const { savedIds, toggleSave, openEnquiryModal, addToRecentlyViewed } = useApp();
 
   const [currentPkg, setCurrentPkg] = useState<Package | undefined>(initialPkg);
 
@@ -85,8 +85,7 @@ export default function PackageDetailsClient({ pkg: initialPkg }: PackageDetails
   };
 
   const handleBookNow = () => {
-    setEnquirePackageId(pkg.id);
-    setEnquireOpen(true);
+    openEnquiryModal(pkg.id, "package_details");
   };
 
   // Mock secondary images for gallery

@@ -10,6 +10,7 @@ import {
   Phone, Mail, ShieldCheck 
 } from "lucide-react";
 import { toast } from "sonner";
+import { createEnquiry } from "@/lib/services/enquiryService";
 
 interface PackageEnquiry {
   packageId: string;
@@ -95,7 +96,7 @@ const ASSISTANCE_OPTIONS = [
 ];
 
 export default function EnquiryModal() {
-  const { isEnquireOpen, setEnquireOpen, enquirePackageId } = useApp();
+  const { isEnquireOpen, setEnquireOpen, enquirePackageId, enquireSource } = useApp();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -420,63 +421,54 @@ export default function EnquiryModal() {
     setIsSubmitting(true);
     const totalTravellers = (formData.adults || 0) + (formData.seniors || 0) + (formData.children || 0) + (formData.infants || 0);
 
-    const payload = {
-      packageId: formData.packageId || "general",
-      packageName: formData.packageTitle || (formData.packageId === "general" ? "General Pilgrimage Enquiry" : ""),
-      packageTitle: formData.packageTitle || (formData.packageId === "general" ? "General Pilgrimage Enquiry" : ""),
-      destination: formData.destination || "India",
-      travelTiming: formData.travelPreference,
-      travelPreference: formData.travelPreference,
-      preferredMonth: formData.preferredMonth,
-      startDate: formData.departureDate,
-      departureDate: formData.departureDate,
-      endDate: formData.returnDate,
-      returnDate: formData.returnDate,
-      departureCity: formData.departureCity.trim(),
-      dateFlexibility: formData.dateFlexibility,
-      adults: formData.adults,
-      children: formData.children,
-      seniorCitizens: formData.seniors,
-      seniors: formData.seniors,
-      infants: formData.infants,
-      totalTravellers,
-      specialAssistance: formData.assistance,
-      assistance: formData.assistance,
-      fullName: formData.fullName.trim(),
-      email: formData.email ? formData.email.trim() : "",
-      phoneCountryCode: formData.phoneCountryCode,
-      phone: formData.phone.trim(),
-      preferredContactMethod: formData.preferredContactMethod,
-      preferredContactTime: formData.preferredContactTime,
-      message: formData.additionalRequests ? formData.additionalRequests.trim() : "",
-      additionalRequests: formData.additionalRequests ? formData.additionalRequests.trim() : "",
-      consent: formData.contactConsent,
-      contactConsent: formData.contactConsent,
-      whatsappUpdates: formData.whatsappUpdates,
-      source: selectedPackage ? `package_${selectedPackage.id}` : "general_enquiry"
-    };
+    const submissionId = crypto.randomUUID();
 
     try {
-      const response = await fetch("/api/enquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      const result = await createEnquiry({
+        submissionId,
+        packageId: selectedPackage ? selectedPackage.id : (formData.packageId || null),
+        packageSlug: selectedPackage ? selectedPackage.id : (formData.packageId || null),
+        packageTitle: selectedPackage ? selectedPackage.title : (formData.packageTitle || "General Pilgrimage Enquiry"),
+        destination: selectedPackage?.location || formData.destination || "India",
+        travelTiming: formData.travelPreference,
+        preferredMonth: formData.preferredMonth,
+        startDate: formData.departureDate,
+        endDate: formData.returnDate,
+        departureCity: formData.departureCity.trim(),
+        dateFlexibility: formData.dateFlexibility,
+        adults: formData.adults,
+        children: formData.children,
+        seniorCitizens: formData.seniors,
+        infants: formData.infants,
+        specialAssistance: formData.assistance,
+        fullName: formData.fullName.trim(),
+        email: formData.email ? formData.email.trim() : null,
+        phone: formData.phone.trim(),
+        phoneCountryCode: formData.phoneCountryCode,
+        preferredContactMethod: formData.preferredContactMethod,
+        preferredContactTime: formData.preferredContactTime,
+        message: formData.additionalRequests ? formData.additionalRequests.trim() : null,
+        consent: formData.contactConsent,
+        whatsappUpdates: formData.whatsappUpdates,
+        source: enquireSource || (selectedPackage ? "package_card" : "homepage"),
       });
 
-      const resData = await response.json();
-      if (response.ok && resData.success) {
+      if (result.success) {
         setIsSuccess(true);
         setSuccessData({
-          reference: resData.reference || "OJ-2026-1042",
-          contactMethod: formData.preferredContactMethod
+          reference: result.reference || "OJ-2026-1042",
+          contactMethod: formData.preferredContactMethod,
         });
         localStorage.removeItem("onejourney_enquiry_draft");
         toast.success("Enquiry request sent successfully!");
       } else {
-        toast.error(resData.message || "Failed to submit enquiry. Please review the details and try again.");
+        if (result.errors) {
+          setErrors(result.errors);
+        }
+        toast.error(result.error || "Failed to submit enquiry. Please review the details and try again.");
       }
-    } catch (err) {
-      toast.error("We could not submit your enquiry right now. Your entered information has been preserved. Please try again.");
+    } catch (err: any) {
+      toast.error(err?.message || "We could not submit your enquiry right now. Your entered information has been preserved. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

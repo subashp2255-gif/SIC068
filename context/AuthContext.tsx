@@ -10,6 +10,7 @@ export interface User {
   email: string;
   name?: string;
   createdAt: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
@@ -34,17 +35,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     const supabase = getSupabaseBrowserClient();
 
+    const checkAdminAndSetUser = async (sessionUser: any) => {
+      let isAdm = false;
+      try {
+        const { data: adminRes } = await (supabase.rpc as any)("is_admin");
+        isAdm = !!adminRes;
+      } catch (err) {
+        isAdm = false;
+      }
+
+      if (!mounted) return;
+      const authUser: User = {
+        id: sessionUser.id,
+        email: sessionUser.email || "",
+        name: sessionUser.user_metadata?.full_name || sessionUser.email?.split("@")[0] || "User",
+        createdAt: sessionUser.created_at || new Date().toISOString(),
+        isAdmin: isAdm,
+      };
+      setUser(authUser);
+    };
+
     // 1. Synchronize from Supabase auth session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       if (session?.user) {
-        const authUser: User = {
-          id: session.user.id,
-          email: session.user.email || "",
-          name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "User",
-          createdAt: session.user.created_at || new Date().toISOString(),
-        };
-        setUser(authUser);
+        checkAdminAndSetUser(session.user);
       } else {
         // Fallback to local session storage
         try {
@@ -68,13 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       if (session?.user) {
-        const authUser: User = {
-          id: session.user.id,
-          email: session.user.email || "",
-          name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "User",
-          createdAt: session.user.created_at || new Date().toISOString(),
-        };
-        setUser(authUser);
+        checkAdminAndSetUser(session.user);
       } else {
         setUser(null);
       }
@@ -85,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
 
   /**
    * Authenticate user with password
@@ -114,7 +124,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           password,
         });
 
-        if (!error && data?.user) {
+        if (error) {
+          return { success: false, error: error.message };
+        }
+
+        if (data?.user) {
           const authenticatedUser: User = {
             id: data.user.id,
             email: data.user.email || cleanEmail,
@@ -132,9 +146,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           return { success: true };
         }
-      } catch (supabaseErr) {
-        console.warn("Supabase auth integration fallback:", supabaseErr);
+      } catch (supabaseErr: any) {
+        console.warn("Supabase auth integration error:", supabaseErr);
+        return { success: false, error: supabaseErr.message || GENERIC_AUTH_ERROR };
       }
+
 
       // Simulated network latency for auth verification (600ms)
       await new Promise((resolve) => setTimeout(resolve, 600));

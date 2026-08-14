@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function ComparePackages() {
-  const { compareIds, toggleCompare, setEnquireOpen, setEnquirePackageId } = useApp();
+  const { compareIds, toggleCompare, openEnquiryModal } = useApp();
   const [highlightDifferences, setHighlightDifferences] = useState(false);
 
   const [packagesList, setPackagesList] = useState<Package[]>(mockPackages);
@@ -36,8 +36,7 @@ export default function ComparePackages() {
   const comparedPackages = packagesList.filter((pkg) => compareIds.includes(pkg.id));
 
   const handleEnquireClick = (id: string) => {
-    setEnquirePackageId(id);
-    setEnquireOpen(true);
+    openEnquiryModal(id, "package_comparison");
   };
 
   // Helper mappings for additional fields

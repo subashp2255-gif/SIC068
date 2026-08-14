@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ExitIntentPopup() {
   const [isOpen, setIsOpen] = useState(false);
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
 
   useEffect(() => {
     const handleMouseLeave = (e: MouseEvent) => {
@@ -24,8 +24,7 @@ export default function ExitIntentPopup() {
 
   const handleClaim = () => {
     setIsOpen(false);
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   return (

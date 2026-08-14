@@ -365,6 +365,7 @@ export type Database = {
           special_assistance: string[] | null
           start_date: string | null
           status: string
+          submission_id: string | null
           travel_timing: string | null
           updated_at: string
           user_id: string | null
@@ -397,6 +398,7 @@ export type Database = {
           special_assistance?: string[] | null
           start_date?: string | null
           status?: string
+          submission_id?: string | null
           travel_timing?: string | null
           updated_at?: string
           user_id?: string | null
@@ -429,6 +431,7 @@ export type Database = {
           special_assistance?: string[] | null
           start_date?: string | null
           status?: string
+          submission_id?: string | null
           travel_timing?: string | null
           updated_at?: string
           user_id?: string | null

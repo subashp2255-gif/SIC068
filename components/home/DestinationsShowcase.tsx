@@ -9,7 +9,7 @@ import { useApp } from "@/context/AppContext";
 import { getAssetPath } from "@/lib/animations";
 
 export default function DestinationsShowcase() {
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
   const [primaryFilter, setPrimaryFilter] = useState<"All" | "Family" | "Pilgrimage">("All");
   const [faithFilter, setFaithFilter] = useState<"All" | "Hinduism" | "Buddhism" | "Christianity" | "Islam">("All");
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -35,8 +35,7 @@ export default function DestinationsShowcase() {
   };
 
   const handleExploreClick = () => {
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   // Filtered destinations list

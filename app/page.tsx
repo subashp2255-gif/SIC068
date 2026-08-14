@@ -37,7 +37,7 @@ import TrustStats from "@/components/home/TrustStats";
 import DestinationsShowcase from "@/components/home/DestinationsShowcase";
 
 export default function Home() {
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   const [packagesList, setPackagesList] = useState(mockPackages);
@@ -61,8 +61,7 @@ export default function Home() {
   const featuredPackages = packagesList.slice(0, 3);
 
   const handleEnquireClick = () => {
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   const toggleFaq = (index: number) => {

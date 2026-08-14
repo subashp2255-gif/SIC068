@@ -15,7 +15,7 @@ import { easeQuint, getAssetPath } from "@/lib/animations";
 import { Users, Search, SlidersHorizontal, RefreshCw, X, Calendar, MapPin, Eye, ArrowRight } from "lucide-react";
 
 export default function GroupTours() {
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
   const [activeView, setActiveView] = useState<"landing" | "listing">("landing");
 
   const [allPackages, setAllPackages] = useState(mockPackages);
@@ -56,8 +56,7 @@ export default function GroupTours() {
   });
 
   const handleEnquireClick = () => {
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {

@@ -21,7 +21,7 @@ import { easeQuint } from "@/lib/animations";
 
 export default function SeniorCareGuidelinesPage() {
   const router = useRouter();
-  const { setEnquireOpen, enquirePackageId } = useApp();
+  const { openEnquiryModal, enquirePackageId } = useApp();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   const selectedPackage = mockPackages.find((p) => p.id === enquirePackageId);
@@ -43,7 +43,7 @@ export default function SeniorCareGuidelinesPage() {
       const updated = {
         ...parsed,
         seniors: Math.max(1, parsed.seniors || 1),
-        source: "senior-care-guidelines",
+        source: "senior_care_guidelines",
         assistance: updatedAssistance,
         additionalRequests: parsed.additionalRequests || "Enquired via Senior Care Guidelines page."
       };
@@ -51,7 +51,7 @@ export default function SeniorCareGuidelinesPage() {
     } catch (e) {
       // Ignore storage error
     }
-    setEnquireOpen(true);
+    openEnquiryModal(enquirePackageId || null, "senior_care_guidelines");
   };
 
   return (

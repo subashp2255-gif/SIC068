@@ -8,7 +8,9 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { easeQuint } from "@/lib/animations";
 import OneJourneyTempleIcon from "@/components/ui/OneJourneyTempleIcon";
-import { Menu, X, Heart, RefreshCw, PhoneCall, Sparkles, Eye, Type, Contrast, User as UserIcon, LogIn, LogOut } from "lucide-react";
+import { Menu, X, Heart, RefreshCw, PhoneCall, Sparkles, Eye, Type, Contrast, User as UserIcon, LogIn, LogOut, Shield, Compass } from "lucide-react";
+
+
 
 interface Props {
   showTransparent?: boolean;
@@ -20,8 +22,7 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
   const { 
     savedIds, 
     compareIds, 
-    setEnquireOpen, 
-    setEnquirePackageId,
+    openEnquiryModal,
     fontSizeClass,
     setFontSizeClass,
     highContrast,
@@ -62,8 +63,7 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
   ];
 
   const handleEnquireClick = () => {
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   const handleRefreshClick = () => {
@@ -278,12 +278,36 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
             </Link>
           </div>
 
-          {/* User Auth Profile / Sign In button */}
+          {/* User Auth Profile / Admin Console / Sign In button */}
           {user ? (
-            <div className="relative group">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/my-bookings"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-label-bold text-xs transition-all ${
+                  showTransparent
+                    ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                    : "bg-[#FFF9F0] hover:bg-[#F3E8D6] text-[#102F4A] border border-[#D89A32]/40"
+                }`}
+                title="View My Bookings"
+              >
+                <Compass size={14} className="text-[#D89A32]" />
+                <span className="hidden sm:inline">My Bookings</span>
+              </Link>
+
+              {user.isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-label-bold text-xs bg-[#D89A32]/20 hover:bg-[#D89A32]/30 border border-[#D89A32]/40 text-[#D89A32] transition-all`}
+                  title="Open Admin Operations Command Centre"
+                >
+                  <Shield size={14} />
+                  <span className="hidden sm:inline">Admin Portal</span>
+                </Link>
+              )}
+
               <button
                 onClick={() => signOut()}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-label-bold text-xs transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-label-bold text-xs transition-all cursor-pointer ${
                   showTransparent
                     ? "text-white hover:bg-white/10"
                     : "text-[#102F4A] hover:bg-slate-100"
@@ -311,6 +335,7 @@ export default function MainNavbar({ showTransparent = false, isCompact = false 
               </button>
             </Link>
           )}
+
 
           {/* Enquire Now Primary CTA */}
           <motion.button

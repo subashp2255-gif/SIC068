@@ -12,18 +12,16 @@ import { ShieldCheck, HeartHandshake, Utensils, ShieldAlert, Compass, Calendar, 
 import { easeQuint, getAssetPath } from "@/lib/animations";
 
 export default function PilgrimageTours() {
-  const { setEnquireOpen, setEnquirePackageId } = useApp();
+  const { openEnquiryModal } = useApp();
 
   const handleEnquireClick = () => {
-    setEnquirePackageId(null);
-    setEnquireOpen(true);
+    openEnquiryModal(null, "homepage");
   };
 
   const handlePackageEnquire = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setEnquirePackageId(id);
-    setEnquireOpen(true);
+    openEnquiryModal(id, "package_card");
   };
 
   return (

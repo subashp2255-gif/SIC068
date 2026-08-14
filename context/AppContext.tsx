@@ -13,6 +13,9 @@ interface AppContextType {
   setEnquireOpen: (open: boolean) => void;
   enquirePackageId: string | null;
   setEnquirePackageId: (id: string | null) => void;
+  enquireSource: string;
+  setEnquireSource: (source: string) => void;
+  openEnquiryModal: (packageId?: string | null, source?: string) => void;
   isCompareOpen: boolean;
   setCompareOpen: (open: boolean) => void;
   // Accessibility States
@@ -32,7 +35,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [isEnquireOpen, setEnquireOpen] = useState(false);
   const [enquirePackageId, setEnquirePackageId] = useState<string | null>(null);
+  const [enquireSource, setEnquireSource] = useState<string>("homepage");
   const [isCompareOpen, setCompareOpen] = useState(false);
+
+  const openEnquiryModal = (packageId: string | null = null, source = "homepage") => {
+    setEnquirePackageId(packageId);
+    setEnquireSource(source);
+    setEnquireOpen(true);
+  };
 
   // Accessibility
   const [fontSizeClass, setFontSizeClass] = useState<"text-normal" | "text-large">("text-normal");
@@ -150,6 +160,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setEnquireOpen,
         enquirePackageId,
         setEnquirePackageId,
+        enquireSource,
+        setEnquireSource,
+        openEnquiryModal,
         isCompareOpen,
         setCompareOpen,
         fontSizeClass,

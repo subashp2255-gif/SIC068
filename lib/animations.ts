@@ -66,3 +66,43 @@ export const getAssetPath = (path: string) => {
   return `${basePath}${cleanPath}`;
 };
 
+/**
+ * Admin Operational Motion System
+ * Information-dense, non-distracting animations for the Admin Command Centre
+ */
+export const adminMotion = {
+  pageEntrance: {
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.32, ease: easeQuint } },
+    exit: { opacity: 0, y: -8, transition: { duration: 0.2, ease: easeQuint } },
+  },
+  cardStagger: {
+    initial: {},
+    animate: {
+      transition: {
+        staggerChildren: 0.045,
+      },
+    },
+  },
+  cardItem: {
+    initial: { opacity: 0, y: 14 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: easeQuint } },
+  },
+  drawerSpring: {
+    initial: { x: "100%", opacity: 0.5 },
+    animate: { x: 0, opacity: 1, transition: { type: "spring", damping: 28, stiffness: 300 } },
+    exit: { x: "100%", opacity: 0, transition: { duration: 0.24, ease: easeQuint } },
+  },
+  modalScale: {
+    initial: { opacity: 0, scale: 0.94 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.22, ease: easeQuint } },
+    exit: { opacity: 0, scale: 0.94, transition: { duration: 0.16, ease: easeQuint } },
+  },
+  commandPalette: {
+    initial: { opacity: 0, scale: 0.96, y: -10 },
+    animate: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.18, ease: easeQuint } },
+    exit: { opacity: 0, scale: 0.96, y: -10, transition: { duration: 0.14, ease: easeQuint } },
+  },
+};
+
+
