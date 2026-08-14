@@ -8,6 +8,8 @@ import {
   confirmPilgrimBooking,
   fetchBookingDetails,
 } from "@/lib/services/adminService";
+import { searchUsersForBooking } from "@/lib/services/adminBookingService";
+
 import {
   Search,
   Filter,
@@ -72,12 +74,16 @@ export default function AdminEnquiriesPage() {
 
   // Confirm Booking Modal State
   const [confirmBookingEnquiry, setConfirmBookingEnquiry] = useState<any | null>(null);
+  const [linkedUser, setLinkedUser] = useState<any | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [searchedUsers, setSearchedUsers] = useState<any[]>([]);
   const [packageAmount, setPackageAmount] = useState<number>(0);
   const [additionalServicesAmount, setAdditionalServicesAmount] = useState<number>(0);
   const [confirmCheck1, setConfirmCheck1] = useState(false);
   const [confirmCheck2, setConfirmCheck2] = useState(false);
   const [bookingAdminNotes, setBookingAdminNotes] = useState("");
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
+
 
   // Success Confirmation Modal
   const [successBookingData, setSuccessBookingData] = useState<any | null>(null);
@@ -197,9 +203,8 @@ export default function AdminEnquiriesPage() {
     }
   };
 
-  const openConfirmBookingModal = (enq: any) => {
+  const openConfirmBookingModal = async (enq: any) => {
     setConfirmBookingEnquiry(enq);
-    // Estimate initial package amount if adults & base price available
     const adults = enq.adults || 1;
     const estBase = enq.package_amount || enq.final_price || 24999;
     setPackageAmount(estBase);
@@ -207,6 +212,22 @@ export default function AdminEnquiriesPage() {
     setConfirmCheck1(false);
     setConfirmCheck2(false);
     setBookingAdminNotes(enq.verification_notes || "");
+    setLinkedUser(null);
+    setUserSearchQuery("");
+    setSearchedUsers([]);
+
+    // Check if user is already linked or search by email
+    if (enq.email) {
+      const foundUsers = await searchUsersForBooking(enq.email.trim());
+      const exactMatch = foundUsers.find(
+        (u: any) => u.email?.toLowerCase() === enq.email?.trim().toLowerCase()
+      );
+      if (exactMatch) {
+        setLinkedUser(exactMatch);
+      } else if (foundUsers.length > 0) {
+        setLinkedUser(foundUsers[0]);
+      }
+    }
   };
 
   const handleConfirmAndCreateBooking = async () => {
@@ -230,6 +251,7 @@ export default function AdminEnquiriesPage() {
       totalAmount: total,
       verificationNotes: confirmBookingEnquiry.verification_notes,
       adminNotes: bookingAdminNotes,
+      userId: linkedUser?.id || confirmBookingEnquiry.user_id || undefined,
     });
 
     setIsSubmittingBooking(false);
@@ -257,6 +279,7 @@ export default function AdminEnquiriesPage() {
       toast.error(res.error || "Failed to confirm booking.");
     }
   };
+
 
   const openViewBookingDrawer = async (bookingIdOrEnquiryId: string) => {
     setLoadingBookingRecord(true);
@@ -921,7 +944,72 @@ export default function AdminEnquiriesPage() {
                     </div>
                   </div>
                 )}
+
+              {/* Linked User Account Section */}
+              <div className="pt-2 border-t border-white/10">
+                {linkedUser ? (
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-emerald-400 block">
+                        ✓ Connected Pilgrim User Account
+                      </span>
+                      <span className="font-semibold text-white">
+                        {linkedUser.full_name || linkedUser.email}
+                      </span>
+                      <span className="text-[11px] text-slate-400 block">{linkedUser.email}</span>
+                    </div>
+                    <button
+                      onClick={() => setLinkedUser(null)}
+                      className="text-[10px] text-slate-400 hover:text-white underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                    <span className="text-[10px] uppercase font-bold text-amber-400 block">
+                      ⚠️ Unlinked Pilgrim Account
+                    </span>
+                    <p className="text-slate-300 text-[11px]">
+                      This enquiry is not connected to a registered user. Link an existing user before confirming the booking.
+                    </p>
+                    <input
+                      type="text"
+                      placeholder="Search user by name, email or phone..."
+                      value={userSearchQuery}
+                      onChange={async (e) => {
+                        setUserSearchQuery(e.target.value);
+                        if (e.target.value.trim().length >= 2) {
+                          const users = await searchUsersForBooking(e.target.value);
+                          setSearchedUsers(users);
+                        } else {
+                          setSearchedUsers([]);
+                        }
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                    />
+                    {searchedUsers.length > 0 && (
+                      <div className="space-y-1 max-h-32 overflow-y-auto pt-1">
+                        {searchedUsers.map((u) => (
+                          <div
+                            key={u.id}
+                            onClick={() => {
+                              setLinkedUser(u);
+                              setSearchedUsers([]);
+                            }}
+                            className="p-2 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 border border-white/5 cursor-pointer flex justify-between items-center text-xs"
+                          >
+                            <span className="text-white">{u.full_name || "Pilgrim"} ({u.email})</span>
+                            <span className="text-[#D4AF37] font-bold text-[10px] uppercase">Link Account →</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
+
 
             {/* Pricing Section */}
             <div className="p-4 rounded-2xl bg-[#0E1724] border border-[#D4AF37]/30 space-y-3">
@@ -1003,12 +1091,14 @@ export default function AdminEnquiriesPage() {
                   isSubmittingBooking ||
                   !confirmCheck1 ||
                   !confirmCheck2 ||
+                  (!linkedUser && !confirmBookingEnquiry.user_id) ||
                   Number(packageAmount) + Number(additionalServicesAmount) <= 0
                 }
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#B38728] text-[#0A1118] font-bold text-xs shadow-lg hover:brightness-110 disabled:opacity-40 transition"
               >
                 {isSubmittingBooking ? "Creating Booking..." : "Confirm & Create Booking"}
               </button>
+
             </div>
           </div>
         </div>

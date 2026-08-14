@@ -3,6 +3,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 export interface UserBookingItem {
   id: string;
   booking_reference: string;
+  booking_id?: string;
   package_id: string;
   package_title: string;
   package_title_snapshot: string;
@@ -24,6 +25,7 @@ export interface UserBookingItem {
   booking_status: "draft" | "pending_confirmation" | "confirmed" | "cancelled" | "completed";
   customer_visible_notes?: string;
   special_requirements?: string[];
+  confirmed_by?: string;
   confirmed_at?: string;
   cancelled_at?: string;
   cancellation_reason?: string;
@@ -63,11 +65,11 @@ export async function getMyBookings(filterTab: "all" | "upcoming" | "completed" 
     let query = (supabase as any)
       .from("bookings")
       .select(
-        `id, booking_reference, package_id, package_title, package_title_snapshot,
+        `id, booking_reference, booking_id, package_id, package_title, package_title_snapshot,
          package_slug_snapshot, destination, departure_city, start_date, end_date,
          travel_date, adults, children, senior_citizens, total_travellers, currency,
          total_amount, amount_paid, balance_amount, payment_status, booking_status,
-         customer_visible_notes, special_requirements, confirmed_at, cancelled_at,
+         customer_visible_notes, special_requirements, confirmed_by, confirmed_at, cancelled_at,
          cancellation_reason, created_at,
          booking_travellers(id, full_name, traveller_type, mobility_requirements, dietary_requirements)`
       )
@@ -75,22 +77,30 @@ export async function getMyBookings(filterTab: "all" | "upcoming" | "completed" 
       .order("created_at", { ascending: false });
 
     if (filterTab === "upcoming") {
-      query = query.eq("booking_status", "confirmed").gte("start_date", new Date().toISOString().split("T")[0]);
+      query = query.or("booking_status.eq.confirmed,status.eq.confirmed");
     } else if (filterTab === "completed") {
-      query = query.or("booking_status.eq.completed,and(booking_status.eq.confirmed,start_date.lt." + new Date().toISOString().split("T")[0] + ")");
+      query = query.or("booking_status.eq.completed,status.eq.completed");
     } else if (filterTab === "cancelled") {
-      query = query.eq("booking_status", "cancelled");
+      query = query.or("booking_status.eq.cancelled,status.eq.cancelled");
     }
 
     const { data, error } = await query;
     if (error) throw error;
 
-    return { bookings: (data || []) as UserBookingItem[], error: null };
+    const mapped = (data || []).map((b: any) => ({
+      ...b,
+      booking_reference: b.booking_reference || b.booking_id || "OJ-CONFIRMED",
+      package_title_snapshot: b.package_title_snapshot || b.package_title || "Sacred Pilgrimage",
+      booking_status: b.booking_status || b.status || "confirmed",
+    }));
+
+    return { bookings: mapped as UserBookingItem[], error: null };
   } catch (err: any) {
     console.error("getMyBookings error:", err);
     return { bookings: [], error: err.message || "Failed to load bookings" };
   }
 }
+
 
 /**
  * Fetches single booking details for the authenticated user by reference

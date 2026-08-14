@@ -299,6 +299,7 @@ export interface ConfirmBookingParams {
   totalAmount: number;
   verificationNotes?: string;
   adminNotes?: string;
+  userId?: string;
 }
 
 /**
@@ -315,6 +316,7 @@ export async function confirmPilgrimBooking(params: ConfirmBookingParams) {
       p_total_amount: params.totalAmount,
       p_verification_notes: params.verificationNotes || null,
       p_admin_notes: params.adminNotes || null,
+      p_user_id: params.userId || null,
     });
 
     if (error) throw error;
@@ -325,6 +327,7 @@ export async function confirmPilgrimBooking(params: ConfirmBookingParams) {
     return { success: false, error: err.message || "Failed to confirm booking" };
   }
 }
+
 
 /**
  * Fetches booking details for an enquiry or booking reference

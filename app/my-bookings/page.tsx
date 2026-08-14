@@ -281,23 +281,33 @@ export default function MyBookingsPage() {
                         </div>
                       </div>
 
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
-                          isCancelled
-                            ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
-                            : isCompleted
-                            ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
-                            : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-extrabold"
-                        }`}
-                      >
-                        {booking.booking_status || "confirmed"}
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        {booking.booking_status === "confirmed" && booking.confirmed_at && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            <span>Confirmed by Admin</span>
+                          </span>
+                        )}
+
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
+                            isCancelled
+                              ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                              : isCompleted
+                              ? "bg-blue-500/15 text-blue-300 border-blue-500/30"
+                              : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 font-extrabold"
+                          }`}
+                        >
+                          {booking.booking_status || "confirmed"}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Package Title & Destination */}
                     <div>
                       <h3 className="font-serif text-xl font-bold text-white group-hover:text-[#D89A32] transition line-clamp-1">
                         {booking.package_title_snapshot || booking.package_title}
+
                       </h3>
                       <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
                         <MapPin className="w-3.5 h-3.5 text-[#D89A32]" />
